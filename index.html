@@ -15,7 +15,12 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0a0c10">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230a0c10%22/%3E%3Cpath d=%22M16 5l11 11-11 11L5 16z%22 fill=%22%23c8f547%22/%3E%3C/svg%3E">
-  <script>document.documentElement.classList.add("js")</script>
+  <script>
+    (function (d) {
+      d.classList.add("js");
+      try { if (!sessionStorage.getItem("intro") && !location.hash && scrollY === 0 && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("intro"); } catch (e) {}
+    })(document.documentElement);
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
@@ -51,14 +56,19 @@
   </nav>
 
   <main id="main">
-    <!-- CHARACTER SHEET -->
-    <header class="sheet" id="top">
-      <div class="container sheet-grid">
-        <div class="char-wrap">
-          <div class="char">
+    <!-- HERO -->
+    <header class="hero" id="top">
+      <div class="veil" aria-hidden="true"><i class="rays"></i><i class="flash"></i></div>
+      <div class="container hero-grid">
+        <div class="tilt">
+          <div class="flip">
+            <div class="char-wrap">
+            <div class="char">
             <span class="char-bg" aria-hidden="true">RURTT</span>
             <img src="assets/char.webp" alt="ภาพบุคคลของธนราชันย์ สุวรรณศรี ในชุดนักเรียน" width="900" height="1212">
-            <div class="char-plate">
+            <div class="foil" aria-hidden="true"></div>
+              <div class="shine" aria-hidden="true"></div>
+              <div class="char-plate">
               <div class="lv"><small>LV</small>18</div>
               <div class="plate-name">
                 <b>Rurtt</b>
@@ -66,35 +76,42 @@
               </div>
             </div>
           </div>
+            </div>
+            <div class="card-back" aria-hidden="true"><i><svg viewBox="0 0 32 32"><path d="M16 3l13 13-13 13L3 16z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M16 9l7 7-7 7-7-7z" fill="currentColor"/></svg><b>RURTT</b></i></div>
+          </div>
         </div>
+        <div class="hero-copy">
+          <p class="eyebrow">Character Profile · Player Selected</p>
+          <h1>ธนราชันย์<br>สุวรรณศรี</h1>
+          <p class="en-name"><b>"Pong"</b> Thanarachan Suwannasri · <b>IGN Rurtt</b></p>
+          <p class="role"><span class="role-pb">Product Builder · </span><b>จากเกมเมอร์ สู่คนสร้างโปรดักต์</b></p>
+          <ul class="proof">
+            <li><b>#8 ประเทศ</b><span>Thailand Cyber Top Talent 2026</span></li>
+            <li><b>ทุน NSC 28</b><span>WordFlow</span></li>
+            <li><b>Gold Medal</b><span>SK Robotics Playground 2025</span></li>
+          </ul>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#main-quest">Main Quest <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn-ghost" href="https://github.com/Rurtt" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
+          </div>
+        </div>
+      </div>
+    </header>
 
-        <div class="sheet-info">
-          <p class="eyebrow">Character Profile · Player Info</p>
-          <h1>ธนราชันย์ สุวรรณศรี</h1>
-          <p class="en-name"><b>"Pong"</b> Thanarachan Suwannasri · ชื่อเล่น ป้อง · <b>IGN Rurtt</b></p>
-
-          <dl class="info">
+    <!-- PLAYER INFO -->
+    <section class="block pinfo" id="player">
+      <div class="container">
+        <div class="sec-head reveal"><div><p class="eyebrow">00 · Player Info</p><h2>Player Info</h2></div></div>
+        <div class="pinfo-grid">
+          <div class="reveal">
+            <dl class="info">
             <div><dt class="logo-slot" tabindex="0" data-tip="Class"><svg aria-hidden="true"><use href="#i-class"/></svg><span class="sr">Class</span></dt><dd>Product Builder</dd></div>
             <div><dt class="logo-slot" tabindex="0" data-tip="Sub-class"><svg aria-hidden="true"><use href="#i-sub"/></svg><span class="sr">Sub-class</span></dt><dd>CTF Player · Gamer</dd></div>
             <div><dt class="logo-slot" tabindex="0" data-tip="Guild"><svg aria-hidden="true"><use href="#i-guild"/></svg><span class="sr">Guild</span></dt><dd>ราชวินิตบางแก้ว</dd></div>
             <div><dt class="logo-slot" tabindex="0" data-tip="Motto"><svg aria-hidden="true"><use href="#i-motto"/></svg><span class="sr">Motto</span></dt><dd class="motto">Go Big Or Go Home</dd></div>
           </dl>
-
-          <div class="block-label">Titles Earned</div>
-          <ul class="titles">
-            <li class="rar-legendary"><b>WordFlow</b><span>ได้รับทุน NSC ครั้งที่ 28</span></li>
-            <li class="rar-legendary"><b>#8 ประเทศ</b><span>Thailand Cyber Top Talent 2026</span></li>
-            <li class="rar-legendary"><b>Gold Medal</b><span>SK Robotics Playground 2025</span></li>
-            <li class="rar-epic"><b>POSN Computer</b><span>ค่าย 1 สอวน. คอมพิวเตอร์</span></li>
-          </ul>
-
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="#main-quest">ดู Main Quest <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-            <a class="btn btn-ghost" href="https://github.com/Rurtt" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-github"/></svg>GitHub</a>
-          </div>
-
-          <div class="block-label">Equipped</div>
-          <ul class="equip">
+            <div class="block-label">Equipped</div>
+            <ul class="equip">
             <li class="logo-slot" tabindex="0" data-tip="Claude Code"><img src="assets/icons/claude.svg" alt="Claude Code" width="20" height="20"></li>
             <li class="logo-slot" tabindex="0" data-tip="Codex"><img src="assets/icons/openai.svg" alt="Codex" width="20" height="20"></li>
             <li class="logo-slot" tabindex="0" data-tip="Next.js"><img src="assets/icons/nextdotjs.svg" alt="Next.js" width="20" height="20"></li>
@@ -109,17 +126,23 @@
             <li class="logo-slot" tabindex="0" data-tip="C"><img src="assets/icons/c.svg" alt="C" width="20" height="20"></li>
             <li class="logo-slot" tabindex="0" data-tip="C++"><img src="assets/icons/cplusplus.svg" alt="C++" width="20" height="20"></li>
           </ul>
-
+          </div>
+          <div>
+            <div class="block-label">Titles Earned</div>
+            <ul class="titles reveal">
+            <li class="rar-legendary"><b>WordFlow</b><span>ได้รับทุน NSC ครั้งที่ 28</span></li>
+            <li class="rar-legendary"><b>#8 ประเทศ</b><span>Thailand Cyber Top Talent 2026</span></li>
+            <li class="rar-legendary"><b>Gold Medal</b><span>SK Robotics Playground 2025</span></li>
+            <li class="rar-epic"><b>POSN Computer</b><span>ค่าย 1 สอวน. คอมพิวเตอร์</span></li>
+          </ul>
+          </div>
         </div>
-      </div>
-
-      <div class="container">
         <div class="lore reveal">
           <span class="block-label">Lore</span>
           <p>จากเกมเมอร์ที่แพ้สนามเทคโนโลยี สู่คนที่สร้างโปรดักต์ที่ได้<b class="hl">ใช้งานจริง</b><br>WordFlow ให้เด็ก LD และ DoCode รับทำเว็บให้<b class="hl">ลูกค้าจริง</b><br>ภารกิจต่อไป: วิศวะคอม → Startup ของตัวเอง</p>
         </div>
       </div>
-    </header>
+    </section>
 
     <!-- STATS -->
     <section class="block" id="stats">

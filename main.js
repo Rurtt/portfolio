@@ -367,6 +367,94 @@
     });
   });
 
+  // ---------- hero: holo tilt + first-visit tarot intro ----------
+  document.querySelectorAll(".pinfo .titles li").forEach((li, i) => li.style.setProperty("--i", i));
+  const heroEl = document.querySelector(".hero");
+  if (heroEl) {
+    const doc = document.documentElement;
+    const card = heroEl.querySelector(".tilt");
+    if (matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      let raf = 0;
+      heroEl.addEventListener("pointermove", (e) => {
+        if (raf || doc.classList.contains("intro")) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const r = card.getBoundingClientRect();
+          const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+          const y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+          card.style.setProperty("--rx", (x - 0.5) * 16 + "deg");
+          card.style.setProperty("--ry", (0.5 - y) * 16 + "deg");
+          card.style.setProperty("--mx", x * 100 + "%");
+          card.style.setProperty("--my", y * 100 + "%");
+          heroEl.classList.add("hot");
+        });
+      });
+      heroEl.addEventListener("pointerleave", () => {
+        card.style.removeProperty("--rx");
+        card.style.removeProperty("--ry");
+        heroEl.classList.remove("hot");
+      });
+    }
+    if (doc.classList.contains("intro")) {
+      try { sessionStorage.setItem("intro", "1"); } catch {}
+      const flip = card.querySelector(".flip");
+      const lvText = card.querySelector(".lv").lastChild, lv = +lvText.textContent;
+      const r = card.getBoundingClientRect();
+      const fx = innerWidth / 2 - (r.left + r.width / 2), fy = innerHeight / 2 - (r.top + r.height / 2);
+      const fs = Math.min(1.15, (innerHeight * 0.7) / r.height);
+      const center = { translate: `${fx}px ${fy}px`, scale: `${fs}` };
+      const OUT = "cubic-bezier(0.22, 1, 0.36, 1)", BACK = "cubic-bezier(0.34, 1.4, 0.64, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
+      const anims = [];
+      const run = (el, kf, delay, duration, easing, fill = "both") => anims.push(el.animate(kf, { delay, duration, easing, fill }));
+      const $$ = (s) => heroEl.querySelector(s);
+
+      // 1. face-down card rises in, then charges up (tilts back, dips, glows)
+      run(card, [{ opacity: 0, translate: `${fx}px ${fy + 70}px`, scale: `${fs * 0.88}` }, { opacity: 1, ...center }], 0, 700, OUT);
+      run(flip, [{ transform: "rotateY(180deg)" }, { transform: "rotateY(208deg) scale(0.94)" }], 450, 420, "cubic-bezier(0.45, 0, 0.55, 1)");
+      run($$(".card-back"), [{ filter: "brightness(1)" }, { filter: "brightness(1.9)" }], 450, 420, "ease-in");
+      // 2. release: 1.5-turn spin that decelerates into a small overshoot, with a punch
+      run(flip, [
+        { transform: "rotateY(208deg) scale(0.94)" },
+        { transform: "rotateY(-372deg) scale(1.07)", offset: 0.72 },
+        { transform: "rotateY(-360deg) scale(1)" },
+      ], 870, 1000, OUT, "forwards");
+      // 3. reveal impact: light rays, flash, shine across the card, badge pulse
+      run($$(".veil .rays"), [{ opacity: 0, transform: "scale(0.3) rotate(0deg)" }, { opacity: 1, offset: 0.18 }, { opacity: 0, transform: "scale(1.2) rotate(40deg)" }], 1120, 1400, OUT);
+      run($$(".veil .flash"), [{ opacity: 0, transform: "scale(0.2)" }, { opacity: 0.85, offset: 0.12 }, { opacity: 0, transform: "scale(1)" }], 1120, 800, OUT);
+      run($$(".shine"), [{ backgroundPosition: "150% 0" }, { backgroundPosition: "-150% 0" }], 1300, 900, INOUT);
+      run($$(".char-plate .rar"), [{ boxShadow: "0 0 0 0 rgba(245, 197, 66, 0.9)", background: "rgba(245, 197, 66, 0.45)" }, { boxShadow: "0 0 0 14px rgba(245, 197, 66, 0)" }], 1450, 900, "ease-out", "forwards");
+      // 4. card glides into its slot while the page fades in around it
+      run(card, [center, { translate: "0px 0px", scale: "1" }], 1850, 850, INOUT, "forwards");
+      run($$(".veil"), [{ opacity: 1 }, { opacity: 0 }], 1900, 650, "ease-out");
+      [...$$(".hero-copy").children].forEach((el, i) => {
+        if (el.classList.contains("proof")) return;
+        const kf = el.tagName === "H1"
+          ? [{ clipPath: "inset(-20% 100% -40% 0)" }, { clipPath: "inset(-20% -5% -40% 0)" }]
+          : [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }];
+        run(el, kf, 2250 + i * 70, 750, OUT);
+      });
+      heroEl.querySelectorAll(".proof li").forEach((li, i) => run(li, [{ opacity: 0, transform: "translateX(24px) scale(0.96)" }, { opacity: 1, transform: "none" }], 2600 + i * 80, 650, BACK));
+      doc.classList.add("go");
+
+      let skipped = false;
+      const t0 = performance.now() + 1150;
+      lvText.textContent = "1";
+      requestAnimationFrame(function count(now) {
+        const p = skipped ? 1 : Math.min(1, Math.max(0, (now - t0) / 700));
+        lvText.textContent = Math.max(1, Math.round(lv * (1 - (1 - p) ** 3)));
+        if (p < 1) requestAnimationFrame(count);
+      });
+      const evs = ["click", "keydown", "wheel", "touchstart"];
+      const skip = () => { skipped = true; anims.forEach((a) => a.finish()); };
+      evs.forEach((ev) => addEventListener(ev, skip, { passive: true }));
+      Promise.all(anims.map((a) => a.finished)).then(() => {
+        anims.forEach((a) => a.cancel());
+        doc.classList.remove("intro", "go");
+        evs.forEach((ev) => removeEventListener(ev, skip));
+      });
+    }
+  }
+
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
   const els = document.querySelectorAll(".reveal");
   if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
