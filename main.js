@@ -43,7 +43,7 @@
   // ---------- home: other main quests ----------
   const side = $("#side-mains");
   if (side) {
-    side.innerHTML = Q.filter((q) => q.main && !q.hero).map((q) => `
+    side.innerHTML = Q.filter((q) => q.main && !q.hero).sort((a, b) => a.main - b.main).map((q) => `
       <a class="mq-card rar-${q.rarity} sheen reveal" href="quest.html?q=${q.id}">
         <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">

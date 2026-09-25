@@ -163,7 +163,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .equip span { font-size: 12px; color: var(--text-2); line-height: 1.2; text-align: center; }
 
 .lore { margin-top: 40px; padding: 4px 0 0 20px; border-left: 2px solid var(--line-2); max-width: 900px; }
-.lore .block-label { margin-top: 0; }
+.lore .block-label { margin: 0 0 10px; font-size: 19px; letter-spacing: 0.14em; color: var(--text-2); }
 .lore p { color: var(--text-2); }
 
 @media (max-width: 960px) {
