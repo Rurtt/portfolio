@@ -1,52 +1,52 @@
 // All site content lives here. Edit values, refresh page. No build step.
 
-// Radar chart. value = 0-100.
+// Attribute chart. value = 0-100, shape only (not shown). can = what I can do in this field.
 window.STATS = [
-  { key: "Product", th: "วางแผนผลิตภัณฑ์", value: 92 },
-  { key: "AI", th: "ทำงานร่วมกับ AI (Claude, Codex)", value: 88 },
-  { key: "Clutch", th: "ทำงานใต้แรงกดดัน", value: 90 },
-  { key: "Pitch", th: "นำเสนอ", value: 85 },
-  { key: "Teamwork", th: "ทำงานเป็นทีม", value: 88 },
-  { key: "Web", th: "Full-stack Web", value: 72 },
-  { key: "Systems", th: "System Integration", value: 62 },
-  { key: "Security", th: "CTF / Security", value: 65 },
-  { key: "Game Dev", th: "Unity / C#", value: 30 },
+  { key: "Product", value: 92, can: "ตีโจทย์ให้ชัด วาง MVP และพาทีมส่งงานจนจบ" },
+  { key: "AI", value: 88, can: "มี Wiki และ Skill ของตัวเอง ใช้ Token คุ้ม เซฟงานทุกขั้น AI รู้บริบทเองโดยไม่ต้องเล่าซ้ำ" },
+  { key: "Clutch", value: 90, can: "ส่งงานได้ใต้เวลาบีบ เช่น Hackathon 12 ชม. หรือเตรียม CTF 7 วัน" },
+  { key: "Pitch", value: 85, can: "นำเสนอและตอบกรรมการจนได้ที่ 1 และเหรียญทอง" },
+  { key: "Teamwork", value: 88, can: "แบ่งงานตามความถนัด และพาทีมไปทางเดียวกัน" },
+  { key: "Web", value: 72, can: "ทำเว็บตั้งแต่หน้าบ้านถึงหลังบ้าน ส่งลูกค้าจริงได้" },
+  { key: "Systems", value: 62, can: "ต่อหลายระบบให้คุยกันได้ เช่น PC กับมือถือผ่านสาย USB" },
+  { key: "Security", value: 65, can: "สืบข้อมูล OSINT และแกะโปรแกรมหา Flag ระดับแข่งประเทศ" },
+  { key: "Game Dev", value: 30, can: "ทำเกมเล่นได้จริงใน 3 วัน ยังฝึกอยู่" },
 ];
 
-// Skill tree. lv = 1-10. max: true shows "MAX".
+// Skill tree. lv = 1-10. max: true shows "MAX". can = what this level actually did.
 window.SKILLS = [
   { group: "Product & Team", items: [
-    { name: "Product Management", lv: 8 },
-    { name: "MVP Scoping", lv: 9 },
-    { name: "Pitching / ตอบกรรมการ", lv: 8 },
+    { name: "Product Management", lv: 8, can: "คุมทีม 3–6 คนส่งงานจริงจนจบ ไม่มีใครหมดไฟ" },
+    { name: "MVP Scoping", lv: 9, can: "ตัดไอเดียเหลือ MVP ที่ชนะ Hackathon ใน 12 ชม." },
+    { name: "Pitching / ตอบกรรมการ", lv: 8, can: "ตอบกรรมการจนได้ที่ 1 และเหรียญทอง" },
   ]},
   { group: "AI Tools", items: [
-    { name: "Claude / Claude Code", lv: 9 },
-    { name: "Codex", lv: 8 },
-    { name: "AI Model Integration", lv: 5 },
+    { name: "Claude / Claude Code", lv: 9, can: "มี Wiki และ Skill ของตัวเอง AI เข้าใจงานโดยไม่ต้องเล่าซ้ำ" },
+    { name: "Codex", lv: 8, can: "ใช้ Token คุ้ม และเซฟความคืบหน้างานทุกขั้น" },
+    { name: "AI Model Integration", lv: 5, can: "ต่อโมเดลเสียงบน Server ให้เกม WordFlow ใช้" },
   ]},
   { group: "Web & Backend", items: [
-    { name: "React + TypeScript", lv: 6 },
-    { name: "Next.js", lv: 6 },
-    { name: "FastAPI / Python", lv: 5 },
-    { name: "Firebase", lv: 5 },
+    { name: "React + TypeScript", lv: 6, can: "ทำระบบล็อกอิน Gmail ให้ SubTrack" },
+    { name: "Next.js", lv: 6, can: "ทำเว็บพร้อม SEO ส่งลูกค้าจริง" },
+    { name: "FastAPI / Python", lv: 5, can: "เขียน Backend ตรวจเสียงของ WordFlow" },
+    { name: "Firebase", lv: 5, can: "วางสิทธิ์ให้ข้อมูลเด็กปลอดภัย" },
   ]},
   { group: "Systems & Security", items: [
-    { name: "OSINT", lv: 6 },
-    { name: "Reverse Engineering", lv: 5 },
-    { name: "C++ / Algorithm", lv: 5 },
-    { name: "Rust + ADB / WebSocket", lv: 4 },
+    { name: "OSINT", lv: 6, can: "สายที่ถนัดสุดตอนติดอันดับ 8 ของประเทศ" },
+    { name: "Reverse Engineering", lv: 5, can: "แกะ Android APK หา Flag ได้" },
+    { name: "C++ / Algorithm", lv: 5, can: "ผ่านค่าย 1 สอวน. และเข้ารอบชิง IT CLASH" },
+    { name: "Rust + ADB / WebSocket", lv: 4, can: "ทำ ZeiTop เสียบสายแล้วใช้ได้ทันที" },
   ]},
   { group: "Game", items: [
-    { name: "Gaming", lv: 10, max: true },
-    { name: "Unity / C# (Game Dev)", lv: 3 },
+    { name: "Gaming", lv: 10, max: true, can: "Immortal ใน Valorant และ Master ใน LoR" },
+    { name: "Unity / C# (Game Dev)", lv: 3, can: "ทำเกมเล่นได้จริงใน 3 วัน" },
   ]},
 ];
 
 // Gaming records.
 window.GAMING = [
   { game: "VALORANT", rank: "Immortal", sub: "Competitive", ign: "Rurtt#Ray", img: "assets/g-val.webp", cap: "Valorant lobby" },
-  { game: "Minecraft · Ranked Bedwars", rank: "International Champion", sub: "AXORA International Cup · ส.ค. 2568 · Prize pool $200 · ทีมไทยชนะ 3–2 ในรอบชิง", ign: "Reigards", img: "assets/g-bw.webp", pos: "left top", cap: "ประกาศผล AXORA International Cup" },
+  { game: "Minecraft · Ranked Bedwars", rank: "$200 International Champion", sub: "AXORA International Cup · ส.ค. 2568 · Prize pool $200 · ทีมไทยชนะ 3–2 ในรอบชิง", ign: "Reigards", img: "assets/g-bw.webp", pos: "left top", cap: "ประกาศผล AXORA International Cup" },
   { game: "Legends of Runeterra", rank: "Master #425", sub: "จากผู้เล่นระดับ Master ทั้งหมด 5,199 คน", img: "assets/g-lor.webp", cap: "Leaderboard ระดับ Master" },
   { game: "ROV", rank: "Top Server Maloch", sub: "ผู้เล่น ROV 100 ดาว · อายุน้อยร้อยดาว · 6,270 เกม · Win rate 56.4%", ign: "สกิบิดี้บิดี้บิดู้", img: "assets/g-rov.webp", fit: "contain", cap: "โปรไฟล์ ROV" },
 ];

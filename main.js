@@ -83,6 +83,7 @@
             <span class="name">${esc(s.name)}</span>
             <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
             <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
+            ${s.can ? `<p class="can">${esc(s.can)}</p>` : ""}
           </div>`).join("")}
       </div>`).join("");
   }
@@ -102,15 +103,16 @@
     svg += `<g class="shape"><polygon class="area" points="${S.map((s, i) => at(i, (R * s.value) / 100).join(",")).join(" ")}"/>`;
     svg += S.map((s, i) => {
       const [x, y] = at(i, (R * s.value) / 100);
-      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" data-i="${i}" aria-label="${esc(s.key)} ${s.value} จาก 100: ${esc(s.th)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
+      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" data-i="${i}" aria-label="${esc(s.key)}: ${esc(s.can)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
     }).join("") + "</g>";
     svg += S.map((s, i) => {
       const [x, y] = at(i, R + 30);
       const dx = x - c;
       const anchor = Math.abs(dx) < 8 ? "middle" : dx > 0 ? "start" : "end";
-      return `<text class="lbl" x="${x}" y="${y - 2}" text-anchor="${anchor}">${esc(s.key.toUpperCase())}</text><text class="val" x="${x}" y="${y - 2}" dy="1.25em" text-anchor="${anchor}">${s.value}</text>`;
+      return `<text class="lbl" x="${x}" y="${y + 5}" text-anchor="${anchor}">${esc(s.key.toUpperCase())}</text>`;
     }).join("");
     radar.innerHTML = svg;
+    radar.setAttribute("aria-label", "กราฟ Attribute: " + S.map((s) => s.key).join(", "));
 
     const tip = $("#radar-tip");
     const show = (el) => {
@@ -119,7 +121,7 @@
       const z = parseFloat(getComputedStyle(document.body).zoom) || 1;
       const box = radar.getBoundingClientRect(), wrap = radar.parentElement.getBoundingClientRect();
       const vb = radar.viewBox.baseVal, k = box.width / vb.width / z;
-      tip.innerHTML = `<b>${esc(s.key)} ${s.value}</b> · ${esc(s.th)}`;
+      tip.innerHTML = `<b>${esc(s.key)}</b><br>${esc(s.can)}`;
       tip.style.left = `${(box.left - wrap.left) / z + (el.cx.baseVal.value - vb.x) * k}px`;
       tip.style.top = `${(box.top - wrap.top) / z + (el.cy.baseVal.value - vb.y) * k}px`;
       tip.classList.add("show");
