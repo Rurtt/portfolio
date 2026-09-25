@@ -404,13 +404,15 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .q-head .summary { margin-top: 18px; font-size: 17px; }
 .q-cover { border-radius: 12px; overflow: hidden; border: 1px solid var(--line-2); aspect-ratio: 16 / 10; background: radial-gradient(circle, color-mix(in srgb, var(--rc) 12%, transparent), transparent 70%), var(--bg-2); }
 .q-cover img { width: 100%; height: 100%; object-fit: cover; }
-.q-cover.slides { aspect-ratio: 1552 / 753; }
-.q-cover.slides img { object-fit: contain; }
-.q-thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
-.q-thumbs button { padding: 0; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; cursor: pointer; color: var(--text-2); opacity: 0.6; transition: opacity 0.2s, border-color 0.2s; }
-.q-thumbs button:hover, .q-thumbs button[aria-pressed="true"] { opacity: 1; border-color: var(--rc, var(--volt)); }
-.q-thumbs img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
-.q-thumbs span { display: block; padding: 5px 6px; font-size: 12px; }
+.q-cover.slides { position: relative; }
+.q-cover.slides img { object-fit: contain; cursor: zoom-in; }
+.sl-btn { position: absolute; top: 50%; right: 10px; width: 42px; height: 42px; display: grid; place-items: center; transform: translateY(-50%); border-radius: 50%; border: 1px solid var(--line-2); background: rgba(10, 12, 16, 0.75); color: var(--text); cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.sl-btn.prev { right: auto; left: 10px; }
+.sl-btn.prev svg { transform: scaleX(-1); }
+.sl-btn svg { width: 20px; height: 20px; }
+.sl-btn:hover { border-color: var(--volt); color: var(--volt); }
+.sl-cap { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-size: 14px; color: var(--text-2); }
+.sl-cap #slide-n { font-family: var(--display); color: var(--text-3); font-variant-numeric: tabular-nums; }
 .q-head .btn { margin-top: 20px; }
 .q-cover.contain img { object-fit: contain; padding: 16px; }
 .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 40px; }

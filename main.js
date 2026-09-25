@@ -149,6 +149,8 @@
       document.title = `${q.title} · ธนราชันย์ สุวรรณศรี`;
       root.classList.add(`rar-${q.rarity}`);
       const li = (arr) => arr.map((t) => `<li>${esc(t)}</li>`).join("");
+      // 2+ pictures and no video: cover becomes an arrow slideshow instead of a screenshot grid
+      const pics = !q.video && q.gallery.length > 1 ? q.gallery : null;
       const when = q.duration ? `${q.date} · ${q.duration}` : q.date;
       const meta = [["ผลงาน", q.result], ["ระดับ", q.level], ["บทบาท", q.role], ["ช่วงเวลา", when]];
       const back = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>`;
@@ -164,8 +166,11 @@
                 <p class="summary">${esc(q.summary)}</p>
                 ${q.live ? `<a class="btn btn-primary" href="${q.live}" target="_blank" rel="noopener">เปิดเว็บจริง ${back}</a>` : ""}
               </div>
-              ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : q.slides ? `<div class="q-media"><div class="q-cover slides"><img id="slide" src="${q.slides[0].src}" alt="${esc(q.slides[0].cap)}" width="900" height="560"></div>
-                <div class="q-thumbs" role="group" aria-label="เลือกรูป">${q.slides.map((s, i) => `<button type="button" data-slide="${s.src}" aria-pressed="${!i}"><img src="${T(s.src)}" alt="" width="120" height="75"><span>${esc(s.cap)}</span></button>`).join("")}</div></div>`
+              ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : pics ? `<div class="q-media"><div class="q-cover slides">
+                  <img id="slide" src="${pics[0].src}" alt="${esc(pics[0].cap)}" data-full="${pics[0].src}" data-cap="${esc(pics[0].cap)}" width="900" height="560">
+                  <button class="sl-btn prev" type="button" data-step="-1" aria-label="รูปก่อนหน้า">${back}</button>
+                  <button class="sl-btn" type="button" data-step="1" aria-label="รูปถัดไป">${back}</button>
+                </div><p class="sl-cap"><span id="slide-cap">${esc(pics[0].cap)}</span><span id="slide-n">1 / ${pics.length}</span></p></div>`
                 : `<div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>`}
             </div>
             <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${hl(v)}</b></div>`).join("")}</div>
@@ -184,11 +189,11 @@
               <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
             </div>
           </div>
-          <h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
+          ${pics ? '<div style="padding-bottom:64px"></div>' : `<h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
           <div class="gallery">${q.gallery.map((g) => `
             <button class="shot reveal" type="button" data-full="${g.src}" data-cap="${esc(g.cap)}">
               <img src="${T(g.src)}" alt="${esc(g.cap)}" loading="lazy" decoding="async" width="480" height="360"><span>${esc(g.cap)}</span>
-            </button>`).join("")}</div>
+            </button>`).join("")}</div>`}
           <nav class="q-nav" aria-label="ภารกิจอื่น">
             ${newer ? `<a href="quest.html?q=${newer.id}"><small>← ภารกิจที่ใหม่กว่า</small><b>${esc(newer.title)}</b></a>` : "<span></span>"}
             ${older ? `<a class="next" href="quest.html?q=${older.id}"><small>ภารกิจก่อนหน้านั้น →</small><b>${esc(older.title)}</b></a>` : ""}
@@ -197,14 +202,16 @@
     }
   }
 
-  // ---------- quest cover slides: thumbs swap the big image ----------
+  // ---------- quest cover slideshow: arrows step through q.gallery ----------
   document.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-slide]");
+    const b = e.target.closest("[data-step]");
     if (!b) return;
+    const G = Q.find((q) => q.id === new URLSearchParams(location.search).get("q")).gallery;
     const img = $("#slide");
-    img.src = b.dataset.slide;
-    img.alt = $("span", b).textContent;
-    b.parentElement.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    const i = (G.findIndex((g) => g.src === img.dataset.full) + +b.dataset.step + G.length) % G.length;
+    img.src = img.dataset.full = G[i].src;
+    img.alt = img.dataset.cap = $("#slide-cap").textContent = G[i].cap;
+    $("#slide-n").textContent = `${i + 1} / ${G.length}`;
   });
 
   // ---------- lightbox ----------

@@ -65,12 +65,6 @@ window.QUESTS = [
     role: "Founder · Design · Frontend",
     cover: "assets/dc-home.webp",
     live: "https://sr-service-express.vercel.app",
-    slides: [
-      { src: "assets/dc-home.webp", cap: "หน้าแรก" },
-      { src: "assets/dc-about.webp", cap: "แนะนำบริษัท" },
-      { src: "assets/dc-services.webp", cap: "บริการ" },
-      { src: "assets/dc-mobile.webp", cap: "มือถือ" },
-    ],
     summary: "รับทำเว็บไซต์และ SEO แบบทำเองครบวงจร ตั้งแต่ทักลูกค้า คุยว่าเขาต้องการอะไร ตีขอบเขตให้พอดีงบ ไปจนถึงแจกงานให้ทีม Dev",
     brief: [
       "เว็บไซต์ลูกค้าทำด้วย Next.js แบบ Static Website พร้อมปรับ SEO",
@@ -86,6 +80,7 @@ window.QUESTS = [
     note: "เขียนโค้ดง่ายกว่าหาลูกค้าเยอะ ตอนนี้เข้าใจแล้วว่าทำไมเซลส์ถึงเก่ง",
     gallery: [
       { src: "assets/dc-home.webp", cap: "เว็บไซต์ลูกค้า · หน้าแรก" },
+      { src: "assets/dc-about.webp", cap: "หน้าแนะนำบริษัท" },
       { src: "assets/dc-services.webp", cap: "หน้ารวมบริการ" },
       { src: "assets/dc-mobile.webp", cap: "มุมมองบนมือถือ" },
       { src: "assets/dc-client.webp", cap: "ส่งมอบงานให้ลูกค้า" },
