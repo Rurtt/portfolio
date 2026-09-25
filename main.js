@@ -167,6 +167,7 @@
         <div class="container">
           <div class="q-body">
             <div>
+              ${q.origin ? `<div class="panel reveal"><h2>จุดเริ่มต้น</h2>${q.origin.map((t) => `<p class="loot">${esc(t)}</p>`).join("")}</div>` : ""}
               <div class="panel reveal"><h2>Mission Brief</h2><ul class="list">${li(q.brief)}</ul></div>
               <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did)}</ul></div>
             </div>
