@@ -101,6 +101,7 @@ window.QUESTS = [
     cover: "assets/ctf-map.webp",
     summary: "ลองลงแข่ง CTF ระดับประเทศทั้งที่พื้นฐาน Cybersecurity แทบเป็นศูนย์ มีเวลาเตรียมตัวประมาณ 7 วัน สุดท้ายติดอันดับ 8 ของประเทศ",
     brief: [
+      "CTF (Capture The Flag) คือการแข่งขันด้าน Cybersecurity ผู้เล่นต้องหาช่องโหว่หรือไขปริศนาในโจทย์ เพื่อค้นหา “Flag” รหัสลับที่ซ่อนอยู่ แล้วส่งเพื่อเก็บคะแนน",
       "โจทย์ครอบคลุม Web Application Security, Reverse Engineering, Cryptography และ OSINT",
       "อันดับ 8 ของประเทศประเภทบุคคลในรอบคัดเลือก",
     ],
