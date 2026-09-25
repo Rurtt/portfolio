@@ -32,7 +32,7 @@ window.SKILLS = [
     { name: "Firebase", lv: 5, can: "วางสิทธิ์ให้ข้อมูลเด็กปลอดภัย" },
   ]},
   { group: "Systems & Security", items: [
-    { name: "OSINT", lv: 6, can: "สายที่ถนัดสุดตอนติด*อันดับ 8* ของประเทศ" },
+    { name: "OSINT", lv: 6, can: "ค้นและเชื่อมเบาะแสจากข้อมูลสาธารณะจนเจอ Flag ในการแข่ง*ระดับประเทศ*" },
     { name: "Reverse Engineering", lv: 5, can: "แกะ Android APK หา Flag ได้" },
     { name: "C++ / Algorithm", lv: 5, can: "ผ่านค่าย 1 สอวน. และเข้ารอบชิง IT CLASH" },
     { name: "Rust + ADB / WebSocket", lv: 4, can: "ทำ ZeiTop เสียบสายแล้วใช้ได้ทันที" },
