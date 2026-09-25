@@ -346,8 +346,19 @@ section.block { padding: 96px 0; border-bottom: 1px solid var(--line); }
 /* contact */
 .contact { text-align: center; }
 .contact h2 { font-size: clamp(32px, 5vw, 52px); margin: 14px 0 16px; }
-.contact > .container > p { color: var(--text-2); max-width: 560px; margin: 0 auto; }
 .contact .hero-cta { justify-content: center; }
+.invite { max-width: 640px; margin: 20px auto 0; padding: 28px 24px; background: var(--panel); border: 1px solid var(--volt); border-radius: 14px; box-shadow: 0 0 40px var(--volt-dim); }
+.js .invite.reveal:not(.in) { transform: translateY(16px) scale(0.96); }
+.invite-head { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-2); }
+.invite-head b { color: var(--text); font-family: var(--display); }
+.invite-head .status-dot { animation: ping 1.8s ease-out infinite; }
+@keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(200, 245, 71, 0.5); } 100% { box-shadow: 0 0 0 10px transparent; } }
+.invite > p:not(.invite-head) { color: var(--text-2); max-width: 520px; margin: 0 auto; }
+.invite .accept:hover { box-shadow: 0 0 24px var(--volt-dim); }
+.invite .invite-mail { margin-top: 14px; font-size: 13px; color: var(--text-3); }
+.outro { margin: 56px auto 0; }
+.outro p { font: 700 clamp(22px, 3vw, 30px)/1.2 var(--display); color: var(--volt); text-transform: uppercase; letter-spacing: 0.04em; }
+.outro footer { margin-top: 8px; color: var(--text-2); font-size: 14px; }
 footer { padding: 32px 0 40px; color: var(--text-3); font-size: 14px; }
 footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
