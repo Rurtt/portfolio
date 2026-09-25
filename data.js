@@ -35,7 +35,7 @@ window.SKILLS = [
     { name: "OSINT", lv: 6, can: "ค้นและเชื่อมเบาะแสจากข้อมูลสาธารณะจนเจอ Flag ในการแข่ง*ระดับประเทศ*" },
     { name: "Reverse Engineering", lv: 5, can: "แกะ Android APK หา Flag ได้" },
     { name: "C++ / Algorithm", lv: 5, can: "ผ่านค่าย 1 สอวน. และเข้ารอบชิง IT CLASH" },
-    { name: "Rust + ADB / WebSocket", lv: 4, can: "ทำ ZeiTop เสียบสายแล้วใช้ได้ทันที" },
+    { name: "ADB / WebSocket", lv: 4, can: "ทำ ZeiTop เสียบสายแล้วใช้ได้ทันที" },
   ]},
   { group: "Game", items: [
     { name: "Gaming", lv: 10, max: true, can: "*Immortal* ใน Valorant และ Master ใน LoR" },
