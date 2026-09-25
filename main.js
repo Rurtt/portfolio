@@ -1,0 +1,220 @@
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const RAR = { legendary: "Legendary", epic: "Epic", rare: "Rare" };
+  const YEAR = { Ongoing: "Ongoing · ปัจจุบัน" };
+  const Q = window.QUESTS || [];
+
+  // ---------- home: timeline (newest first, grouped by year) ----------
+  const tl = $("#timeline");
+  if (tl) {
+    let last = null, html = "";
+    for (const q of Q) {
+      if (q.year !== last) { html += `<div class="tl-year" data-year="${q.year}"><span>${esc(YEAR[q.year] || q.year)}</span></div>`; last = q.year; }
+      html += `
+        <a class="tl-item rar-${q.rarity} reveal${q.main ? " is-main" : ""}" data-rarity="${q.rarity}" data-year="${q.year}" href="quest.html?q=${q.id}">
+          <span class="tl-date">${esc(q.date)}</span>
+          <span class="tl-rail" aria-hidden="true"></span>
+          <div class="tl-card sheen">
+            <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="" loading="lazy" width="264" height="165"></div>
+            <div>
+              <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
+              <h3>${esc(q.title)}</h3>
+              <p class="event">${esc(q.event)}</p>
+              <p class="result">${esc(q.result)}</p>
+            </div>
+            ${arrow}
+          </div>
+        </a>`;
+    }
+    tl.innerHTML = html;
+
+    // rarity filter: hide non-matching rows, then year headers left empty
+    document.querySelectorAll(".filter").forEach((btn) => btn.addEventListener("click", () => {
+      const f = btn.dataset.filter;
+      document.querySelectorAll(".filter").forEach((b) => { const on = b === btn; b.classList.toggle("is-on", on); b.setAttribute("aria-pressed", on); });
+      tl.querySelectorAll(".tl-item").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
+      tl.querySelectorAll(".tl-year").forEach((y) => { y.hidden = !tl.querySelector(`.tl-item[data-year="${y.dataset.year}"]:not([hidden])`); });
+    }));
+  }
+
+  // ---------- home: other main quests ----------
+  const side = $("#side-mains");
+  if (side) {
+    side.innerHTML = Q.filter((q) => q.main && !q.hero).map((q) => `
+      <a class="mq-card rar-${q.rarity} sheen reveal" href="quest.html?q=${q.id}">
+        <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="" loading="lazy" width="400" height="250"></div>
+        <div class="mq-card-body">
+          <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
+          <h3>${esc(q.title)}</h3>
+          <span class="mq-ev">${esc(q.event)}</span>
+          <p>${esc(q.result)}</p>
+        </div>
+      </a>`).join("");
+  }
+
+  // ---------- home: gaming ----------
+  const gg = $("#gaming-grid");
+  if (gg) {
+    gg.innerHTML = (window.GAMING || []).map((g) => `
+      <article class="gcard sheen reveal">
+        <button class="shot-btn" type="button" data-full="${g.img}" data-cap="${esc(g.cap)}" aria-label="ดูรูป ${esc(g.cap)}">
+          <img src="${g.img}" alt="${esc(g.cap)}" loading="lazy" width="1400" height="700" style="${g.fit ? `object-fit:${g.fit};` : ""}${g.pos ? `object-position:${g.pos};` : ""}">
+        </button>
+        <div class="gbody">
+          <span class="game">${esc(g.game)}</span>
+          <span class="rank">${esc(g.rank)}</span>
+          <p class="sub">${esc(g.sub)}</p>
+          ${g.ign ? `<div class="ign"><span><small>IGN</small><b>${esc(g.ign)}</b></span><button class="copy" type="button" data-copy="${esc(g.ign)}" aria-label="คัดลอกชื่อในเกม ${esc(g.game)}">คัดลอก</button></div>` : ""}
+        </div>
+      </article>`).join("");
+  }
+
+  // ---------- home: skills ----------
+  const skills = $("#skills");
+  if (skills) {
+    skills.innerHTML = (window.SKILLS || []).map((g) => `
+      <div class="skill-group">
+        <h4>${esc(g.group)}</h4>
+        ${g.items.map((s) => `
+          <div class="skill${s.max ? " max" : ""}">
+            <span class="name">${esc(s.name)}</span>
+            <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
+            <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
+          </div>`).join("")}
+      </div>`).join("");
+  }
+
+  // ---------- home: radar ----------
+  const radar = $("#radar");
+  if (radar) {
+    const S = window.STATS || [];
+    const c = 210, R = 140, n = S.length;
+    const at = (i, r) => {
+      const a = (Math.PI * 2 * i) / n - Math.PI / 2;
+      return [c + r * Math.cos(a), c + r * Math.sin(a)];
+    };
+    const poly = (r) => S.map((_, i) => at(i, r).map((v) => v.toFixed(1)).join(",")).join(" ");
+    let svg = [0.25, 0.5, 0.75, 1].map((k) => `<polygon class="ring" points="${poly(R * k)}"/>`).join("");
+    svg += S.map((_, i) => { const [x, y] = at(i, R); return `<line class="spoke" x1="${c}" y1="${c}" x2="${x}" y2="${y}"/>`; }).join("");
+    svg += `<g class="shape"><polygon class="area" points="${S.map((s, i) => at(i, (R * s.value) / 100).join(",")).join(" ")}"/>`;
+    svg += S.map((s, i) => {
+      const [x, y] = at(i, (R * s.value) / 100);
+      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" data-i="${i}" aria-label="${esc(s.key)} ${s.value} จาก 100: ${esc(s.th)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
+    }).join("") + "</g>";
+    svg += S.map((s, i) => {
+      const [x, y] = at(i, R + 30);
+      const dx = x - c;
+      const anchor = Math.abs(dx) < 8 ? "middle" : dx > 0 ? "start" : "end";
+      return `<text class="lbl" x="${x}" y="${y - 2}" text-anchor="${anchor}">${esc(s.key.toUpperCase())}</text><text class="val" x="${x}" y="${y - 2}" dy="1.25em" text-anchor="${anchor}">${s.value}</text>`;
+    }).join("");
+    radar.innerHTML = svg;
+
+    const tip = $("#radar-tip");
+    const show = (el) => {
+      const s = S[el.dataset.i];
+      const box = radar.getBoundingClientRect(), wrap = radar.parentElement.getBoundingClientRect();
+      const vb = radar.viewBox.baseVal, k = box.width / vb.width;
+      tip.innerHTML = `<b>${esc(s.key)} ${s.value}</b> · ${esc(s.th)}`;
+      tip.style.left = `${box.left - wrap.left + (el.cx.baseVal.value - vb.x) * k}px`;
+      tip.style.top = `${box.top - wrap.top + (el.cy.baseVal.value - vb.y) * k}px`;
+      tip.classList.add("show");
+    };
+    const hide = () => tip.classList.remove("show");
+    radar.querySelectorAll(".hit").forEach((h) => {
+      h.addEventListener("pointerenter", () => show(h));
+      h.addEventListener("focus", () => show(h));
+      h.addEventListener("pointerleave", hide);
+      h.addEventListener("blur", hide);
+    });
+  }
+
+  // ---------- quest detail page ----------
+  const root = $("#quest");
+  if (root) {
+    const id = new URLSearchParams(location.search).get("q");
+    const i = Q.findIndex((q) => q.id === id);
+    if (i < 0) {
+      root.innerHTML = `<div class="container empty"><p class="eyebrow">404 · Quest not found</p><h1>ไม่พบภารกิจนี้</h1><p>อาจจะยังไม่ได้ปลดล็อก หรือลิงก์ผิด</p><a class="btn btn-primary" href="index.html#timeline-sec">กลับไปไทม์ไลน์</a></div>`;
+    } else {
+      const q = Q[i], newer = Q[i - 1], older = Q[i + 1];
+      document.title = `${q.title} · ธนราชันย์ สุวรรณศรี`;
+      root.classList.add(`rar-${q.rarity}`);
+      const li = (arr) => arr.map((t) => `<li>${esc(t)}</li>`).join("");
+      const when = q.duration ? `${q.date} · ${q.duration}` : q.date;
+      const meta = [["ผลงาน", q.result], ["ระดับ", q.level], ["บทบาท", q.role], ["ช่วงเวลา", when]];
+      const back = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+      root.innerHTML = `
+        <header class="q-top">
+          <div class="container">
+            <a class="back" href="index.html#timeline-sec">${back} กลับไปไทม์ไลน์</a>
+            <div class="q-head">
+              <div>
+                <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]} Quest</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
+                <h1>${esc(q.title)}</h1>
+                <p class="event">${esc(q.event)}</p>
+                <p class="summary">${esc(q.summary)}</p>
+              </div>
+              <div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>
+            </div>
+            <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>
+          </div>
+        </header>
+        <div class="container">
+          <div class="q-body">
+            <div>
+              <div class="panel reveal"><h2>Mission Brief</h2><ul class="list">${li(q.brief)}</ul></div>
+              <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did)}</ul></div>
+            </div>
+            <div>
+              <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
+              <div class="panel reveal"><h2>บทเรียน</h2><p class="loot">${esc(q.loot)}</p></div>
+              <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
+            </div>
+          </div>
+          <h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
+          <div class="gallery">${q.gallery.map((g) => `
+            <button class="shot reveal" type="button" data-full="${g.src}" data-cap="${esc(g.cap)}">
+              <img src="${g.src}" alt="${esc(g.cap)}" loading="lazy" width="900" height="675"><span>${esc(g.cap)}</span>
+            </button>`).join("")}</div>
+          <nav class="q-nav" aria-label="ภารกิจอื่น">
+            ${newer ? `<a href="quest.html?q=${newer.id}"><small>← ภารกิจที่ใหม่กว่า</small><b>${esc(newer.title)}</b></a>` : "<span></span>"}
+            ${older ? `<a class="next" href="quest.html?q=${older.id}"><small>ภารกิจก่อนหน้านั้น →</small><b>${esc(older.title)}</b></a>` : ""}
+          </nav>
+        </div>`;
+    }
+  }
+
+  // ---------- lightbox ----------
+  const dlg = $("#lightbox");
+  if (dlg) {
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-full]");
+      if (!b) return;
+      $("img", dlg).src = b.dataset.full;
+      $("img", dlg).alt = b.dataset.cap;
+      $(".bar span", dlg).textContent = b.dataset.cap;
+      dlg.showModal();
+    });
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  }
+
+  // ---------- copy IGN ----------
+  document.querySelectorAll("[data-copy]").forEach((b) => {
+    b.addEventListener("click", async () => {
+      const old = b.textContent;
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; }
+      catch { b.textContent = "คัดลอกไม่ได้"; }
+      setTimeout(() => (b.textContent = old), 1500);
+    });
+  });
+
+  // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
+  const els = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
+  const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+  }), { rootMargin: "0px 0px -8% 0px" });
+  els.forEach((el) => io.observe(el));
+})();
