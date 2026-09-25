@@ -1,5 +1,7 @@
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
+  // *word* in data.js = highlight. Only for trusted site text, never attributes.
+  const hl = (s) => esc(s).replace(/\*(.+?)\*/g, '<b class="hl">$1</b>');
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const RAR = { legendary: "Legendary", epic: "Epic", rare: "Rare" };
@@ -23,7 +25,7 @@
               <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
               <h3>${esc(q.title)}</h3>
               <p class="event">${esc(q.event)}</p>
-              <p class="result">${esc(q.result)}</p>
+              <p class="result">${hl(q.result)}</p>
             </div>
             ${arrow}
           </div>
@@ -50,7 +52,7 @@
           <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
           <h3>${esc(q.title)}</h3>
           <span class="mq-ev">${esc(q.event)}</span>
-          <p>${esc(q.result)}</p>
+          <p>${hl(q.result)}</p>
         </div>
       </a>`).join("");
   }
@@ -83,7 +85,7 @@
             <span class="name">${esc(s.name)}</span>
             <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
             <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
-            ${s.can ? `<p class="can">${esc(s.can)}</p>` : ""}
+            ${s.can ? `<p class="can">${hl(s.can)}</p>` : ""}
           </div>`).join("")}
       </div>`).join("");
   }
@@ -163,7 +165,7 @@
               </div>
               ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : `<div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>`}
             </div>
-            <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>
+            <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${hl(v)}</b></div>`).join("")}</div>
           </div>
         </header>
         <div class="container">
