@@ -5,41 +5,41 @@ window.STATS = [
   { key: "Product", value: 92, can: "ตีโจทย์ให้ชัด วาง MVP และพาทีมส่งงานจนจบ" },
   { key: "AI", value: 88, can: "มี Wiki และ Skill ของตัวเอง ใช้ Token คุ้ม เซฟงานทุกขั้น AI รู้บริบทเองโดยไม่ต้องเล่าซ้ำ" },
   { key: "Clutch", value: 90, can: "ส่งงานได้ใต้เวลาบีบ เช่น Hackathon 12 ชม. หรือเตรียม CTF 7 วัน" },
-  { key: "Pitch", value: 85, can: "นำเสนอและตอบกรรมการจนได้ที่ 1 และเหรียญทอง" },
+  { key: "Pitch", value: 85, can: "เล่าโปรเจกต์ให้เข้าใจง่าย และตอบคำถามกรรมการได้ตรงจุด" },
   { key: "Teamwork", value: 88, can: "แบ่งงานตามความถนัด และพาทีมไปทางเดียวกัน" },
   { key: "Web", value: 72, can: "ทำเว็บตั้งแต่หน้าบ้านถึงหลังบ้าน ส่งลูกค้าจริงได้" },
   { key: "Systems", value: 62, can: "ต่อหลายระบบให้คุยกันได้ เช่น PC กับมือถือผ่านสาย USB" },
-  { key: "Security", value: 65, can: "สืบข้อมูล OSINT และแกะโปรแกรมหา Flag ระดับแข่งประเทศ" },
+  { key: "Security", value: 65, can: "สืบข้อมูล OSINT และแกะโปรแกรมหาจุดอ่อนได้" },
   { key: "Game Dev", value: 30, can: "ทำเกมเล่นได้จริงใน 3 วัน ยังฝึกอยู่" },
 ];
 
 // Skill tree. lv = 1-10. max: true shows "MAX". can = what this level actually did.
 window.SKILLS = [
   { group: "Product & Team", items: [
-    { name: "Product Management", lv: 8, can: "คุมทีม *3–6 คน*ส่งงานจริงจนจบ ไม่มีใครหมดไฟ" },
-    { name: "MVP Scoping", lv: 9, can: "ตัดไอเดียเหลือ MVP ที่ชนะ Hackathon ใน *12 ชม.*" },
-    { name: "Pitching / ตอบกรรมการ", lv: 8, can: "ตอบกรรมการจนได้*ที่ 1* และเหรียญทอง" },
+    { name: "Product Management", lv: 8, can: "คุมทีม *3–6 คน*ให้โฟกัสและส่งงานจนจบโดยไม่หมดไฟ" },
+    { name: "MVP Scoping", lv: 9, can: "ตัดไอเดียให้เหลือ MVP ที่เดโมได้ภายใน *12 ชม.*" },
+    { name: "Pitching / ตอบกรรมการ", lv: 8, can: "เล่าโปรเจกต์ให้เข้าใจง่าย และตอบคำถามกรรมการได้ตรงจุด" },
   ]},
   { group: "AI Tools", items: [
-    { name: "Claude / Claude Code", lv: 9, can: "มี Wiki และ Skill ของตัวเอง AI เข้าใจงานโดยไม่ต้องเล่าซ้ำ" },
-    { name: "Codex", lv: 8, can: "ใช้ Token คุ้ม และเซฟความคืบหน้างานทุกขั้น" },
-    { name: "AI Model Integration", lv: 5, can: "ต่อโมเดลเสียงบน Server ให้เกม WordFlow ใช้" },
+    { name: "Claude / Claude Code", lv: 9, can: "สร้าง Wiki และ Skill ของตัวเอง ให้ AI เข้าใจบริบทงานโดยไม่ต้องเล่าซ้ำ" },
+    { name: "Codex", lv: 8, can: "ใช้ Token อย่างคุ้มค่า และเซฟความคืบหน้างานได้ทุกขั้น" },
+    { name: "AI Model Integration", lv: 5, can: "ต่อโมเดล AI ขึ้น Server ให้แอปเรียกใช้ผ่าน API ได้" },
   ]},
   { group: "Web & Backend", items: [
-    { name: "React + TypeScript", lv: 6, can: "ทำระบบล็อกอิน Gmail ให้ SubTrack" },
-    { name: "Next.js", lv: 6, can: "ทำเว็บพร้อม SEO ส่ง*ลูกค้าจริง*" },
-    { name: "FastAPI / Python", lv: 5, can: "เขียน Backend ตรวจเสียงของ WordFlow" },
-    { name: "Firebase", lv: 5, can: "วางสิทธิ์ให้ข้อมูลเด็กปลอดภัย" },
+    { name: "React + TypeScript", lv: 6, can: "ทำเว็บที่ล็อกอินด้วย Google และดึงข้อมูลจาก API มาแสดงได้" },
+    { name: "Next.js", lv: 6, can: "ทำเว็บพร้อม SEO ส่งให้*ลูกค้าจริง*ใช้งานได้" },
+    { name: "FastAPI / Python", lv: 5, can: "เขียน Backend API ให้แอปส่งข้อมูลมาประมวลผลแล้วรับผลกลับ" },
+    { name: "Firebase", lv: 5, can: "เก็บข้อมูลผู้ใช้ และตั้งสิทธิ์ว่าใครเห็นข้อมูลไหนได้บ้าง" },
   ]},
   { group: "Systems & Security", items: [
-    { name: "OSINT", lv: 6, can: "ค้นและเชื่อมเบาะแสจากข้อมูลสาธารณะจนเจอ Flag ในการแข่ง*ระดับประเทศ*" },
-    { name: "Reverse Engineering", lv: 5, can: "แกะ Android APK หา Flag ได้" },
-    { name: "C++ / Algorithm", lv: 5, can: "ผ่านค่าย 1 สอวน. และเข้ารอบชิง IT CLASH" },
-    { name: "ADB / WebSocket", lv: 4, can: "ทำ ZeiTop เสียบสายแล้วใช้ได้ทันที" },
+    { name: "OSINT", lv: 6, can: "ค้นและเชื่อมเบาะแสจากข้อมูลสาธารณะจนหาคำตอบเจอ" },
+    { name: "Reverse Engineering", lv: 5, can: "แกะไฟล์ Android APK เพื่อดูว่าโปรแกรมทำงานยังไง" },
+    { name: "C++ / Algorithm", lv: 5, can: "แก้โจทย์อัลกอริทึมใต้เวลาจำกัดได้ถึง*รอบชิง* IT CLASH Programming Track" },
+    { name: "ADB / WebSocket", lv: 4, can: "ทำให้มือถือกับ PC เชื่อมกันเอง เสียบสายแล้วใช้ได้ทันที" },
   ]},
   { group: "Game", items: [
-    { name: "Gaming", lv: 10, max: true, can: "*Immortal* ใน Valorant และ Master ใน LoR" },
-    { name: "Unity / C# (Game Dev)", lv: 3, can: "ทำเกมเล่นได้จริงใน *3 วัน*" },
+    { name: "Gaming", lv: 10, max: true, can: "*Immortal* ใน Valorant และ Top Server ใน ROV" },
+    { name: "Unity / C# (Game Dev)", lv: 3, can: "ทำเกม 2D ที่เล่นได้จริงภายใน *3 วัน*" },
   ]},
 ];
 
