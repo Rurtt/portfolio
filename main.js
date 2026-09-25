@@ -400,8 +400,10 @@
       const flip = card.querySelector(".flip");
       const lvText = card.querySelector(".lv").lastChild, lv = +lvText.textContent;
       const r = card.getBoundingClientRect();
-      const fx = innerWidth / 2 - (r.left + r.width / 2), fy = innerHeight / 2 - (r.top + r.height / 2);
-      const fs = Math.min(1.15, (innerHeight * 0.7) / r.height);
+      // rect is in screen px, but translate runs inside body{zoom} on big screens, so divide by zoom
+      const z = parseFloat(getComputedStyle(document.body).zoom) || 1, vw = doc.clientWidth, vh = innerHeight;
+      const fx = (vw / 2 - (r.left + r.width / 2)) / z, fy = (vh / 2 - (r.top + r.height / 2)) / z;
+      const fs = Math.min(1.15, (vh * 0.7) / r.height, (vw * 0.86) / r.width);
       const center = { translate: `${fx}px ${fy}px`, scale: `${fs}` };
       const OUT = "cubic-bezier(0.22, 1, 0.36, 1)", BACK = "cubic-bezier(0.34, 1.4, 0.64, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
       const anims = [];
@@ -412,6 +414,11 @@
       run(card, [{ opacity: 0, translate: `${fx}px ${fy + 70}px`, scale: `${fs * 0.88}` }, { opacity: 1, ...center }], 0, 700, OUT);
       run(flip, [{ transform: "rotateY(180deg)" }, { transform: "rotateY(208deg) scale(0.94)" }], 450, 420, "cubic-bezier(0.45, 0, 0.55, 1)");
       run($$(".card-back"), [{ filter: "brightness(1)" }, { filter: "brightness(1.9)" }], 450, 420, "ease-in");
+      heroEl.querySelectorAll(".stars s").forEach((st, i) => run(st, [
+        { opacity: 0.25, transform: "scale(1)" },
+        { opacity: 1, transform: "scale(1.6)", color: "#fff6d0", offset: 0.35 },
+        { opacity: 1, transform: "scale(1)" },
+      ], 300 + i * 90, 380, BACK));
       // 2. release: 1.5-turn spin that decelerates into a small overshoot, with a punch
       run(flip, [
         { transform: "rotateY(208deg) scale(0.94)" },

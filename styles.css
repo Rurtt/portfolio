@@ -125,6 +125,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .card-back svg { width: 34%; color: var(--legendary); filter: drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); }
 .card-back b { font: 700 15px/1 var(--display); letter-spacing: 0.5em; padding-left: 0.5em; color: var(--legendary); }
+.stars { display: flex; gap: 6px; }
+.stars s { text-decoration: none; font-size: 20px; line-height: 1; color: var(--legendary); opacity: 0.25; text-shadow: 0 0 12px rgba(245, 197, 66, 0.8); }
 .foil, .shine { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .foil {
   mix-blend-mode: color-dodge; opacity: 0; transition: opacity 0.4s;
@@ -170,12 +172,13 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (max-width: 960px) {
   .hero { min-height: 0; }
   .hero-grid, .pinfo-grid { grid-template-columns: 1fr; gap: 36px; }
-  .tilt { max-width: 340px; }
+  .tilt { max-width: 340px; justify-self: start; }
 }
 @media (max-width: 560px) {
   .tilt { max-width: 280px; }
   .proof li { flex: 1 1 100%; }
-  .role-pb { display: none; }
+  .hide-sm { display: none; }
+  .tilt { justify-self: center; }
 }
 
 @property --spin { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
