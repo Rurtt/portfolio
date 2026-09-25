@@ -99,7 +99,7 @@ window.QUESTS = [
     role: "Web Security · Reverse Engineering · Crypto · OSINT",
     duration: "เตรียมตัว 7 วัน",
     cover: "assets/ctf-map.webp",
-    summary: "ลองลงแข่ง CTF ระดับประเทศทั้งที่พื้นฐาน Cybersecurity แทบเป็นศูนย์ มีเวลาเตรียมตัวประมาณ 7 วัน สุดท้ายติดอันดับ 8 ของประเทศมาแบบงง ๆ",
+    summary: "ลองลงแข่ง CTF ระดับประเทศทั้งที่พื้นฐาน Cybersecurity แทบเป็นศูนย์ มีเวลาเตรียมตัวประมาณ 7 วัน สุดท้ายติดอันดับ 8 ของประเทศ",
     brief: [
       "โจทย์ครอบคลุม Web Application Security, Reverse Engineering, Cryptography และ OSINT",
       "อันดับ 8 ของประเทศประเภทบุคคลในรอบคัดเลือก",
