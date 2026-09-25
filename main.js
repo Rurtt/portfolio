@@ -202,16 +202,12 @@
     }
   }
 
-  // ---------- scroll: XP bar fills with page progress, quest path lights up as you pass each quest ----------
-  const xp = $(".xp");
-  if (xp) {
-    const items = document.querySelectorAll(".tl-item");
+  // ---------- scroll: quest path lights up as you pass each quest ----------
+  const items = document.querySelectorAll(".tl-item");
+  if (items.length) {
     let queued = false;
     const tick = () => {
       queued = false;
-      const p = Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
-      xp.style.setProperty("--xp", p);
-      xp.classList.toggle("done", p > 0.98);
       const line = innerHeight * 0.6;
       items.forEach((it) => it.classList.toggle("lit", it.getBoundingClientRect().top < line));
     };
