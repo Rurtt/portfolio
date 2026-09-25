@@ -261,7 +261,7 @@ window.QUESTS = [
     rarity: "legendary",
     level: "ระดับชาติ",
     role: "System Integration · ผู้นำเสนอหลัก",
-    cover: "assets/zt-macro.webp", fit: "contain",
+    cover: "assets/zt-macro-bg.webp", fit: "contain",
     summary: "แอป Open Source ที่ชุบชีวิตมือถือ Android เครื่องเก่าให้กลายเป็นจอเสริม Macropad หรือแผงควบคุมของ PC เสียบสายปุ๊บ ใช้ได้ปั๊บ",
     brief: [
       "ฝั่ง PC เขียนด้วย Rust + Tokio ฝั่ง Android ใช้ Apache Cordova",
@@ -277,8 +277,8 @@ window.QUESTS = [
     loot: "ประสบการณ์ผู้ใช้เริ่มตั้งแต่วินาทีแรกที่เสียบสาย ขั้นตอนติดตั้งสำคัญพอ ๆ กับฟีเจอร์",
     note: "มือถือเก่าในลิ้นชักทุกบ้าน ขอเกิดใหม่เป็น Macropad แม่จะได้เลิกถามว่าเก็บไว้ทำไม",
     gallery: [
-      { src: "assets/zt-macro.webp", cap: "โหมด Macropad" },
-      { src: "assets/zt-clock.webp", cap: "โหมด Desktop Clock" },
+      { src: "assets/zt-macro-bg.webp", cap: "โหมด Macropad" },
+      { src: "assets/zt-clock-bg.webp", cap: "โหมด Desktop Clock" },
       { src: "assets/zt-arch.webp", cap: "ระบบการทำงาน" },
       { src: "assets/zt-team.webp", cap: "ทีมในวันแข่ง" },
       { src: "assets/zt-cert.webp", cap: "เกียรติบัตรเหรียญทอง" },
