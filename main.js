@@ -202,17 +202,29 @@
     }
   }
 
-  // ---------- quest cover slideshow: arrows step through q.gallery ----------
-  document.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-step]");
-    if (!b) return;
+  // ---------- quest cover slideshow: arrows step through q.gallery, auto-advance every 5s ----------
+  const slide = $("#slide");
+  if (slide) {
     const G = Q.find((q) => q.id === new URLSearchParams(location.search).get("q")).gallery;
-    const img = $("#slide");
-    const i = (G.findIndex((g) => g.src === img.dataset.full) + +b.dataset.step + G.length) % G.length;
-    img.src = img.dataset.full = G[i].src;
-    img.alt = img.dataset.cap = $("#slide-cap").textContent = G[i].cap;
-    $("#slide-n").textContent = `${i + 1} / ${G.length}`;
-  });
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const step = (d) => {
+      const i = (G.findIndex((g) => g.src === slide.dataset.full) + d + G.length) % G.length;
+      slide.src = slide.dataset.full = G[i].src;
+      slide.alt = slide.dataset.cap = $("#slide-cap").textContent = G[i].cap;
+      $("#slide-n").textContent = `${i + 1} / ${G.length}`;
+      if (!calm) slide.animate([{ transform: `translateX(${d * 40}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 400, easing: "cubic-bezier(.2,.8,.2,1)" });
+    };
+    let timer;
+    const play = () => { clearInterval(timer); if (!calm) timer = setInterval(() => document.hidden || step(1), 5000); };
+    const box = slide.parentElement;
+    box.addEventListener("click", (e) => { const b = e.target.closest("[data-step]"); if (b) { step(+b.dataset.step); play(); } });
+    // pause while the viewer is looking at / using it
+    box.addEventListener("pointerenter", () => clearInterval(timer));
+    box.addEventListener("pointerleave", play);
+    box.addEventListener("focusin", () => clearInterval(timer));
+    box.addEventListener("focusout", play);
+    play();
+  }
 
   // ---------- lightbox ----------
   const dlg = $("#lightbox");
