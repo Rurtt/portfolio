@@ -126,7 +126,7 @@ window.QUESTS = [
     level: "ระดับชาติ",
     role: "Product Manager · Backend · Dashboard",
     duration: "4 เดือน",
-    cover: "assets/wf-app.webp", fit: "contain",
+    cover: "assets/wf-app.webp", fit: "contain", video: "assets/wf-demo.mp4", poster: "assets/wf-poster.webp",
     summary: "เกมฝึกอ่านภาษาไทยสำหรับเด็กที่มีภาวะบกพร่องทางการเรียนรู้ (LD) เด็กเล่นเกมไป ฝึกอ่านไป แล้วมี AI ช่วยฟังว่าออกเสียงถูกไหมในระดับหน่วยเสียง",
     brief: [
       "เปลี่ยนแบบฝึกอ่านที่น่าเบื่อให้เป็นเกมผจญภัย เด็กต้องประกอบคำและออกเสียงเพื่อดำเนินเนื้อเรื่อง",

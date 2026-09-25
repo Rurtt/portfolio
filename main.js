@@ -156,7 +156,7 @@
                 <p class="event">${esc(q.event)}</p>
                 <p class="summary">${esc(q.summary)}</p>
               </div>
-              <div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>
+              ${q.video ? `<div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="none" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div>` : `<div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>`}
             </div>
             <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${esc(v)}</b></div>`).join("")}</div>
           </div>
