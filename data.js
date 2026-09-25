@@ -34,7 +34,7 @@ window.SKILLS = [
   { group: "Systems & Security", items: [
     { name: "OSINT", lv: 6, can: "ค้นและเชื่อมเบาะแสจากข้อมูลสาธารณะจนหาคำตอบเจอ" },
     { name: "Reverse Engineering", lv: 5, can: "แกะไฟล์ Android APK เพื่อดูว่าโปรแกรมทำงานยังไง" },
-    { name: "C++ / Algorithm", lv: 5, can: "แก้โจทย์อัลกอริทึมใต้เวลาจำกัดได้ถึง*รอบชิง* IT CLASH Programming Track" },
+    { name: "C++ / Algorithm", lv: 5, can: "แก้โจทย์อัลกอริทึมใต้เวลาจำกัดได้ถึง*รอบชิง* IT CLASH Coding Track" },
     { name: "ADB / WebSocket", lv: 4, can: "ทำให้มือถือกับ PC เชื่อมกันเอง เสียบสายแล้วใช้ได้ทันที" },
   ]},
   { group: "Game", items: [
