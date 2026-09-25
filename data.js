@@ -55,6 +55,7 @@ window.GAMING = [
 window.QUESTS = [
   {
     id: "docode",
+    main: true,
     date: "2568 – ปัจจุบัน", year: "Ongoing",
     title: "DoCode",
     event: "ฟรีแลนซ์รับทำเว็บไซต์และ SEO",

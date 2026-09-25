@@ -428,7 +428,8 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .tl-item[hidden], .tl-year[hidden] { display: none; }
 
 /* other main quests */
-.mq-side { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.mq-side { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+@media (max-width: 1100px) { .mq-side { grid-template-columns: repeat(2, 1fr); } }
 .mq-card {
   overflow: hidden; display: flex; flex-direction: column; text-decoration: none;
   background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--rc); border-radius: 12px;
@@ -483,3 +484,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .player:fullscreen video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; }
 @media (max-width: 420px) { .p-bar { gap: 2px; padding: 18px 4px 4px; } .p-time { font-size: 11px; } }
 @media (max-width: 560px) { .char-wrap { max-width: 340px; margin: 0 auto; } }
+
+/* big screens (1080p+ / 2K): scale the whole page so text isn't tiny and layout isn't a narrow strip */
+@media (min-width: 1600px) { body { zoom: 1.12; } }
+@media (min-width: 2200px) { body { zoom: 1.25; } }

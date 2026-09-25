@@ -115,11 +115,13 @@
     const tip = $("#radar-tip");
     const show = (el) => {
       const s = S[el.dataset.i];
+      // rects are in zoomed (visual) px, style px get zoomed again -> divide by body zoom
+      const z = parseFloat(getComputedStyle(document.body).zoom) || 1;
       const box = radar.getBoundingClientRect(), wrap = radar.parentElement.getBoundingClientRect();
-      const vb = radar.viewBox.baseVal, k = box.width / vb.width;
+      const vb = radar.viewBox.baseVal, k = box.width / vb.width / z;
       tip.innerHTML = `<b>${esc(s.key)} ${s.value}</b> · ${esc(s.th)}`;
-      tip.style.left = `${box.left - wrap.left + (el.cx.baseVal.value - vb.x) * k}px`;
-      tip.style.top = `${box.top - wrap.top + (el.cy.baseVal.value - vb.y) * k}px`;
+      tip.style.left = `${(box.left - wrap.left) / z + (el.cx.baseVal.value - vb.x) * k}px`;
+      tip.style.top = `${(box.top - wrap.top) / z + (el.cy.baseVal.value - vb.y) * k}px`;
       tip.classList.add("show");
     };
     const hide = () => tip.classList.remove("show");
