@@ -212,7 +212,7 @@
       slide.src = slide.dataset.full = G[i].src;
       slide.alt = slide.dataset.cap = $("#slide-cap").textContent = G[i].cap;
       $("#slide-n").textContent = `${i + 1} / ${G.length}`;
-      if (!calm) slide.animate([{ transform: `translateX(${d * 40}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 400, easing: "cubic-bezier(.2,.8,.2,1)" });
+      if (!calm) slide.animate([{ transform: `translateX(${d * 40}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 500, easing: "cubic-bezier(.2,.8,.2,1)" });
     };
     let timer;
     const play = () => { clearInterval(timer); if (!calm) timer = setInterval(() => document.hidden || step(1), 5000); };
