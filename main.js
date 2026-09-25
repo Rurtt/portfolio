@@ -5,6 +5,7 @@
   const RAR = { legendary: "Legendary", epic: "Epic", rare: "Rare" };
   const YEAR = { Ongoing: "Ongoing · ปัจจุบัน" };
   const Q = window.QUESTS || [];
+  const T = (src) => src.replace("assets/", "assets/t/"); // 480px thumbnail of the same image
 
   // ---------- home: timeline (newest first, grouped by year) ----------
   const tl = $("#timeline");
@@ -17,7 +18,7 @@
           <span class="tl-date">${esc(q.date)}</span>
           <span class="tl-rail" aria-hidden="true"></span>
           <div class="tl-card sheen">
-            <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="" loading="lazy" width="264" height="165"></div>
+            <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="264" height="165"></div>
             <div>
               <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
               <h3>${esc(q.title)}</h3>
@@ -44,7 +45,7 @@
   if (side) {
     side.innerHTML = Q.filter((q) => q.main && !q.hero).map((q) => `
       <a class="mq-card rar-${q.rarity} sheen reveal" href="quest.html?q=${q.id}">
-        <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="" loading="lazy" width="400" height="250"></div>
+        <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">
           <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
           <h3>${esc(q.title)}</h3>
@@ -176,7 +177,7 @@
           <h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
           <div class="gallery">${q.gallery.map((g) => `
             <button class="shot reveal" type="button" data-full="${g.src}" data-cap="${esc(g.cap)}">
-              <img src="${g.src}" alt="${esc(g.cap)}" loading="lazy" width="900" height="675"><span>${esc(g.cap)}</span>
+              <img src="${T(g.src)}" alt="${esc(g.cap)}" loading="lazy" decoding="async" width="480" height="360"><span>${esc(g.cap)}</span>
             </button>`).join("")}</div>
           <nav class="q-nav" aria-label="ภารกิจอื่น">
             ${newer ? `<a href="quest.html?q=${newer.id}"><small>← ภารกิจที่ใหม่กว่า</small><b>${esc(newer.title)}</b></a>` : "<span></span>"}
@@ -200,18 +201,103 @@
     dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   }
 
-  // ---------- video: -5s / +5s buttons ----------
+  // ---------- video player: custom controls, ←/→ keys and double-tap sides skip 5s ----------
+  const fmt = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  const I = {
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+    vol: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>',
+    muted: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zm12.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z"/></svg>',
+    fs: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h5v2H7v3H5zm9 0h5v5h-2V7h-3zM5 14h2v3h3v2H5zm12 3v-3h2v5h-5v-2z"/></svg>',
+  };
   document.querySelectorAll("video").forEach((v) => {
-    const bar = document.createElement("div");
-    bar.className = "vskip";
-    bar.innerHTML = '<button type="button" data-d="-5" aria-label="ย้อนกลับ 5 วินาที">« 5s</button><button type="button" data-d="5" aria-label="ข้ามไป 5 วินาที">5s »</button>';
-    bar.addEventListener("click", (e) => {
-      const d = Number(e.target.closest("button")?.dataset.d);
-      if (!d) return;
-      const end = Number.isFinite(v.duration) ? v.duration : Infinity;
-      v.currentTime = Math.min(Math.max(v.currentTime + d, 0), end);
+    v.controls = false; // native controls stay as the no-JS fallback
+    const p = document.createElement("div");
+    p.className = "player";
+    p.tabIndex = 0;
+    p.setAttribute("role", "group");
+    p.setAttribute("aria-label", `${v.getAttribute("aria-label") || "วิดีโอ"} · Space เล่น/หยุด · ลูกศรซ้าย/ขวา ข้าม 5 วินาที`);
+    v.replaceWith(p);
+    p.innerHTML = `
+      <button class="p-big" type="button" aria-label="เล่นวิดีโอ">${I.play}</button>
+      <span class="p-flash p-flash-l" aria-hidden="true">« 5s</span>
+      <span class="p-flash p-flash-r" aria-hidden="true">5s »</span>
+      <div class="p-bar">
+        <button class="p-play" type="button"></button>
+        <span class="p-time">0:00 / 0:00</span>
+        <input class="p-seek" type="range" min="0" max="0" step="0.1" value="0" aria-label="ตำแหน่งวิดีโอ">
+        <button class="p-mute" type="button"></button>
+        <button class="p-fs" type="button" aria-label="เต็มจอ">${I.fs}</button>
+      </div>`;
+    p.prepend(v);
+    const q = (s) => p.querySelector(s);
+    const seek = q(".p-seek"), time = q(".p-time"), play = q(".p-play"), mute = q(".p-mute");
+
+    const sync = () => {
+      const d = v.duration || 0;
+      seek.max = d;
+      seek.value = v.currentTime;
+      seek.style.setProperty("--p", d ? `${(v.currentTime / d) * 100}%` : "0%");
+      time.textContent = `${fmt(v.currentTime)} / ${fmt(d)}`;
+      seek.setAttribute("aria-valuetext", fmt(v.currentTime));
+    };
+    const state = () => {
+      p.classList.toggle("playing", !v.paused);
+      if (!v.paused) p.classList.add("started");
+      play.innerHTML = v.paused ? I.play : I.pause;
+      play.setAttribute("aria-label", v.paused ? "เล่น" : "หยุดชั่วคราว");
+      mute.innerHTML = v.muted ? I.muted : I.vol;
+      mute.setAttribute("aria-label", v.muted ? "เปิดเสียง" : "ปิดเสียง");
+    };
+    const toggle = () => (v.paused ? v.play() : v.pause());
+    const skip = (d) => {
+      if (!v.duration) return;
+      v.currentTime = Math.min(Math.max(v.currentTime + d, 0), v.duration);
+      const f = q(d < 0 ? ".p-flash-l" : ".p-flash-r");
+      f.classList.remove("on");
+      void f.offsetWidth; // restart the flash animation
+      f.classList.add("on");
+      sync();
+    };
+    const fullscreen = () => {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (p.requestFullscreen) p.requestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen(); // iOS
+    };
+
+    ["loadedmetadata", "timeupdate", "seeked"].forEach((e) => v.addEventListener(e, sync));
+    ["play", "pause", "volumechange"].forEach((e) => v.addEventListener(e, state));
+    seek.addEventListener("input", () => { v.currentTime = +seek.value; sync(); });
+    play.addEventListener("click", toggle);
+    q(".p-big").addEventListener("click", toggle);
+    mute.addEventListener("click", () => (v.muted = !v.muted));
+    q(".p-fs").addEventListener("click", fullscreen);
+
+    // keyboard (works when the player or any of its controls has focus)
+    p.addEventListener("keydown", (e) => {
+      const act = { ArrowLeft: () => skip(-5), ArrowRight: () => skip(5), " ": toggle, k: toggle, m: () => (v.muted = !v.muted), f: fullscreen }[e.key];
+      if (!act || (e.key === " " && e.target.tagName === "BUTTON")) return;
+      e.preventDefault();
+      act();
     });
-    (v.closest(".q-cover") || v).after(bar);
+
+    // tap/click on the picture: single = play/pause, double on left/right half = -5s/+5s
+    let last = 0, timer;
+    v.addEventListener("click", (e) => {
+      const now = performance.now();
+      if (now - last < 300) {
+        clearTimeout(timer);
+        last = 0;
+        skip(e.offsetX < v.clientWidth / 2 ? -5 : 5);
+        return;
+      }
+      last = now;
+      timer = setTimeout(toggle, 260);
+    });
+    v.addEventListener("dblclick", (e) => e.preventDefault());
+
+    state();
+    sync();
   });
 
   // ---------- copy IGN ----------
