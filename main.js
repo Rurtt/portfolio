@@ -209,7 +209,11 @@
     const tick = () => {
       queued = false;
       const line = innerHeight * 0.6;
-      items.forEach((it) => it.classList.toggle("lit", it.getBoundingClientRect().top < line));
+      items.forEach((it) => {
+        const r = it.getBoundingClientRect();
+        it.style.setProperty("--fill", Math.min(1, Math.max(0, (line - r.top) / r.height)).toFixed(3));
+        it.classList.toggle("lit", r.top + 31 < line); // 31px = diamond centre
+      });
     };
     addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(tick); } }, { passive: true });
     addEventListener("resize", tick);
