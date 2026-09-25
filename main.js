@@ -162,8 +162,11 @@
                 <h1>${esc(q.title)}</h1>
                 <p class="event">${esc(q.event)}</p>
                 <p class="summary">${esc(q.summary)}</p>
+                ${q.live ? `<a class="btn btn-primary" href="${q.live}" target="_blank" rel="noopener">เปิดเว็บจริง ${back}</a>` : ""}
               </div>
-              ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : `<div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>`}
+              ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : q.slides ? `<div class="q-media"><div class="q-cover slides"><img id="slide" src="${q.slides[0].src}" alt="${esc(q.slides[0].cap)}" width="900" height="560"></div>
+                <div class="q-thumbs" role="group" aria-label="เลือกรูป">${q.slides.map((s, i) => `<button type="button" data-slide="${s.src}" aria-pressed="${!i}"><img src="${T(s.src)}" alt="" width="120" height="75"><span>${esc(s.cap)}</span></button>`).join("")}</div></div>`
+                : `<div class="q-cover${q.fit === "contain" ? " contain" : ""}"><img src="${q.cover}" alt="${esc(q.title)}" width="900" height="560"></div>`}
             </div>
             <div class="meta">${meta.map(([k, v]) => `<div><small>${k}</small><b>${hl(v)}</b></div>`).join("")}</div>
           </div>
@@ -193,6 +196,16 @@
         </div>`;
     }
   }
+
+  // ---------- quest cover slides: thumbs swap the big image ----------
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-slide]");
+    if (!b) return;
+    const img = $("#slide");
+    img.src = b.dataset.slide;
+    img.alt = $("span", b).textContent;
+    b.parentElement.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+  });
 
   // ---------- lightbox ----------
   const dlg = $("#lightbox");

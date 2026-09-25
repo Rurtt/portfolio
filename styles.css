@@ -138,6 +138,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .info dt.logo-slot { flex: none; color: var(--volt); }
 .info dt svg { width: 18px; height: 18px; }
 .hl { color: var(--volt); font-weight: 600; }
+.meta .hl { display: inline; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .info dt:not(.logo-slot) { font: 600 11px/1 var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
 .info dd { font-weight: 600; line-height: 1.4; }
@@ -397,6 +398,14 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .q-head .summary { margin-top: 18px; font-size: 17px; }
 .q-cover { border-radius: 12px; overflow: hidden; border: 1px solid var(--line-2); aspect-ratio: 16 / 10; background: radial-gradient(circle, color-mix(in srgb, var(--rc) 12%, transparent), transparent 70%), var(--bg-2); }
 .q-cover img { width: 100%; height: 100%; object-fit: cover; }
+.q-cover.slides { aspect-ratio: 1552 / 753; }
+.q-cover.slides img { object-fit: contain; }
+.q-thumbs { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.q-thumbs button { padding: 0; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; cursor: pointer; color: var(--text-2); opacity: 0.6; transition: opacity 0.2s, border-color 0.2s; }
+.q-thumbs button:hover, .q-thumbs button[aria-pressed="true"] { opacity: 1; border-color: var(--rc, var(--volt)); }
+.q-thumbs img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.q-thumbs span { display: block; padding: 5px 6px; font-size: 12px; }
+.q-head .btn { margin-top: 20px; }
 .q-cover.contain img { object-fit: contain; padding: 16px; }
 .meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 40px; }
 .meta div { background: var(--panel); padding: 16px 18px; }
