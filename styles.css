@@ -133,7 +133,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   font-weight: 500; line-height: 1.5;
 }
 .title-tag span { font: 700 11px/1 var(--display); letter-spacing: 0.16em; color: var(--on-accent); background: var(--legendary); padding: 5px 7px; border-radius: 3px; }
-.info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 24px; }
+.info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 32px; }
+.sheet-info .block-label { margin: 34px 0 12px; }
+.sheet-info .hero-cta { margin-top: 34px; }
 .info div { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
 .info dt.logo-slot { flex: none; color: var(--volt); }
 .info dt svg { width: 18px; height: 18px; }
@@ -144,7 +146,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .info dd { font-weight: 600; line-height: 1.4; }
 .info .motto { font-family: var(--display); color: var(--volt); text-transform: uppercase; letter-spacing: 0.04em; }
 
-.titles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.titles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .titles li {
   position: relative; padding: 10px 14px 10px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
   border-left: 3px solid var(--rc); line-height: 1.35;
@@ -219,7 +221,11 @@ section.block { padding: 96px 0; border-bottom: 1px solid var(--line); }
 .skill-group h4 { margin: 0 0 8px; font: 600 12px/1 var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); }
 .skill { display: grid; grid-template-columns: minmax(0, 1fr) 132px 56px; align-items: center; gap: 14px; padding: 6px 0; }
 .skill .name { font-size: 15px; line-height: 1.4; }
-.skill .can { grid-column: 1 / -1; margin: -6px 0 4px; font-size: 13px; line-height: 1.5; color: var(--text-2); }
+/* sentence hidden until hover/tap (tap focuses the row); still in the a11y tree */
+.skill[tabindex] { cursor: pointer; border-radius: 6px; }
+.skill .can { grid-column: 1 / -1; margin: -6px 0 0; font-size: 13px; line-height: 1.5; color: var(--text-2); max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.25s var(--ease), opacity 0.2s, margin 0.25s; }
+.skill:hover .can, .skill:focus .can { max-height: 80px; opacity: 1; margin: -4px 0 6px; }
+.skill:hover .name, .skill:focus .name { color: var(--volt); }
 .skill .lvtxt { font: 700 13px/1 var(--display); color: var(--volt); text-align: right; font-variant-numeric: tabular-nums; }
 .skill.max .lvtxt { color: var(--legendary); text-shadow: 0 0 12px rgba(245, 197, 66, 0.5); }
 .lvbar {

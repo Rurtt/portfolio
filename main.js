@@ -81,7 +81,7 @@
       <div class="skill-group">
         <h4>${esc(g.group)}</h4>
         ${g.items.map((s) => `
-          <div class="skill${s.max ? " max" : ""}">
+          <div class="skill${s.max ? " max" : ""}"${s.can ? ' tabindex="0"' : ""}>
             <span class="name">${esc(s.name)}</span>
             <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
             <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
