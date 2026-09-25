@@ -392,9 +392,12 @@ section.block { padding: 96px 0; border-bottom: 1px solid var(--line); }
   .tl-date { grid-column: 2; grid-row: 1; text-align: left; padding: 6px 0 6px 12px; font-size: 13px; }
   .tl-rail { grid-column: 1; grid-row: 1 / span 2; }
   .tl-rail::after { top: 10px; }
-  .tl-card { grid-column: 2; grid-template-columns: 1fr auto; }
-  .tl-thumb { display: none; }
+  .tl-card { grid-column: 2; grid-template-columns: 76px 1fr; gap: 12px; align-items: start; padding: 12px; }
+  .tl-card .tl-thumb { aspect-ratio: 1; }
+  .tl-card > svg { display: none; }
+  .tl-card h3 { font-size: 17px; margin-top: 6px; }
 }
+@media (max-width: 380px) { .tl-card { grid-template-columns: 60px 1fr; } }
 
 /* gaming */
 .gaming { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
