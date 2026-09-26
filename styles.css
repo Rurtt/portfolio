@@ -524,19 +524,21 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
   .ch-mark { font-size: 16px; letter-spacing: 0.16em; line-height: 1.4; }
 }
 .chapter .btn { margin-top: 26px; }
-/* transition words: pinned, each line lights up as you scroll through */
-.words { height: 240svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
-.words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); padding-top: 64px; text-align: center; padding: 0 20px; }
+/* transition words: pinned. Beat 1 = lead-in alone (the pause), then each line fades in as you scroll */
+.words { height: 340svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
+.words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); text-align: center; padding: 64px 20px 0; }
 .words p { font: 700 clamp(40px, 7.5vw, 112px)/1.1 var(--display); color: var(--text); }
 .words .w-fall { color: #ff5a5a; }
 .words .w-back { font: 600 clamp(22px, 2.6vw, 36px)/1.4 var(--display); color: var(--text-2); }
 .words .w-rise { color: var(--volt); }
 @supports (animation-timeline: view()) {
-  .words p { animation: lit linear both; animation-timeline: --words; }
-  .words p:nth-of-type(1) { animation-range: contain 0% contain 25%; }
-  .words p:nth-of-type(2) { animation-range: contain 25% contain 50%; }
-  .words p:nth-of-type(3) { animation-range: contain 50% contain 75%; }
-  @keyframes lit { from { color: #5c6576; } } /* unlit still 3:1 on --bg */
+  .words .w-back { animation: back-dim linear both; animation-timeline: --words; animation-range: contain 22% contain 32%; }
+  .words p { animation: line-in linear both; animation-timeline: --words; }
+  .words p:nth-of-type(1) { animation-range: contain 32% contain 46%; }
+  .words p:nth-of-type(2) { animation-range: contain 48% contain 62%; }
+  .words p:nth-of-type(3) { animation-range: contain 64% contain 78%; }
+  @keyframes back-dim { to { opacity: 0.45; } }
+  @keyframes line-in { from { opacity: 0; transform: translateY(24px); } }
 }
 
 /* chapter 1: big title */
