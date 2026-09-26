@@ -588,15 +588,17 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 @media (max-width: 860px) { .wf-stage { display: none; } }
 
 /* chapter beats (one per chapter, all end in the static final state; reduced motion skips them) */
-/* ch.1: rank cards dealt onto the table, ROV photo slides over the lobby */
-.js .ch-ranks .gcard.reveal { transition: opacity 0.5s var(--ease), transform 0.65s cubic-bezier(0.34, 1.4, 0.64, 1), border-color 0.25s; }
-.js .ch-ranks .gcard.reveal:not(.in) { opacity: 0; transform: translateY(56px) rotate(-7deg) scale(0.9); }
-.js .ch-ranks .gcard.reveal:nth-child(even):not(.in) { transform: translateY(56px) rotate(7deg) scale(0.9); }
-.ch-ranks .gcard:nth-child(2) { transition-delay: 0.1s; }
-.ch-ranks .gcard:nth-child(3) { transition-delay: 0.2s; }
-.ch-ranks .gcard:nth-child(4) { transition-delay: 0.3s; }
-.js .ch-stack .inset { transition: opacity 0.5s var(--ease) 0.3s, transform 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) 0.3s; }
-.js .ch-stack.reveal:not(.in) .inset { opacity: 0; transform: translate(-48px, 32px) rotate(-8deg); }
+/* ch.1: rank cards dealt onto the table (soft: small tilt, light settle; phones just fade up) */
+.js .ch-ranks .gcard.reveal { transition: opacity 0.5s var(--ease), transform 0.6s cubic-bezier(0.34, 1.15, 0.64, 1), border-color 0.25s; }
+.js .ch-ranks .gcard.reveal:not(.in) { opacity: 0; transform: translateY(32px) rotate(-3deg); }
+.js .ch-ranks .gcard.reveal:nth-child(even):not(.in) { transform: translateY(32px) rotate(3deg); }
+.ch-ranks .gcard:nth-child(2) { transition-delay: 0.06s; }
+.ch-ranks .gcard:nth-child(3) { transition-delay: 0.12s; }
+.ch-ranks .gcard:nth-child(4) { transition-delay: 0.18s; }
+@media (max-width: 560px) {
+  .js .ch-ranks .gcard.reveal:not(.in), .js .ch-ranks .gcard.reveal:nth-child(even):not(.in) { transform: translateY(16px); }
+  .ch-ranks .gcard:nth-child(n) { transition-delay: 0s; }
+}
 /* ch.3: the photo goes from gray (like ch.2) to full color, the quote bar fills top to bottom */
 .ch-quote { position: relative; border-left-color: var(--line-2); }
 .ch-quote::before { content: ""; position: absolute; left: -3px; top: 0; bottom: 0; width: 3px; background: var(--ch); transform-origin: top; }
