@@ -47,8 +47,8 @@
     <div class="container">
       <a class="logo" href="#top">RURTT<span>.</span></a>
       <div class="nav-links">
-        <a href="#ch1">เรื่องราว</a>
         <a href="#main-quest">Main Quest</a>
+        <a href="#ch1">เรื่องราว</a>
         <a href="#timeline-sec">ไทม์ไลน์</a>
         <a href="#stats">Status</a>
         <a href="#hobby">งานอดิเรก</a>
@@ -70,13 +70,16 @@
             <img src="assets/char.webp" alt="ภาพบุคคลของธนราชันย์ สุวรรณศรี ในชุดนักเรียน" width="900" height="1212">
             <div class="foil" aria-hidden="true"></div>
               <div class="shine" aria-hidden="true"></div>
+              <div class="char-ovr">
+                <div class="lv"><small>LV</small>18</div>
+                <em>PM</em>
+                <i class="flag-th" role="img" aria-label="ประเทศไทย"></i>
+              </div>
               <div class="char-plate">
-              <div class="lv"><small>LV</small>18</div>
-              <div class="plate-name">
                 <b>Rurtt</b>
                 <span class="rar rar-legendary">Legendary</span>
+                <ul id="card-stats" class="card-stats" aria-label="Attribute สูงสุด 6 ด้าน"></ul>
               </div>
-            </div>
           </div>
             </div>
             <div class="card-back" aria-hidden="true"><i><svg viewBox="0 0 32 32"><path d="M16 3l13 13-13 13L3 16z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M16 9l7 7-7 7-7-7z" fill="currentColor"/></svg><b>RURTT</b><span class="stars"><s>★</s><s>★</s><s>★</s><s>★</s><s>★</s></span></i></div>
@@ -101,12 +104,36 @@
       </div>
     </header>
 
-    <!-- TRANSITION WORDS -->
-    <section class="words" aria-label="เรื่องย่อ">
-      <div class="words-stage">
-        <p>จากเกมเมอร์</p>
-        <p class="w-fall">ที่เคยแพ้สนามเทค</p>
-        <p class="w-rise">สู่คนสร้างโปรดักต์</p>
+    <!-- MAIN QUEST -->
+    <section class="chapter ch-wf" id="main-quest" aria-labelledby="ch5-title">
+      <div class="container">
+        <div class="wf-intro reveal">
+          <p class="ch-mark">Main Quest · 2026</p>
+          <h2 id="ch5-title" class="ch-big">WordFlow<span class="hl">.</span></h2>
+          <p class="ch-sub">เกมฝึกอ่านภาษาไทย <span class="nw">สำหรับเด็ก LD ด้านการอ่าน</span></p>
+          <div class="chips"><span class="chip gold">ทุน NSC ครั้งที่ 28</span><span class="chip">Product Manager</span><span class="chip">4 เดือน</span><span class="chip">ที่ปรึกษา RainyKids Clinic</span></div>
+        </div>
+        <div class="wf">
+          <div class="wf-stage"></div>
+          <div class="wf-steps">
+            <div class="wf-step">
+              <div class="wf-m wf-stat"><b>1 ใน 14</b><span>เด็กที่มีภาวะ LD</span></div>
+              <div><p class="eyebrow">ปัญหา</p><h3>เด็ก LD ที่อยู่ตรงกลาง<br>มักถูกมองข้าม</h3><p class="ch-sub">การได้พบแพทย์ต้องใช้เงิน และทางเลือกที่ถูกกว่านั้นแทบไม่มีเลย</p></div>
+            </div>
+            <div class="wf-step">
+              <div class="wf-m"><video class="demo" src="assets/wf-demo.mp4" poster="assets/wf-poster.webp" controls muted loop preload="metadata" playsinline width="776" height="540" aria-label="วิดีโอเดโมการเล่นเกม WordFlow"></video></div>
+              <div><p class="eyebrow">เล่น = ฝึก</p><h3>เปลี่ยนแบบฝึกอ่าน<br>ให้เป็นเกมผจญภัย</h3><p class="ch-sub">เด็กต้องประกอบคำและ<span class="nw">ออกเสียงเพื่อไปต่อ</span></p></div>
+            </div>
+            <div class="wf-step">
+              <div class="wf-m"><img src="assets/wf-loop.webp" alt="Gameplay Loop ของ WordFlow" width="1400" height="504" loading="lazy"></div>
+              <div><p class="eyebrow">AI</p><h3>AI ฟังการออกเสียง<br>ระดับหน่วยเสียง</h3><p class="ch-sub">ใช้โมเดล ReVoiceAI อ้างอิง IPA <span class="nw">บอกได้ว่าเด็กพลาดตรงไหน</span></p></div>
+            </div>
+            <div class="wf-step">
+              <div class="wf-m"><img src="assets/wf-dash.webp" alt="Dashboard สำหรับแพทย์และผู้ปกครอง" width="1400" height="797" loading="lazy"></div>
+              <div><p class="eyebrow">ผลลัพธ์</p><h3>Dashboard ให้แพทย์<br>และผู้ปกครองดูพัฒนาการ</h3><p class="ch-sub">Unity · FastAPI · Firebase · Next.js</p><a class="btn btn-primary" href="quest.html?q=wordflow">เปิดบันทึกภารกิจ WordFlow <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -114,20 +141,17 @@
     <section class="chapter ch-gamer" id="ch1" aria-labelledby="ch1-title">
       <div class="container">
         <div class="ch-grid">
-          <figure class="ch-media ch-stack reveal">
-            <img src="assets/val-lobby.webp" alt="ล็อบบี้ Valorant โหมด Competitive ของ Rurtt" width="1600" height="900" loading="lazy">
-            <img class="inset" src="assets/t/rov-1.webp" alt="ทีม ROV รับรางวัลรองชนะเลิศอันดับ 2 depa E-Sports In Schools" width="480" height="360" loading="lazy">
+          <figure class="ch-media reveal">
+            <img src="assets/rov-1.webp" alt="ทีม ROV รับรางวัลรองชนะเลิศอันดับ 2 depa E-Sports In Schools" width="900" height="675" loading="lazy">
           </figure>
           <div class="ch-copy reveal">
             <p class="ch-mark">Chapter 1 · Start</p>
             <h2 id="ch1-title" class="ch-big">Gamer<span class="hl">.</span></h2>
             <p class="ch-sub">เล่นเพราะสนุก แรงก์มาเองแบบงง&nbsp;ๆ</p>
-            <div class="chips"><span class="chip">Valorant</span><span class="chip">ROV</span><span class="chip">Legends of Runeterra</span><span class="chip">Minecraft Bedwars</span></div>
             <p class="ch-sub">ลงแข่ง depa E-Sports In Schools ได้<b class="hl nw">รองชนะเลิศอันดับ 2</b></p>
             <a class="btn btn-ghost" href="quest.html?q=rov">ดูภารกิจ <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
           </div>
         </div>
-        <div id="gaming-grid" class="gaming ch-ranks"></div>
       </div>
     </section>
 
@@ -181,39 +205,6 @@
           <p class="ch-sub"><b>ZeiTop</b> แอป Open Source ชุบชีวิตมือถือ Android เก่าให้เป็นจอเสริม / Macropad ของ PC เสียบสายปุ๊บ ใช้ได้ปั๊บ</p>
           <div class="chips"><span class="chip gold">SK Robotics Playground 2025</span><span class="chip">Rust + Tokio</span><span class="chip">Android</span><span class="chip">WebSocket over USB</span></div>
           <a class="btn btn-ghost" href="quest.html?q=zeitop">ดูภารกิจ <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- CH.5 MAIN QUEST -->
-    <section class="chapter ch-wf" id="main-quest" aria-labelledby="ch5-title">
-      <div class="container">
-        <div class="wf-intro reveal">
-          <p class="ch-mark">Chapter 5 · 2026 · Main Quest</p>
-          <h2 id="ch5-title" class="ch-big">WordFlow<span class="hl">.</span></h2>
-          <p class="ch-sub">เกมฝึกอ่านภาษาไทย <span class="nw">สำหรับเด็ก LD ด้านการอ่าน</span></p>
-          <div class="chips"><span class="chip gold">ทุน NSC ครั้งที่ 28</span><span class="chip">Product Manager</span><span class="chip">4 เดือน</span><span class="chip">ที่ปรึกษา RainyKids Clinic</span></div>
-        </div>
-        <div class="wf">
-          <div class="wf-stage"></div>
-          <div class="wf-steps">
-            <div class="wf-step">
-              <div class="wf-m wf-stat"><b>1 ใน 14</b><span>เด็กที่มีภาวะ LD</span></div>
-              <div><p class="eyebrow">ปัญหา</p><h3>เด็ก LD ที่อยู่ตรงกลาง<br>มักถูกมองข้าม</h3><p class="ch-sub">การได้พบแพทย์ต้องใช้เงิน และทางเลือกที่ถูกกว่านั้นแทบไม่มีเลย</p></div>
-            </div>
-            <div class="wf-step">
-              <div class="wf-m"><video class="demo" src="assets/wf-demo.mp4" poster="assets/wf-poster.webp" controls muted loop preload="metadata" playsinline width="776" height="540" aria-label="วิดีโอเดโมการเล่นเกม WordFlow"></video></div>
-              <div><p class="eyebrow">เล่น = ฝึก</p><h3>เปลี่ยนแบบฝึกอ่าน<br>ให้เป็นเกมผจญภัย</h3><p class="ch-sub">เด็กต้องประกอบคำและ<span class="nw">ออกเสียงเพื่อไปต่อ</span></p></div>
-            </div>
-            <div class="wf-step">
-              <div class="wf-m"><img src="assets/wf-loop.webp" alt="Gameplay Loop ของ WordFlow" width="1400" height="504" loading="lazy"></div>
-              <div><p class="eyebrow">AI</p><h3>AI ฟังการออกเสียง<br>ระดับหน่วยเสียง</h3><p class="ch-sub">ใช้โมเดล ReVoiceAI อ้างอิง IPA <span class="nw">บอกได้ว่าเด็กพลาดตรงไหน</span></p></div>
-            </div>
-            <div class="wf-step">
-              <div class="wf-m"><img src="assets/wf-dash.webp" alt="Dashboard สำหรับแพทย์และผู้ปกครอง" width="1400" height="797" loading="lazy"></div>
-              <div><p class="eyebrow">ผลลัพธ์</p><h3>Dashboard ให้แพทย์<br>และผู้ปกครองดูพัฒนาการ</h3><p class="ch-sub">Unity · FastAPI · Firebase · Next.js</p><a class="btn btn-primary" href="quest.html?q=wordflow">เปิดบันทึกภารกิจ WordFlow <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -284,11 +275,12 @@
             <div class="academic">
               <div><b class="num">3.90</b><span>GPAX</span></div>
               <div><b class="num">580</b><span>TOEFL ITP</span></div>
+              <div><b class="num">B2</b><span>CEFR English</span></div>
             </div>
           </div>
           <div class="panel reveal">
             <h3>Skill Tree</h3>
-            <p class="hint">LV 1–10 · แตะหรือชี้ที่สกิลเพื่อดูว่าทำอะไรได้จริง</p>
+            <p class="hint">LV 1–10 · แตะหรือชี้ที่สกิลเพื่อดูว่าทำอะไรได้</p>
             <div id="skills" style="margin-top:20px"></div>
           </div>
         </div>

@@ -65,38 +65,26 @@
   openTl();
   addEventListener("hashchange", openTl);
 
-  // ---------- home: gaming ----------
-  const gg = $("#gaming-grid");
-  if (gg) {
-    gg.innerHTML = (window.GAMING || []).map((g) => `
-      <article class="gcard sheen reveal">
-        <button class="shot-btn" type="button" data-full="${g.img}" data-cap="${esc(g.cap)}" aria-label="ดูรูป ${esc(g.cap)}">
-          <img src="${g.img}" alt="${esc(g.cap)}" loading="lazy" width="1400" height="700" style="${g.fit ? `object-fit:${g.fit};` : ""}${g.pos ? `object-position:${g.pos};` : ""}">
-        </button>
-        <div class="gbody">
-          <span class="game">${esc(g.game)}</span>
-          <span class="rank">${esc(g.rank)}</span>
-          <p class="sub">${esc(g.sub)}</p>
-          ${g.ign ? `<div class="ign"><span><small>IGN</small><b>${esc(g.ign)}</b></span><button class="copy" type="button" data-copy="${esc(g.ign)}" aria-label="คัดลอกชื่อในเกม ${esc(g.game)}">คัดลอก</button></div>` : ""}
-        </div>
-      </article>`).join("");
-  }
-
   // ---------- home: skills ----------
   const skills = $("#skills");
   if (skills) {
-    skills.innerHTML = (window.SKILLS || []).map((g) => `
-      <div class="skill-group">
-        <h4>${esc(g.group)}</h4>
-        ${g.items.map((s) => `
-          <div class="skill${s.max ? " max" : ""}"${s.can ? ' tabindex="0"' : ""}>
-            <span class="name">${esc(s.name)}</span>
-            <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
-            <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
-            ${s.can ? `<p class="can">${hl(s.can)}</p>` : ""}
-          </div>`).join("")}
-      </div>`).join("");
+    const row = (s) => `
+      <div class="skill${s.max ? " max" : ""}"${s.can ? ' tabindex="0"' : ""}>
+        <span class="name">${esc(s.name)}</span>
+        <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
+        <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
+        ${s.can ? `<p class="can">${hl(s.can)}</p>` : ""}
+      </div>`;
+    // top 8 by level up front, the rest folded (sort is stable, so ties keep data.js order)
+    const all = (window.SKILLS || []).flatMap((g) => g.items).sort((a, b) => b.lv - a.lv);
+    skills.innerHTML = all.slice(0, 8).map(row).join("") +
+      (all.length > 8 ? `<details class="sk-more"><summary>ดูทั้งหมด (${all.length})</summary>${all.slice(8).map(row).join("")}</details>` : "");
   }
+
+  // ---------- hero card: top 6 attributes as bars ----------
+  const cs = $("#card-stats");
+  if (cs) cs.innerHTML = [...(window.STATS || [])].sort((a, b) => b.value - a.value).slice(0, 6).map((s) =>
+    `<li><span>${esc(s.key)}</span><b>${s.value}</b><i style="--v:${s.value}%"></i></li>`).join("");
 
   // ---------- home: radar ----------
   const radar = $("#radar");
@@ -186,16 +174,8 @@
         </header>
         <div class="container">
           <div class="q-body">
-            <div>
-              ${q.origin ? `<div class="panel reveal"><h2>จุดเริ่มต้น</h2>${q.origin.map((t) => `<p class="loot">${esc(t)}</p>`).join("")}</div>` : ""}
-              <div class="panel reveal"><h2>Mission Brief</h2><ul class="list">${li(q.brief)}</ul></div>
-              <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did)}</ul></div>
-            </div>
-            <div>
-              <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
-              <div class="panel reveal"><h2>บทเรียน</h2><p class="loot">${esc(q.loot)}</p></div>
-              <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
-            </div>
+            <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did.slice(0, 3))}</ul></div>
+            <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
           </div>
           ${pics ? '<div style="padding-bottom:64px"></div>' : `<h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
           <div class="gallery">${q.gallery.map((g) => `
@@ -363,16 +343,6 @@
 
     state();
     sync();
-  });
-
-  // ---------- copy IGN ----------
-  document.querySelectorAll("[data-copy]").forEach((b) => {
-    b.addEventListener("click", async () => {
-      const old = b.textContent;
-      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; }
-      catch { b.textContent = "คัดลอกไม่ได้"; }
-      setTimeout(() => (b.textContent = old), 1500);
-    });
   });
 
   // ---------- hero: holo tilt + first-visit tarot intro ----------
