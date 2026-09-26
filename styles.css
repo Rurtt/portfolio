@@ -574,14 +574,14 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .wf-step .btn { margin-top: 26px; }
 .wf-m img { width: 100%; border-radius: 16px; border: 1px solid var(--line-2); object-fit: contain; }
 .wf-stat { display: grid; place-content: center; text-align: center; min-height: 280px; padding: 32px 24px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; }
-.wf-stat b { font: 700 clamp(72px, 12vw, 180px)/1 var(--display); color: var(--volt); }
-.wf-stat span { color: var(--text-2); font-size: clamp(18px, 1.6vw, 22px); margin-top: 12px; }
+.wf-stat b { font: 700 clamp(64px, 7.5vw, 120px)/1 var(--display); color: var(--volt); }
+.wf-stat span { color: var(--text); font: 600 clamp(22px, 2.2vw, 32px)/1.3 var(--display); margin-top: 18px; }
 @media (min-width: 861px) {
   .js .wf { grid-template-columns: 1.15fr 0.85fr; column-gap: 56px; }
   .js .wf-stage { position: sticky; top: 64px; height: calc(100svh - 64px); display: grid; place-items: center; }
   .js .wf-stage > .wf-m { grid-area: 1 / 1; width: 100%; opacity: 0; visibility: hidden; transform: scale(0.96); transition: opacity 0.45s var(--ease), transform 0.45s var(--ease), visibility 0s 0.45s; }
   .js .wf-stage > .wf-m.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
-  .js .wf-stage .wf-stat { min-height: 60svh; }
+  .js .wf-stage .wf-stat { min-height: 0; aspect-ratio: 16 / 10; max-height: 56svh; }
   .js .wf-stage img { max-height: 76svh; }
   .js .wf-step { min-height: 90svh; align-content: center; padding: 0; }
 }
