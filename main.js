@@ -16,13 +16,13 @@
     for (const q of Q) {
       if (q.year !== last) { html += `<div class="tl-year" data-year="${q.year}"><span>${esc(YEAR[q.year] || q.year)}</span></div>`; last = q.year; }
       html += `
-        <a class="tl-item rar-${q.rarity} reveal${q.main ? " is-main" : ""}" data-rarity="${q.rarity}" data-year="${q.year}" href="quest.html?q=${q.id}">
+        <a class="tl-item rar-${q.rarity} reveal${q.hero ? " is-main" : ""}" data-rarity="${q.rarity}" data-year="${q.year}" href="quest.html?q=${q.id}">
           <span class="tl-date">${esc(q.date)}</span>
           <span class="tl-rail" aria-hidden="true"></span>
           <div class="tl-card sheen">
             <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="264" height="165"></div>
             <div>
-              <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
+              <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.hero ? '<span class="rar main">Main Quest</span>' : ""}</div>
               <h3>${esc(q.title)}</h3>
               <p class="event">${esc(q.event)}</p>
               <p class="result">${hl(q.result)}</p>
@@ -42,11 +42,13 @@
     }));
   }
 
-  // ---------- home: other main quests ----------
-  const side = $("#side-mains");
+  // ---------- home: side quests = every quest without its own chapter, ranked by rarity ----------
+  const side = $("#side-list");
   if (side) {
-    side.innerHTML = Q.filter((q) => q.main && !q.hero).sort((a, b) => a.main - b.main).map((q) => `
+    const CH = ["rov", "posn", "zeitop", "wordflow"], ORDER = { legendary: 0, epic: 1, rare: 2 };
+    side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
       <a class="mq-card rar-${q.rarity} sheen reveal" href="quest.html?q=${q.id}">
+        <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
         <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">
           <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
@@ -56,6 +58,12 @@
         </div>
       </a>`).join("");
   }
+
+  // full timeline sits collapsed under side quests; links to #timeline-sec (e.g. quest page back link) open it
+  const tlAll = $("#timeline-sec");
+  const openTl = () => { if (tlAll && location.hash === "#timeline-sec") { tlAll.open = true; tlAll.scrollIntoView(); } };
+  openTl();
+  addEventListener("hashchange", openTl);
 
   // ---------- home: gaming ----------
   const gg = $("#gaming-grid");
@@ -459,6 +467,25 @@
         evs.forEach((ev) => removeEventListener(ev, skip));
       });
     }
+  }
+
+  // ---------- WordFlow chapter: wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
+  const wf = $(".wf");
+  if (wf) {
+    const stage = $(".wf-stage", wf), steps = [...wf.querySelectorAll(".wf-step")], media = steps.map((s) => $(".wf-m", s));
+    const wide = matchMedia("(min-width: 861px)");
+    const place = () => media.forEach((m, i) => (wide.matches ? stage.append(m) : steps[i].prepend(m)));
+    place();
+    wide.addEventListener("change", place);
+    const vid = $("video", wf), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const pick = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const i = steps.indexOf(e.target);
+      media.forEach((m, j) => m.classList.toggle("on", j === i));
+      if (vid && !calm) { if (media[i].contains(vid)) vid.play().catch(() => {}); else vid.pause(); }
+    }), { rootMargin: "-45% 0px -45% 0px" });
+    steps.forEach((s) => pick.observe(s));
+    media[0].classList.add("on");
   }
 
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
