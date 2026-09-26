@@ -469,4 +469,10 @@
     if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
   }), { rootMargin: "0px 0px -8% 0px" });
   els.forEach((el) => io.observe(el));
+
+  // story beats (e.g. battery boom) fire later, once well inside the screen, so the reader sees them happen
+  const pop = new IntersectionObserver((entries) => entries.forEach((en) => {
+    if (en.isIntersecting) { en.target.classList.add("in"); pop.unobserve(en.target); }
+  }), { rootMargin: "0px 0px -30% 0px" });
+  document.querySelectorAll(".pop").forEach((el) => pop.observe(el));
 })();
