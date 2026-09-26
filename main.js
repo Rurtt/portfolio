@@ -113,7 +113,7 @@
     svg += `<g class="shape"><polygon class="area" points="${S.map((s, i) => at(i, (R * s.value) / 100).join(",")).join(" ")}"/>`;
     svg += S.map((s, i) => {
       const [x, y] = at(i, (R * s.value) / 100);
-      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" data-i="${i}" aria-label="${esc(s.key)}: ${esc(s.can)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
+      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" role="img" data-i="${i}" aria-label="${esc(s.key)}: ${esc(s.can)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
     }).join("") + "</g>";
     svg += S.map((s, i) => {
       const [x, y] = at(i, R + 30);

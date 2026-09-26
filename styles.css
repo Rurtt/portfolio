@@ -501,7 +501,9 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .ch-media { position: relative; }
 .ch-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; border: 1px solid var(--line-2); }
 .ch-fall .ch-media img { filter: grayscale(0.35); }
-.ch-mark { font: 700 clamp(18px, 1.6vw, 22px)/1 var(--display); letter-spacing: 0.24em; text-transform: uppercase; color: var(--ch); }
+.ch-mark { font: 700 clamp(18px, 1.6vw, 22px)/1 var(--display); letter-spacing: 0.24em; text-transform: uppercase; color: var(--ch, var(--volt)); }
+.epi { text-align: center; padding: 24px 0 112px; }
+.epi-title { font-size: clamp(36px, 6vw, 84px); line-height: 1.15; margin-top: 18px; }
 .chapter h2 { font-size: clamp(34px, 5vw, 64px); line-height: 1.12; margin-top: 18px; }
 .ch-sub { color: var(--text-2); font-size: clamp(18px, 1.5vw, 21px); max-width: 40ch; margin-top: 16px; }
 .nw { white-space: nowrap; }
@@ -523,7 +525,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
   .words p:nth-child(1) { animation-range: contain 0% contain 25%; }
   .words p:nth-child(2) { animation-range: contain 25% contain 50%; }
   .words p:nth-child(3) { animation-range: contain 50% contain 75%; }
-  @keyframes lit { from { color: #2a303c; } }
+  @keyframes lit { from { color: #5c6576; } } /* unlit still 3:1 on --bg */
 }
 
 /* chapter 1: big title, lobby + ROV photo stack, rank cards */
@@ -613,6 +615,8 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 }
 .filter:hover { border-color: var(--rc, var(--volt)); }
 .filter.is-on { background: var(--rc, var(--volt)); border-color: var(--rc, var(--volt)); color: var(--on-accent); }
+/* touch: nav links + filters reach the 44px tap target (nav band is 64px, so the links still fit) */
+@media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .filter { min-height: 44px; } }
 .tl-item[hidden], .tl-year[hidden] { display: none; }
 
 /* side quest cards */

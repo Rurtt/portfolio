@@ -23,7 +23,9 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap">
+  <!-- web fonts load without blocking first paint (display=swap; system fallback until they land) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap"></noscript>
   <link rel="stylesheet" href="styles.css">
   <link rel="preload" as="image" href="assets/char.webp">
 </head>
@@ -298,9 +300,13 @@
     <!-- HOBBY -->
     <section class="block" id="hobby">
       <div class="container">
+        <div class="epi reveal">
+          <p class="ch-mark">Epilogue · Next Quest</p>
+          <h2 class="epi-title">วิศวะคอม → <span class="nw">Startup ของตัวเอง<span class="hl">.</span></span></h2>
+        </div>
         <div class="sec-head reveal">
           <div><p class="eyebrow">Off-duty</p><h2>งานอดิเรก</h2></div>
-          <p>ตอนที่ไม่ได้เขียนโค้ด ก็อยู่กับสามอย่างนี้</p>
+          <p>ตอนที่ไม่ได้เขียนโค้ด ก็อยู่กับสองอย่างนี้</p>
         </div>
         <div class="hobby">
           <figure class="hobby-photo reveal">
@@ -321,11 +327,6 @@
               <h3>กำลังเขียนนิยาย High Fantasy ของตัวเอง</h3>
               <p>ปั้นโลก ระบบพลัง และตัวละครเองทั้งหมด อ่านมาเยอะจนถึงเวลาเขียนบ้าง</p>
               <p class="wip"><span class="status-dot" aria-hidden="true"></span>Status: กำลังเขียน · ยังไม่เปิดเผยชื่อเรื่อง</p>
-            </article>
-            <article class="panel hobby-card reveal">
-              <span class="block-label">Gamer</span>
-              <h3>เล่นเกม</h3>
-              <p>Valorant, ROV, Legends of Runeterra และ Minecraft Bedwars ส่วนใหญ่เล่นชิล ๆ กับเพื่อน บางทีก็เผลอจริงจังไปนิดนึง ดูสถิติได้ที่ <a href="#ch1">Chapter 1</a></p>
             </article>
           </div>
         </div>
