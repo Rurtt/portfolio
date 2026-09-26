@@ -174,8 +174,15 @@
         </header>
         <div class="container">
           <div class="q-body">
-            <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did.slice(0, 3))}</ul></div>
-            <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
+            <div>
+              <div class="panel reveal"><h2>Mission Brief</h2><ul class="list">${li(q.brief)}</ul></div>
+              <div class="panel reveal"><h2>สิ่งที่ผมทำ</h2><ul class="list">${li(q.did)}</ul></div>
+            </div>
+            <div>
+              <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
+              <div class="panel reveal"><h2>บทเรียน</h2><p class="loot">${esc(q.loot)}</p></div>
+              <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
+            </div>
           </div>
           ${pics ? '<div style="padding-bottom:64px"></div>' : `<h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>
           <div class="gallery">${q.gallery.map((g) => `
@@ -343,6 +350,16 @@
 
     state();
     sync();
+  });
+
+  // ---------- copy IGN ----------
+  document.querySelectorAll("[data-copy]").forEach((b) => {
+    b.addEventListener("click", async () => {
+      const old = b.textContent;
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; }
+      catch { b.textContent = "คัดลอกไม่ได้"; }
+      setTimeout(() => (b.textContent = old), 1500);
+    });
   });
 
   // ---------- hero: holo tilt + first-visit tarot intro ----------
