@@ -612,8 +612,8 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .gold-shine { padding: 0.25em 0; background: linear-gradient(100deg, var(--legendary) 30%, #fffdf2 47%, #ffffff 50%, #fffdf2 53%, var(--legendary) 70%) 100% 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
 .js .ch-copy.in .gold-shine { animation: goldsweep 1.4s 0.5s ease-in-out both; }
 @keyframes goldsweep { from { background-position: 100% 0; } 50% { filter: drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); } to { background-position: 0 0; } }
-/* as the shine passes, the gold certificate pulses once (echo of the hero badge pulse) */
-.js .duo.reveal.in img.contain { animation: goldpulse 1.3s 1s ease-out both; }
+/* as the shine passes, the team photo (medals on) pulses gold once (echo of the hero badge pulse) */
+.js .duo.reveal.in img:nth-child(2) { animation: goldpulse 1.3s 1s ease-out both; }
 @keyframes goldpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0.85); border-color: var(--legendary); } 60% { border-color: var(--legendary); } 100% { box-shadow: 0 0 0 22px rgba(245, 197, 66, 0); } }
 .js .duo.reveal img { transition: opacity 0.6s var(--ease), transform 0.7s var(--ease); }
 .js .duo.reveal:not(.in) img { opacity: 0; transform: translateY(48px); }
