@@ -368,7 +368,6 @@
   });
 
   // ---------- hero: holo tilt + first-visit tarot intro ----------
-  document.querySelectorAll(".pinfo .titles li").forEach((li, i) => li.style.setProperty("--i", i));
   const heroEl = document.querySelector(".hero");
   if (heroEl) {
     const doc = document.documentElement;

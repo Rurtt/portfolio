@@ -146,13 +146,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 
 /* player info */
 .pinfo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
-.pinfo .info { margin-top: 0; }
-.pinfo .block-label:first-child { margin-top: 0; }
-.pinfo .lore { margin-top: 56px; }
-.js .pinfo .titles.reveal { opacity: 1; transform: none; }
-.js .pinfo .titles:not(.in) li { opacity: 0; }
-.pinfo .titles.in li { animation: toast 0.6s cubic-bezier(0.34, 1.4, 0.64, 1) calc(var(--i) * 0.08s) both; }
-@keyframes toast { from { opacity: 0; transform: translateX(24px) scale(0.96); } }
+.sheet-info { margin-bottom: 32px; }
+.sheet-info .info { margin-top: 0; }
+.sheet-info .block-label { margin-top: 0; }
 
 /* first-visit intro (JS drives it; see main.js) */
 .veil { display: none; }
@@ -224,14 +220,6 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .info dd { font-weight: 600; line-height: 1.4; }
 .info .motto { font-family: var(--display); color: var(--volt); text-transform: uppercase; letter-spacing: 0.04em; }
 
-.titles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.titles li {
-  position: relative; padding: 10px 14px 10px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-  border-left: 3px solid var(--rc); line-height: 1.35;
-}
-.titles b { display: block; font: 700 17px/1.2 var(--display); color: var(--rc); letter-spacing: 0.02em; }
-.titles span { font-size: 13px; color: var(--text-2); }
-
 .equip { display: flex; flex-wrap: wrap; gap: 6px; }
 .logo-slot { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); transition: border-color 0.2s; }
 .logo-slot img { width: 18px; height: 18px; filter: brightness(0) invert(1); opacity: 0.7; transition: opacity 0.2s; }
@@ -247,12 +235,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .logo-slot:hover::after, .logo-slot:focus::after { opacity: 1; transform: translate(-50%, 0); }
 .logo-slot:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 
-.lore { margin-top: 40px; padding: 4px 0 0 20px; border-left: 2px solid var(--line-2); max-width: 900px; }
-.lore .block-label { margin: 0 0 10px; font-size: 19px; letter-spacing: 0.14em; color: var(--text-2); }
-.lore p { color: var(--text-2); }
-
 @media (max-width: 560px) {
-  .info, .titles { grid-template-columns: 1fr; }
+  .info { grid-template-columns: 1fr; }
 }
 
 /* ============ SECTIONS ============ */
@@ -556,6 +540,34 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .ch-quote { margin: 24px 0 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--ch); font: 600 clamp(20px, 2vw, 26px)/1.5 var(--display); }
 .chapter .chips { margin-top: 22px; }
 .chapter .btn { margin-top: 26px; }
+/* transition words: pinned, each line lights up as you scroll through */
+.words { height: 240svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
+.words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; text-align: center; padding: 0 20px; }
+.words p { font: 700 clamp(40px, 7.5vw, 112px)/1.1 var(--display); color: var(--text); }
+.words .w-fall { color: #ff5a5a; }
+.words .w-rise { color: var(--volt); }
+@supports (animation-timeline: view()) {
+  .words p { animation: lit linear both; animation-timeline: --words; }
+  .words p:nth-child(1) { animation-range: contain 0% contain 25%; }
+  .words p:nth-child(2) { animation-range: contain 25% contain 50%; }
+  .words p:nth-child(3) { animation-range: contain 50% contain 75%; }
+  @keyframes lit { from { color: #2a303c; } }
+}
+
+/* chapter 1: big title, lobby + ROV photo stack, rank cards */
+.chapter .ch-big { font-size: clamp(64px, 10vw, 140px); line-height: 0.95; letter-spacing: -0.02em; }
+.ch-stack { padding-bottom: 48px; }
+.ch-stack img:first-child { aspect-ratio: 16 / 9; }
+.ch-stack .inset { position: absolute; left: -16px; bottom: 0; width: 42%; aspect-ratio: 4 / 3; border: 3px solid var(--bg); border-radius: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55); }
+.ch-ranks { grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 64px; }
+.ch-ranks .gcard .gbody { padding: 16px 18px 18px; }
+.ch-ranks .gcard .sub { font-size: 14px; }
+.ch-ranks .gcard .rank { font-size: clamp(20px, 1.7vw, 24px); }
+.ch-ranks .ign { min-width: 0; }
+.ch-ranks .ign > span { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 1100px) { .ch-ranks { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .ch-ranks { grid-template-columns: 1fr; } .ch-stack .inset { left: 8px; } }
+
 /* battery boom: drawn burst behind the card's right side, pops when the card is well on screen */
 .fails .pop { position: relative; }
 .fails .pop > small, .fails .pop > b { position: relative; z-index: 1; }
