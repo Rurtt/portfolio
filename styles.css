@@ -529,7 +529,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); text-align: center; padding: 64px 20px 0; }
 .words p { font: 700 clamp(40px, 7.5vw, 112px)/1.1 var(--display); color: var(--text); }
 .words .w-fall { color: #ff5a5a; }
-.words .w-back { font: 600 clamp(22px, 2.6vw, 36px)/1.4 var(--display); color: var(--text-2); }
+.words .w-back { font: 600 clamp(30px, 4vw, 56px)/1.3 var(--display); color: var(--text-2); }
 .words .w-rise { color: var(--volt); }
 @supports (animation-timeline: view()) {
   .words .w-back { animation: back-dim linear both; animation-timeline: --words; animation-range: contain 22% contain 32%; }
@@ -562,8 +562,8 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .wf-intro .chips { justify-content: center; }
 .wf { display: grid; }
 .wf-step { display: grid; gap: 24px; padding: 48px 0; }
-.wf-step .eyebrow { font-size: 16px; }
-.wf-step h3 { font-size: clamp(28px, 3.4vw, 44px); line-height: 1.2; margin-top: 12px; }
+.wf-step .eyebrow { font: 700 clamp(36px, 4.6vw, 64px)/1.1 var(--display); letter-spacing: 0; }
+.wf-step h3 { font-size: clamp(24px, 2.6vw, 34px); line-height: 1.25; margin-top: 16px; }
 .wf-step .btn { margin-top: 26px; }
 .wf-m img { width: 100%; border-radius: 16px; border: 1px solid var(--line-2); object-fit: contain; }
 .wf-stat { display: grid; place-content: center; text-align: center; min-height: 280px; padding: 32px 24px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 16px; }
