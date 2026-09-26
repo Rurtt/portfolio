@@ -402,7 +402,12 @@
         heroEl.classList.remove("hot");
       });
     }
-    if (doc.classList.contains("intro")) {
+    // fonts load without blocking paint now, so wait for them + the portrait before measuring and playing (as in 63867cb); cap the wait
+    const ready = Promise.race([
+      Promise.all([document.fonts ? document.fonts.ready : 0, card.querySelector(".char img").decode().catch(() => {})]),
+      new Promise((r) => setTimeout(r, 2500)),
+    ]);
+    if (doc.classList.contains("intro")) ready.then(() => {
       try { sessionStorage.setItem("intro", "1"); } catch {}
       const flip = card.querySelector(".flip");
       const lvText = card.querySelector(".lv").lastChild, lv = +lvText.textContent;
@@ -466,7 +471,7 @@
         doc.classList.remove("intro", "go");
         evs.forEach((ev) => removeEventListener(ev, skip));
       });
-    }
+    });
   }
 
   // ---------- WordFlow chapter: wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
