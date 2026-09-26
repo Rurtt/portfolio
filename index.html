@@ -222,20 +222,18 @@
     <section class="block" id="side-quests">
       <div class="container">
         <div class="sec-head reveal">
-          <div><p class="eyebrow">Side Quests</p><h2>ระหว่างทาง เก็บของมาเรื่อย&nbsp;ๆ</h2></div>
-          <p>เรียงตามความหายาก กดเพื่อดูบันทึกภารกิจ</p>
-        </div>
-        <div id="side-list" class="side-list"></div>
-        <details class="tl-all" id="timeline-sec">
-          <summary class="btn btn-ghost">ดูทั้งหมด · ไทม์ไลน์ภารกิจ <svg aria-hidden="true"><use href="#i-arrow"/></svg></summary>
-        <div class="filters" role="group" aria-label="กรองตามความหายาก">
+          <div><p class="eyebrow">Side Quests</p><h2>ระหว่างทาง <span class="nw">เก็บของมาเรื่อย&nbsp;ๆ</span></h2></div>
+          <div class="filters" role="group" aria-label="กรองตามความหายาก">
             <button type="button" class="filter is-on" data-filter="all" aria-pressed="true">ทั้งหมด</button>
             <button type="button" class="filter rar-legendary" data-filter="legendary" aria-pressed="false">Legendary</button>
             <button type="button" class="filter rar-epic" data-filter="epic" aria-pressed="false">Epic</button>
             <button type="button" class="filter rar-rare" data-filter="rare" aria-pressed="false">Rare</button>
           </div>
         </div>
-        <div id="timeline" class="timeline"></div>
+        <div id="side-list" class="side-list"></div>
+        <details class="tl-all" id="timeline-sec">
+          <summary class="btn btn-ghost">ดูทั้งหมด · ไทม์ไลน์ภารกิจ <svg aria-hidden="true"><use href="#i-arrow"/></svg></summary>
+          <div id="timeline" class="timeline"></div>
         </details>
       </div>
     </section>

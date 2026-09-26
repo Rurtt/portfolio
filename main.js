@@ -37,7 +37,7 @@
     document.querySelectorAll(".filter").forEach((btn) => btn.addEventListener("click", () => {
       const f = btn.dataset.filter;
       document.querySelectorAll(".filter").forEach((b) => { const on = b === btn; b.classList.toggle("is-on", on); b.setAttribute("aria-pressed", on); });
-      tl.querySelectorAll(".tl-item").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
+      document.querySelectorAll(".tl-item, #side-list .mq-card").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
       tl.querySelectorAll(".tl-year").forEach((y) => { y.hidden = !tl.querySelector(`.tl-item[data-year="${y.dataset.year}"]:not([hidden])`); });
     }));
   }
@@ -47,7 +47,7 @@
   if (side) {
     const CH = ["rov", "posn", "zeitop", "wordflow"], ORDER = { legendary: 0, epic: 1, rare: 2 };
     side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
-      <a class="mq-card rar-${q.rarity} sheen reveal" href="quest.html?q=${q.id}">
+      <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
         <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
         <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">
