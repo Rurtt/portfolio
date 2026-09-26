@@ -525,7 +525,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 }
 .chapter .btn { margin-top: 26px; }
 /* transition words: pinned. Beat 1 = lead-in alone (the pause), then each line fades in as you scroll */
-.words { height: 340svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
+.words { height: 290svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
 .words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); text-align: center; padding: 64px 20px 0; }
 .words p { font: 700 clamp(40px, 7.5vw, 112px)/1.1 var(--display); color: var(--text); }
 .words .w-fall { color: #ff5a5a; }
