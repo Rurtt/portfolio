@@ -518,6 +518,10 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .chapter .ch-sub { font-size: clamp(20px, 1.9vw, 26px); }
 .ch-comeback .chip { font-size: 15px; padding: 9px 13px; }
 .ch-comeback .ch-sub { font-size: clamp(19px, 1.65vw, 23px); }
+@media (max-width: 560px) {
+  .chapter .chip, .ch-comeback .chip { font-size: 15px; padding: 8px 12px; }
+  .ch-mark { font-size: 16px; letter-spacing: 0.16em; line-height: 1.4; }
+}
 .chapter .btn { margin-top: 26px; }
 /* transition words: pinned, each line lights up as you scroll through */
 .words { height: 240svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
@@ -621,7 +625,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .filter:hover { border-color: var(--rc, var(--volt)); }
 .filter.is-on { background: var(--rc, var(--volt)); border-color: var(--rc, var(--volt)); color: var(--on-accent); }
 /* touch: nav links + filters reach the 44px tap target (nav band is 64px, so the links still fit) */
-@media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .filter { min-height: 44px; } }
+@media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .filter, .copy { min-height: 44px; } .p-bar button { min-width: 44px; min-height: 44px; } }
 .tl-item[hidden], .tl-year[hidden] { display: none; }
 
 /* side quest cards */
