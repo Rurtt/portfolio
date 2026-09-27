@@ -84,13 +84,6 @@
     },
     lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.08, i * 0.045, 2600, 2600, 3); kick(0.3, 0.14, 140, 60, 0.2); noise(0.06, 0.07, 0.3, 1200); },
     stop: () => { kick(0, 0.17, 200, 70, 0.14); noise(0.04, 0.09, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
-    // game start (Ch.1): tape pushed in = plastic slide, click-clack, latch clunk, then the motor spins up
-    tape: () => {
-      noise(0.16, 0.05, 0, 1800, 2600, 3);
-      noise(0.02, 0.12, 0.17, 3000, 3000, 2); noise(0.02, 0.1, 0.23, 2200, 2200, 2);
-      tone(180, 0.25, 0.08, "square", 0.05, 120); noise(0.05, 0.08, 0.25, 700, 700, 1.5);
-      tone(90, 0.4, 0.5, "sawtooth", 0.015, 140); noise(0.5, 0.02, 0.4, 400, 600, 2);
-    },
     // Ch.2 battery: soft thud, not a jump scare
     boom: () => { noise(0.45, 0.056, 0, 600, 120); tone(85, 0, 0.35, "sine", 0.056, 45); },
     coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
@@ -650,8 +643,8 @@
     // chapter track: each chapter holds HOLD svh of scroll, then the next one spends PAN svh entering its own way (data-tx, CSS)
     const HOLD = 45, PAN = 45, track = $(".htrack"), chs = track ? [...track.querySelectorAll(".chapter")] : [];
     if (track) track.style.setProperty("--th", HOLD * chs.length + PAN * (chs.length - 1) + "svh");
-    // a chapter's beats (.go) play once, when it lands; its data-sfx with them
-    const land = (s) => { if (s.classList.contains("go")) return; s.classList.add("go"); sfx(s.dataset.sfx); };
+    // chapter beats are scrubbed by --h (0-1 through the chapter); a chapter's data-sfx plays when --h passes 0.3 going forward
+    const hold = (s, h) => { s.style.setProperty("--h", h.toFixed(3)); if (h >= 0.3 && (s.h ?? 1) < 0.3) sfx(s.dataset.sfx); s.h = h; };
     let q = 0, ys = null;
     const run = () => {
       q = 0;
@@ -662,9 +655,14 @@
         c.y0 = k > 0 && k < 1 ? k * vh * 0.3 : 0;
         c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.04).toFixed(4)})` : "";
         c.style.setProperty("--k", c.y0 ? k.toFixed(3) : 0);
+        c.nextElementSibling.style.setProperty("--kin", k.toFixed(3)); // how far the next panel has risen (Main Quest 2 widens with it)
       });
       if (!track) return;
-      if (calm || !big.matches) { ys = null; return chs.forEach((s) => s.classList.remove("cur", "nxt")); }
+      if (calm || !big.matches) {
+        ys = null;
+        // no pinned stage: --h runs while the chapter crosses the screen
+        return chs.forEach((s) => { s.classList.remove("cur", "nxt"); const r = s.getBoundingClientRect(); hold(s, calm ? 1 : Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (vh * 0.7)))); });
+      }
       const top = hud ? hud.getBoundingClientRect().bottom : 0, goal = (top - track.getBoundingClientRect().top) / (vh / 100);
       // ease toward the scroll position instead of snapping to it: wheel notches become one smooth glide
       ys = ys == null || Math.abs(goal - ys) > 150 ? goal : ys + (goal - ys) * 0.14;
@@ -678,14 +676,11 @@
         s.style.setProperty("--in", j === i + 1 ? t.toFixed(4) : 0);
         if (j === i && chs[j + 1]) s.dataset.leave = chs[j + 1].dataset.tx; else delete s.dataset.leave;
       });
-      if (y > -15 && y < HOLD * chs.length + PAN * (chs.length - 1) + 60) land(t > 0.85 ? chs[i + 1] : chs[i]);
+      chs.forEach((s, j) => hold(s, j < i ? 1 : j > i ? 0 : Math.min(1, Math.max(0, local / HOLD))));
     };
     addEventListener("scroll", () => { if (!q) q = requestAnimationFrame(run); }, { passive: true });
     addEventListener("resize", run);
     run();
-    // phones / short screens / reduced motion: no pinned stage, so a chapter lands when a third of it is on screen
-    const seen = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting && (calm || !big.matches)) land(e.target); }), { threshold: 0.35 });
-    chs.forEach((s) => seen.observe(s));
   }
 
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
