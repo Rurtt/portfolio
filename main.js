@@ -104,20 +104,19 @@
     },
     // pack intro: foil tearing, then a stadium walkout: riser > hit (kick + crack + brass stab), each beat a step higher
     tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
-    riser: (big) => { const d = big ? 0.6 : 0.5; noise(d, big ? 0.12 : 0.08, 0, 300, 9000, 0.8); tone(180, 0, d, "sawtooth", big ? 0.03 : 0.02, big ? 1400 : 900); },
+    // all treble, no bass (user): each beat a step higher, the card reveal highest
+    riser: (big) => { const d = big ? 0.6 : 0.5; noise(d, big ? 0.07 : 0.05, 0, 2000, 10000, 0.8); tone(700, 0, d, "triangle", big ? 0.03 : 0.02, big ? 2800 : 2000); },
     beat: (i = 0) => {
-      const r = [110, 131, 165][i % 3];
-      kick(0, 0.22);
-      noise(0.14, 0.11, 0, 3000, 900, 0.7);
-      stab([r, r * 1.5, r * 2, r * 3], 0, 0.8, 0.05);
-      noise(1.1, 0.05, 0.05, 900, 400, 0.5); // crowd rumble tail
+      const r = [659, 880, 1175][i % 3];
+      noise(0.1, 0.07, 0, 7000, 4000, 1);
+      stab([r, r * 1.5, r * 2], 0, 0.7, 0.05, 9000, 2500);
+      tone(r * 2, 0.02, 0.5, "sine", 0.04);
     },
     reveal: () => {
-      kick(0, 0.25, 170, 35, 0.8);
-      noise(0.2, 0.14, 0, 4000, 1000, 0.7);
-      stab([220, 277, 330, 440, 554, 659], 0, 1.8, 0.06, 5000, 500);
-      noise(1.8, 0.05, 0.02, 700, 1500, 0.4); // crowd roar swells up
-      arp([1319, 1568, 1976, 2637, 3136], 0.07, "sine", 0.04, 0.15);
+      noise(0.15, 0.08, 0, 9000, 5000, 1);
+      stab([1319, 1661, 1976, 2637], 0, 1.4, 0.05, 11000, 3000);
+      arp([1976, 2637, 3136, 3951], 0.07, "sine", 0.04, 0.1);
+      noise(1.2, 0.025, 0.1, 9000, 7000, 1); // sparkle tail
     },
     // real slot machine: reels rattle high-low-high-low and slow down, each reel lands with a clunk, then the bell rings with coins dropping
     spin: (len = 1.8) => {
@@ -762,7 +761,7 @@
     const covers = [...document.querySelectorAll(".cover")];
     const curtain = (vh) => covers.forEach((c) => {
       const k = calm ? 0 : Math.min(1, Math.max(0, (vh - (c.getBoundingClientRect().bottom - (c.y0 || 0))) / vh));
-      if (k > 0.02 && !c.hit) sfx("curtain");
+      if (k > 0.02 && !c.hit && !c.hasAttribute("data-hush")) sfx("curtain");
       c.hit = k > 0.02;
       // fully covered (or not yet) = no transform, so #anchors from the nav still land on the real layout position
       c.y0 = k > 0 && k < 1 ? k * vh * 0.45 : 0;
