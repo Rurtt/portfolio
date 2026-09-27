@@ -684,7 +684,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .ch-quote::before { content: ""; position: absolute; left: -3px; top: 0; bottom: 0; width: 3px; background: var(--ch); transform-origin: top; }
 /* ch.4: the one kept beat: gold shine sweeps across "ได้เหรียญทอง" */
 .gold-shine { padding: 0.25em 0; background: linear-gradient(100deg, var(--legendary) 30%, #fffdf2 47%, #ffffff 50%, #fffdf2 53%, var(--legendary) 70%) 100% 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
-.js .ch-copy.in .gold-shine { animation: goldsweep 1.4s 0.5s ease-in-out both; }
+.js .ch-comeback.go .gold-shine { animation: goldsweep 1.4s 0.5s ease-in-out both; }
 @keyframes goldsweep { from { background-position: 100% 0; } 50% { filter: drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); } to { background-position: 0 0; } }
 
 .ch-now .ch-media { border-radius: 20px; overflow: hidden; }
@@ -864,4 +864,36 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
   .js .htrack .cur[data-leave="scan"]::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--out) * 100%); height: 3px; z-index: 9; background: #3ee8ff; box-shadow: 0 0 24px 4px rgba(62, 232, 255, 0.7); }
 }
 @media (prefers-reduced-motion: reduce) { .cover::after { display: none; } }
-@media (min-width: 861px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) { .js .htrack .chapter:not(.cur) .gold-shine { animation: none; } } /* shine when Ch.4 takes the stage, not while it waits hidden */
+
+/* chapter beats: 1-2 per chapter, each plays once when its chapter lands (.go from main.js). Transitions not counted */
+/* Ch.1: the photo switches on like an old TV */
+.js .ch-gamer.go .ch-media { animation: tv-on 0.7s var(--ease) both; }
+@keyframes tv-on { 0% { transform: scale(0.9, 0.006); filter: brightness(3); } 45% { transform: scale(1, 0.006); filter: brightness(3); } 100% { transform: none; filter: none; } }
+/* Ch.2: battery burst pops behind "แบตระเบิด" and the card jolts */
+.fails .boom { position: relative; }
+.fails .boom > small, .fails .boom > b { position: relative; z-index: 1; }
+.burst { position: absolute; right: -28px; top: 50%; width: clamp(120px, 12vw, 170px); height: auto; margin-top: calc(clamp(120px, 12vw, 170px) / -2); pointer-events: none; filter: drop-shadow(0 0 24px rgba(255, 90, 90, 0.55)); }
+@media (max-width: 860px) { .burst { right: -10px; } }
+.ch-fall { overflow-x: clip; }
+.js .ch-fall:not(.go) .burst { transform: scale(0) rotate(-40deg); }
+.js .ch-fall.go .burst { animation: burst 0.42s 0.35s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+.js .ch-fall.go .boom { animation: jolt 0.36s 0.43s both; }
+@keyframes burst { 0% { transform: scale(0) rotate(-40deg); } 60% { transform: scale(1.35) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes jolt { 0%, 100% { transform: none; background: var(--panel); } 20% { transform: translateX(-7px); background: #3a1418; } 45% { transform: translateX(6px); } 70% { transform: translateX(-3px); } }
+/* Ch.3: photo goes gray to color, the quote bar fills */
+.js .ch-posn:not(.go) .ch-media img { filter: grayscale(1) brightness(0.75); }
+.js .ch-posn.go .ch-media img { animation: colorize 1.2s 0.2s ease-out both; }
+@keyframes colorize { from { filter: grayscale(1) brightness(0.75); } to { filter: none; } }
+.js .ch-posn:not(.go) .ch-quote::before { transform: scaleY(0); }
+.js .ch-posn.go .ch-quote::before { animation: barfill 0.8s 0.9s var(--ease) both; }
+@keyframes barfill { from { transform: scaleY(0); } }
+/* Ch.4: gold shine on the headline (existing), team photo pulses gold */
+.js .ch-comeback.go .duo img:nth-child(2) { animation: goldpulse 1.3s 1s ease-out both; }
+@keyframes goldpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0.85); border-color: var(--legendary); } 60% { border-color: var(--legendary); } 100% { box-shadow: 0 0 0 22px rgba(245, 197, 66, 0); } }
+/* Ch.5: cyan scan sweeps the photo, then "อันดับ 8" glitches in */
+.ch-now .ch-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(180deg, transparent 0 44%, rgba(62, 232, 255, 0.28) 49%, #3ee8ff 50%, transparent 51%) 0 0 / 100% 200% no-repeat, repeating-linear-gradient(0deg, rgba(62, 232, 255, 0.07) 0 2px, transparent 2px 4px); }
+.js .ch-now.go .ch-media::after { animation: scan 1.3s 0.2s ease-in-out both; }
+@keyframes scan { 0% { opacity: 1; background-position: 0 100%, 0 0; } 85% { opacity: 1; } 100% { opacity: 0; background-position: 0 -100%, 0 0; } }
+.js .ch-now.go h2 .cyber { animation: glitch 0.6s 1.1s steps(1) both; }
+@keyframes glitch { 0% { opacity: 0; } 15% { opacity: 1; transform: translateX(-4px); text-shadow: 3px 0 #ff2bd6, -3px 0 #3ee8ff; } 35% { transform: translateX(3px); text-shadow: -3px 0 #ff2bd6, 3px 0 #3ee8ff; } 55% { opacity: 0.4; transform: none; } 70% { opacity: 1; transform: translateX(-2px); text-shadow: 2px 0 #ff2bd6, -2px 0 #3ee8ff; } 100% { opacity: 1; transform: none; text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); } }
+@media (prefers-reduced-motion: reduce) { .js .chapter:not(.go) .burst { transform: none; } .js .ch-posn:not(.go) .ch-media img { filter: none; } .js .ch-posn:not(.go) .ch-quote::before { transform: none; } }
