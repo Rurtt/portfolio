@@ -66,6 +66,22 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .nav-links a { white-space: nowrap; padding: 12px 10px; font-size: 14px; }
 }
 
+/* HUD: game-style nav. LV + XP bar = scroll progress; icons + labels, icons only on phones */
+.hud .container { justify-content: flex-start; }
+.hud-lv { font: 700 15px/1 var(--display); color: var(--volt); white-space: nowrap; }
+.xp { flex: 1; min-width: 40px; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.xp i { display: block; height: 100%; background: linear-gradient(90deg, var(--volt), var(--legendary)); transform: scaleX(0); transform-origin: left; }
+.hud .nav-links a { display: flex; align-items: center; gap: 6px; }
+.hud .nav-links svg { width: 18px; height: 18px; flex: none; }
+.hud .nav-links a[aria-current="true"] { color: var(--volt); background: var(--volt-dim); }
+@media (max-width: 760px) {
+  .hud-lv { display: none; }
+  .xp { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 0; min-width: 0; }
+  .hud .nav-links { margin-left: auto; }
+  .hud .nav-links a { min-width: 44px; justify-content: center; }
+  .hud .nav-links a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
 /* buttons & chips */
 .btn {
   display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px;

@@ -484,6 +484,21 @@
     media[0].classList.add("on");
   }
 
+  // ---------- HUD: XP bar = scroll progress; link of the section in mid-screen gets aria-current ----------
+  const hud = $(".hud");
+  if (hud) {
+    const bar = $(".xp i", hud), links = [...hud.querySelectorAll(".nav-links a")];
+    let tick = 0;
+    const fill = () => { tick = 0; const h = document.documentElement; bar.style.transform = `scaleX(${h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)})`; };
+    addEventListener("scroll", () => { if (!tick) tick = requestAnimationFrame(fill); }, { passive: true });
+    fill();
+    const cur = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => (a.hash === "#" + e.target.id ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current")));
+    }), { rootMargin: "-45% 0px -50% 0px" });
+    links.forEach((a) => { const t = document.getElementById(a.hash.slice(1)); if (t) cur.observe(t); });
+  }
+
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
   const els = document.querySelectorAll(".reveal");
   if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
