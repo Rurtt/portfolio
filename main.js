@@ -1,7 +1,11 @@
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   // *word* in data.js = highlight. Only for trusted site text, never attributes.
-  const hl = (s) => esc(s).replace(/\*(.+?)\*/g, '<b class="hl">$1</b>');
+  // Thai has no spaces between words, so browsers may wrap mid-word (ผู้|ใช้). Each space-separated phrase up to 20 chars
+  // is one unit (.ph) that only wraps inside itself if wider than the line; longer ones wrap normally. KEEP words never split. *x* = highlight.
+  // ponytail: compound words the line breaker splits in our copy (found by a wrap audit at 320-1920px); add more if new text breaks badly
+  const KEEP = /ผลงาน|ตรงไหน|พร้อมกัน|ร่วมกัน|โปรดักต์|โปรเจกต์|เสียบสาย|เวลาจำกัด|ผู้ใช้|ผู้ปกครอง|ผู้เชี่ยวชาญ|ต่างระบบ|ตัวแอป|ปัญหาจริง|ใช้จริง|ประเทศไทย|วิธีคิด|ทันที|เขียนโค้ด|บทบาท|เปิดแอป|ผจญภัย|มหาวิทยาลัย|ยากกว่า|ส่งงาน|เป้าหมาย|โครงงาน|ขั้นตอน|ความ(?:พยายาม|กดดัน|คาดหวัง)|ครั้งแรก|หน่วยเสียง|สิ่งจำเป็น|ต่างคนต่างทำ|คุณค่า|ลูกค้า|ข้อมูล|ละเอียดอ่อน|มิตรภาพ|จริงจัง|ใช้ได้จริง|แผนสำรอง|หลายส่วน|กลับบ้าน/g;
+  const hl = (s) => esc(s).split(/ (?=(?:[^*]*\*[^*]*\*)*[^*]*$)/).map((c) => ((c = c.replace(KEEP, '<span class="nw">$&</span>'), c.replace(/<[^>]+>/g, "").length <= 20 ? `<span class="ph">${c}</span>` : c)).replace(/\*(.+?)\*/g, '<b class="hl">$1</b>')).join(" ").replace(/\n/g, "<br>");
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const RAR = { legendary: "Legendary", epic: "Epic", rare: "Rare" };
@@ -24,7 +28,7 @@
             <div>
               <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span>${q.hero ? '<span class="rar main">Main Quest</span>' : ""}</div>
               <h3>${esc(q.title)}</h3>
-              <p class="event">${esc(q.event)}</p>
+              <p class="event">${hl(q.event)}</p>
               <p class="result">${hl(q.result)}</p>
             </div>
             ${arrow}
@@ -53,7 +57,7 @@
         <div class="mq-card-body">
           <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
           <h3>${esc(q.title)}</h3>
-          <span class="mq-ev">${esc(q.event)}</span>
+          <span class="mq-ev">${hl(q.event)}</span>
           <p>${hl(q.result)}</p>
         </div>
       </a>`).join("");
@@ -144,7 +148,7 @@
       const q = Q[i], newer = Q[i - 1], older = Q[i + 1];
       document.title = `${q.title} · ธนราชันย์ สุวรรณศรี`;
       root.classList.add(`rar-${q.rarity}`);
-      const li = (arr) => arr.map((t) => `<li>${esc(t)}</li>`).join("");
+      const li = (arr) => arr.map((t) => `<li>${hl(t)}</li>`).join("");
       // 2+ pictures and no video: cover becomes an arrow slideshow instead of a screenshot grid
       const pics = !q.video && q.gallery.length > 1 ? q.gallery : null;
       const when = q.duration ? `${q.date} · ${q.duration}` : q.date;
@@ -158,8 +162,8 @@
               <div>
                 <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]} Quest</span>${q.main ? '<span class="rar main">Main Quest</span>' : ""}</div>
                 <h1>${esc(q.title)}</h1>
-                <p class="event">${esc(q.event)}</p>
-                <p class="summary">${esc(q.summary)}</p>
+                <p class="event">${hl(q.event)}</p>
+                <p class="summary">${hl(q.summary)}</p>
                 ${q.live ? `<a class="btn btn-primary" href="${q.live}" target="_blank" rel="noopener">${q.liveLabel || "เปิดเว็บจริง"} ${back}</a>` : ""}
               </div>
               ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : pics ? `<div class="q-media"><div class="q-cover slides">
@@ -181,7 +185,7 @@
             <div>
               <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
               <div class="panel reveal"><h2>บทเรียน</h2><ul class="list">${li(q.loot)}</ul></div>
-              <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
+              <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${hl(q.note)}</p></div>
             </div>
           </div>
           ${pics ? '<div style="padding-bottom:64px"></div>' : `<h2 class="eyebrow" style="margin-bottom:16px">Screenshots · หลักฐาน</h2>

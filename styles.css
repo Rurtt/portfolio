@@ -513,6 +513,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .chapter h2 { font-size: clamp(34px, 5vw, 64px); line-height: 1.12; margin-top: 18px; }
 .ch-sub { color: var(--text-2); font-size: clamp(18px, 1.5vw, 21px); max-width: 40ch; margin-top: 16px; }
 .nw { white-space: nowrap; }
+.ph { display: inline-block; max-width: 100%; }
 .fails { display: grid; gap: 12px; margin-top: 24px; }
 .fails li { background: var(--panel); border: 1px solid var(--line-2); border-left: 3px solid var(--ch); border-radius: 12px; padding: 16px 20px; }
 .fails small { display: block; font: 700 13px/1 var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); }
@@ -556,6 +557,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .ch-now { --ch: #3ee8ff; background: radial-gradient(60% 50% at 30% 50%, rgba(62, 232, 255, 0.08), transparent 70%); }
 .ch-now .ch-media img { border-color: rgba(62, 232, 255, 0.5); box-shadow: 0 0 48px rgba(62, 232, 255, 0.18); }
 .cyber { color: var(--ch); text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); }
+@media (min-width: 861px) { .ch-now h2 { font-size: clamp(30px, 3.9vw, 50px); } } /* 2 lines on desktop, not 4 */
 .chip.cyber { color: var(--ch); border-color: rgba(62, 232, 255, 0.45); text-shadow: none; }
 .ch-sub b { color: var(--text); }
 .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
