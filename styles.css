@@ -184,7 +184,7 @@ html.intro { overflow: hidden; }
 .pk-pack small { position: absolute; inset: 12% 0 auto; font: 600 clamp(11px, 1.6vh, 14px) var(--display); letter-spacing: 0.3em; color: var(--on-accent); }
 .pk-pack b { position: absolute; inset: auto 0 14%; font: 700 clamp(24px, 5vh, 44px) var(--display); letter-spacing: 0.1em; color: var(--on-accent); }
 .pk-pack i { position: absolute; left: 50%; top: 50%; width: 42%; aspect-ratio: 1; translate: -50% -60%; rotate: 45deg; border: 3px solid var(--on-accent); border-radius: 8px; }
-.pk-hint { align-self: end; margin-bottom: max(28px, 7vh); font: 600 17px var(--display); color: var(--volt); animation: pk-blink 1.4s ease-in-out infinite; }
+.pk-hint { align-self: center; margin: 0; translate: 0 calc(min(72vw, 46vh) * 0.7 + 36px); /* always just under the pack: half the pack height (w * 7/5 / 2) + gap */ font: 600 17px var(--display); color: var(--volt); animation: pk-blink 1.4s ease-in-out infinite; }
 .pk-rays { position: absolute; left: 50%; top: 50%; margin: -110vmax 0 0 -110vmax; width: 220vmax; height: 220vmax; opacity: 0; pointer-events: none; background: repeating-conic-gradient(rgba(245, 197, 66, 0.15) 0 8deg, transparent 8deg 20deg); animation: pk-spin 14s linear infinite; }
 .pk-beat { display: grid; justify-items: center; gap: 18px; opacity: 0; pointer-events: none; text-align: center; padding: 0 16px; }
 .pk-beat strong { font: 700 clamp(80px, 22vw, 160px)/1 var(--display); color: var(--legendary); text-shadow: 0 0 40px rgba(245, 197, 66, 0.6); }
