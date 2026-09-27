@@ -19,6 +19,7 @@
     (function (d) {
       d.classList.add("js");
       try { if (!sessionStorage.getItem("intro") && !location.hash && scrollY === 0 && !matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("intro"); } catch (e) {}
+      setTimeout(function () { var k = document.getElementById("pack"); if (!k || k.hidden) d.classList.remove("intro"); }, 3000);
     })(document.documentElement);
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,7 +69,7 @@
   <main id="main" tabindex="-1">
     <!-- HERO -->
     <header class="hero" id="top">
-      <div class="pk" id="pack" role="dialog" aria-label="เปิดแพ็กการ์ดผู้เล่น" hidden>
+      <div class="pk" id="pack" role="dialog" aria-modal="true" aria-label="เปิดแพ็กการ์ดผู้เล่น" hidden>
         <button class="pk-skip" type="button">ข้าม ›</button>
         <i class="pk-rays" aria-hidden="true"></i>
         <button class="pk-pack" type="button"><small>PLAYER PACK </small><i aria-hidden="true"></i><b>RURTT</b></button>

@@ -361,7 +361,7 @@
     });
   });
 
-  // ---------- hero: holo tilt + first-visit tarot intro ----------
+  // ---------- hero: holo tilt + first-visit pack-opening intro ----------
   const heroEl = document.querySelector(".hero");
   if (heroEl) {
     const doc = document.documentElement;
@@ -395,7 +395,7 @@
       pk.hidden = false;
       const flip = $(".flip", card), OUT = "cubic-bezier(0.22, 1, 0.36, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
       const timers = [];
-      let stage = 0; // 0 sealed, 1 opening, 2 card shown, 3 leaving
+      let stage = 0, shown = null; // stage: 0 sealed, 1 opening, 2 card shown, 3 leaving; shown = centre pose the card was revealed at
       // card rect is in screen px, but translate runs inside body{zoom} on big screens, so divide by zoom (as the tarot did)
       const center = () => {
         const r = card.getBoundingClientRect(), z = parseFloat(getComputedStyle(document.body).zoom) || 1, vw = doc.clientWidth, vh = innerHeight;
@@ -404,7 +404,7 @@
       };
       const reveal = () => {
         stage = 2;
-        const c = center();
+        const c = (shown = center());
         doc.classList.add("go");
         pk.classList.add("revealed");
         card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
@@ -413,7 +413,7 @@
       };
       const enter = () => {
         if (stage === 3) return;
-        const from = stage === 2 ? center() : null;
+        const from = stage === 2 ? shown : null;
         stage = 3;
         timers.forEach(clearTimeout);
         doc.classList.add("go");
@@ -428,11 +428,19 @@
           $("#main").focus({ preventScroll: true });
         });
       };
-      const onKey = (e) => { if (e.key === "Escape") enter(); };
+      const onKey = (e) => {
+        if (e.key === "Escape") return enter();
+        if (e.key !== "Tab" || stage === 3) return;
+        const live = [$(".pk-skip", pk), stage === 0 && $(".pk-pack", pk), stage === 2 && $(".pk-enter", pk)].filter(Boolean);
+        const i = live.indexOf(document.activeElement);
+        e.preventDefault();
+        live[(i + (e.shiftKey ? -1 : 1) + live.length) % live.length].focus();
+      };
       $(".pk-pack", pk).addEventListener("click", () => {
         if (stage) return;
         stage = 1;
         pk.classList.add("opening");
+        $(".pk-skip", pk).focus(); // the pack bursts away; do not leave focus on an invisible button
         [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => pk.classList.add(c), t)));
         timers.push(setTimeout(reveal, 3550));
       });
@@ -484,7 +492,7 @@
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
-    if (slotM.classList.contains("seen")) roll(); else slotM.addEventListener("seen", roll, { once: true });
+    if (calm || slotM.classList.contains("seen")) roll(); else slotM.addEventListener("seen", roll, { once: true });
     $(".spin").addEventListener("click", roll);
   }
 
