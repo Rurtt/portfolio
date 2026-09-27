@@ -41,7 +41,7 @@
     document.querySelectorAll(".filter").forEach((btn) => btn.addEventListener("click", () => {
       const f = btn.dataset.filter;
       document.querySelectorAll(".filter").forEach((b) => { const on = b === btn; b.classList.toggle("is-on", on); b.setAttribute("aria-pressed", on); });
-      document.querySelectorAll(".tl-item, #side-list .qc").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
+      document.querySelectorAll(".tl-item, #side-list .mq-card").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
       tl.querySelectorAll(".tl-year").forEach((y) => { y.hidden = !tl.querySelector(`.tl-item[data-year="${y.dataset.year}"]:not([hidden])`); });
     }));
   }
@@ -50,11 +50,16 @@
   const side = $("#side-list");
   if (side) {
     const CH = ["rov", "posn", "zeitop", "ctf", "wordflow", "docode"], ORDER = { legendary: 0, epic: 1, rare: 2 };
-    side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q) => `
-      <a class="qc rar-${q.rarity} reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
-        <span class="qc-tier">${RAR[q.rarity]}</span><span class="qc-yr">${esc(q.year)}</span>
-        <div class="qc-pic${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="300"></div>
-        <div class="qc-info"><h3>${esc(q.title)}</h3><p>${hl(q.result)}</p></div>
+    side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
+      <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
+        <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
+        <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
+        <div class="mq-card-body">
+          <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
+          <h3>${esc(q.title)}</h3>
+          <span class="mq-ev">${hl(q.event)}</span>
+          <p>${hl(q.result)}</p>
+        </div>
       </a>`).join("");
   }
 
@@ -477,7 +482,7 @@
   if (reels) {
     const FACE = "1x,xxx", digits = FACE.replace(",", ""), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
     reels.innerHTML = [...FACE].map((c) => (c === "," ? '<span class="reel comma"><i><span>,</span></i></span>' : '<span class="reel"><i><span>0</span></i></span>')).join("");
-    const strips = [...reels.querySelectorAll(".reel:not(.comma) i")], job = $(".next-job");
+    const strips = [...reels.querySelectorAll(".reel:not(.comma) i")], job = $(".next-job"), machine = $(".slot-machine"), lever = $(".sm-lever");
     let pulse = 0;
     const roll = () => {
       strips.forEach((s, k) => {
@@ -488,21 +493,17 @@
       });
       clearTimeout(pulse);
       job.classList.remove("ping");
-      pulse = setTimeout(() => job.classList.add("ping"), calm ? 0 : 900 + 4 * 220);
+      machine.classList.remove("idle");
+      pulse = setTimeout(() => { job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
     if (calm || slotM.classList.contains("seen")) roll(); else slotM.addEventListener("seen", roll, { once: true });
-    $(".spin").addEventListener("click", roll);
-  }
-
-  // ---------- ZeiTop macropad: press order sets each key's delay; .go fires the sequence once ----------
-  const pad = $(".pad");
-  if (pad) {
-    const keys = pad.querySelectorAll(".key");
-    [0, 1, 4, 8, 6, 2, 7].forEach((k, i) => keys[k].style.setProperty("--k", i));
-    const once = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { once.disconnect(); pad.classList.add("go"); } }), { threshold: 0.6 });
-    once.observe(pad);
+    lever.addEventListener("click", () => {
+      lever.classList.remove("pull"); void lever.offsetWidth; // restart the pull animation on every pull
+      lever.classList.add("pull");
+      roll();
+    });
   }
 
   // ---------- HUD: XP bar = scroll progress; link of the section in mid-screen gets aria-current ----------
