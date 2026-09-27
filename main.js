@@ -518,6 +518,8 @@
     const stage = $(".wf-stage", wf), steps = [...wf.querySelectorAll(".wf-step")], media = steps.map((s) => $(".wf-m", s));
     const wide = matchMedia("(min-width: 861px)");
     const place = () => media.forEach((m, i) => (wide.matches ? stage.append(m) : steps[i].prepend(m)));
+    // each step is also a scroll scene (see "scroll scenes"): its media plays while the step crosses mid-screen, even when the media sits in the pinned stage
+    steps.forEach((s, i) => { s.classList.add("scene", "step"); s.media = media[i]; });
     place();
     wide.addEventListener("change", place);
     const vid = $("video", wf), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -590,7 +592,9 @@
   const scenes = [...document.querySelectorAll(".scene")];
   if (scenes.length) {
     const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, wide = matchMedia("(min-width: 861px) and (min-height: 600px)");
-    const parts = scenes.map((s) => [[...s.querySelectorAll("[data-at]")], [...s.querySelectorAll("[data-count]")]]);
+    const all = (s, q) => [...new Set([...s.querySelectorAll(q), ...(s.media ? s.media.querySelectorAll(q) : [])])];
+    const parts = scenes.map((s) => [all(s, "[data-at]"), all(s, "[data-count]")]);
+    const stageOn = matchMedia("(min-width: 861px)");
     const hs = $(".scene.hs"), track = $("#side-list");
     // side quests: vertical scroll distance = how far the card row overflows, so it slides exactly to its end
     const size = () => { if (hs) { const dx = wide.matches && !calm ? Math.max(0, track.scrollWidth - track.clientWidth) : 0; hs.style.setProperty("--dx", dx + "px"); } };
@@ -600,9 +604,12 @@
       const vh = innerHeight, top = hud ? hud.getBoundingClientRect().bottom : 0;
       scenes.forEach((s, i) => {
         const r = s.getBoundingClientRect(), pinned = s.classList.contains("pin") || s === hs;
-        const raw = calm ? 1 : pinned && wide.matches ? (top - r.top) / Math.max(1, r.height - vh + top) : (vh * 0.9 - r.top) / (vh * 0.75);
+        const raw = calm ? 1
+          : s.media ? (vh * (stageOn.matches ? 0.5 : 0.85) - r.top) / r.height // pinned-steps: 0 when the step reaches mid-screen (its media shows), 1 when it leaves
+          : pinned && wide.matches ? (top - r.top) / Math.max(1, r.height - vh + top) : (vh * 0.9 - r.top) / (vh * 0.75);
         const p = Math.min(1, Math.max(0, raw));
         s.style.setProperty("--p", p.toFixed(4));
+        if (s.media) s.media.style.setProperty("--p", p.toFixed(4));
         parts[i][0].forEach((b) => {
           const on = p >= +b.dataset.at;
           if (on === b.classList.contains("on")) return;

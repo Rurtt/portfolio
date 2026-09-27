@@ -945,12 +945,9 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .ga b { display: grid; place-items: center; min-width: 1.4em; height: 1.4em; border-radius: 10px; color: var(--on-accent); }
 .ga b:first-child { background: var(--volt); }
 .ga b:last-child { background: var(--legendary); }
-.js .ga b:first-child { transform: translateX(-60%); opacity: 0; }
-.js .ga b:last-child { transform: translateX(60%); opacity: 0; }
-.js .seen .ga b { animation: ga-join 0.8s var(--ease) 0.2s forwards; }
-@keyframes ga-join { 60% { opacity: 1; transform: none; margin: 0 4px; } to { opacity: 1; transform: none; margin: 0; } }
-.seen .ga b:first-child { border-radius: 10px 0 0 10px; }
-.seen .ga b:last-child { border-radius: 0 10px 10px 0; }
+/* tiles slide together as the step scrolls (--p from the step scene) */
+.js .ga b:first-child { --k: clamp(0, calc(var(--p) / 0.35), 1); transform: translateX(calc((1 - var(--k)) * -70%)); opacity: calc(0.2 + var(--k)); border-radius: 10px calc((1 - var(--k)) * 10px) calc((1 - var(--k)) * 10px) 10px; }
+.js .ga b:last-child { --k: clamp(0, calc(var(--p) / 0.35), 1); transform: translateX(calc((1 - var(--k)) * 70%)); opacity: calc(0.2 + var(--k)); border-radius: calc((1 - var(--k)) * 10px) 10px 10px calc((1 - var(--k)) * 10px); }
 @media (prefers-reduced-motion: reduce) { .js .ga b { animation: none !important; transform: none !important; opacity: 1 !important; } }
 
 
@@ -969,3 +966,72 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 @media (max-width: 480px) { .en-name .ign-line { display: block; } .en-name .sep { display: none; } } /* IGN on its own line, no orphan dot */
 @media (max-width: 340px) { .chapter h2 { font-size: 28px; } .ch-grid > * { min-width: 0; } } /* folded phones (280px): unbreakable Thai headline phrases must fit */
 @media (max-width: 600px) { .pk-sep { display: none; } .pk-beat small .nw { display: block; } } /* phones: POSITION / PRODUCT BUILDER on two clean lines */
+
+/* ============ MAIN QUEST STEPS as mini scenes: each .wf-step gets --p (0 when it reaches mid-screen, 1 when it leaves); its media (maybe in the pinned stage) gets the same --p + .on parts ============ */
+.js .wf-m [data-at] { transition: opacity 0.4s var(--ease), transform 0.5s var(--ease); }
+.js .wf-m [data-at]:not(.on) { opacity: 0; }
+.wf-m { --p: 0; }
+
+/* DoCode 1: browser window, URL types itself, load bar, page appears */
+.br { border-radius: 14px; overflow: hidden; border: 1px solid var(--line-2); background: #0e1117; box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7); }
+.br-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: #1a1f2a; border-bottom: 1px solid var(--line); }
+.br-bar > i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+.br-bar > i:nth-child(2) { background: #febc2e; }
+.br-bar > i:nth-child(3) { background: #28c840; }
+.br-url { flex: 1; margin-left: 10px; padding: 6px 12px; border-radius: 99px; background: #0b0e14; font: 500 clamp(12px, 1.1vw, 15px)/1.2 ui-monospace, Consolas, monospace; color: var(--text-2); white-space: nowrap; overflow: hidden; }
+.br-url b { font-weight: 500; display: inline-block; }
+.js .br-url b { clip-path: inset(0 calc(100% - clamp(0%, (var(--p) - var(--a)) / (var(--b) - var(--a)) * 100%, 100%)) 0 0); }
+.br-page { position: relative; aspect-ratio: 1552 / 753; background: repeating-linear-gradient(90deg, #121620 0 25%, #151a25 25% 50%); }
+.br-page img { border: 0 !important; border-radius: 0 !important; }
+.br-load { position: absolute; left: 0; top: 0; z-index: 1; height: 3px; width: 100%; background: var(--legendary); transform-origin: left; transform: scaleX(clamp(0, calc(var(--p) / 0.34), 1)); opacity: calc((1 - var(--p)) * 3); }
+
+/* DoCode 2: gray wireframe wipes away left to right = the site being built, then the phone version slides in */
+.dc-build { position: relative; }
+.skel { position: absolute; inset: 0; display: grid; grid-template-rows: 14% 38% 1fr 1fr; gap: 5%; padding: 5%; border-radius: 16px; background: #141923; border: 1px solid var(--line-2); clip-path: inset(0 0 0 clamp(0%, var(--p) / 0.45 * 100%, 100%)); }
+html:not(.js) .skel { display: none; }
+.skel b { border-radius: 8px; background: #212838; }
+.skel b:nth-child(2) { width: 70%; }
+.skel b:nth-child(3) { width: 90%; }
+.skel b:nth-child(4) { width: 55%; }
+.js .dc-phone[data-at]:not(.on) { transform: translate(30%, 20%) rotate(8deg); }
+
+/* DoCode 3: deploy terminal, progress bar, Ready, then the handoff photo */
+.dep { position: relative; aspect-ratio: 900 / 506; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); background: #07090d; }
+.dep img { position: absolute; inset: 0; height: 100%; object-fit: cover; border: 0 !important; border-radius: 0 !important; }
+.dep-term { position: absolute; inset: 0; display: grid; align-content: center; gap: 16px; padding: 8%; font: 600 clamp(15px, 1.5vw, 20px)/1.4 ui-monospace, Consolas, monospace; color: var(--text-2); transition: opacity 0.5s; }
+.dep-bar { height: 10px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.dep-bar i { display: block; height: 100%; background: var(--legendary); transform-origin: left; transform: scaleX(clamp(0, calc(var(--p) / 0.4), 1)); }
+.dep-ok { color: #7dffa8; font-size: 1.2em; }
+.dep:has(img.on) .dep-term { opacity: 0; }
+html:not(.js) .dep-term { display: none; }
+
+/* WordFlow 1: 14 kids fill in, one lights up */
+.kids { display: grid; grid-template-columns: repeat(7, 1fr); gap: clamp(8px, 1.2vw, 16px); width: min(420px, 90%); margin: 0 auto 22px; }
+.kids i { aspect-ratio: 3 / 4; opacity: clamp(0.15, calc(var(--p) * 40 - var(--i) * 1.2), 1); background: var(--line-2); -webkit-mask: radial-gradient(circle at 50% 22%, #000 21%, transparent 22%), radial-gradient(ellipse 42% 38% at 50% 100%, #000 98%, transparent 100%); mask: radial-gradient(circle at 50% 22%, #000 21%, transparent 22%), radial-gradient(ellipse 42% 38% at 50% 100%, #000 98%, transparent 100%); }
+html:not(.js) .kids i { opacity: 1; }
+.kids .me.on { opacity: 1; background: var(--volt); filter: drop-shadow(0 0 12px var(--volt)); animation: kid 0.6s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.js .kids .me:not(.on) { opacity: clamp(0.15, calc(var(--p) * 40 - var(--i) * 1.2), 1); }
+@keyframes kid { from { transform: scale(1.6); } }
+.js .wf-stat > b { transform: scale(calc(0.85 + clamp(0, (var(--p) - 0.5) * 6, 1) * 0.15)); opacity: calc(0.25 + clamp(0, (var(--p) - 0.45) * 6, 1)); }
+
+/* WordFlow 3: the kid reads ปลา, waveform plays across, AI marks each sound (IPA), /l/ missed */
+.voice { display: grid; justify-items: center; gap: 22px; padding: clamp(24px, 4vw, 44px) 20px; border-radius: 16px; background: radial-gradient(circle at 50% 30%, rgba(200, 245, 71, 0.08), transparent 60%), var(--panel); border: 1px solid var(--line-2); }
+.v-word { font: 700 clamp(56px, 7vw, 96px)/1.1 var(--body); color: var(--text); }
+.wave { display: flex; align-items: center; gap: 4px; height: 90px; width: min(460px, 100%); }
+.wave i { flex: 1; height: var(--h); border-radius: 3px; background: var(--line-2); transform-origin: center; }
+.js .wave i { background: color-mix(in srgb, var(--volt) calc(clamp(0, var(--p) * 110 - var(--i) * 3, 1) * 100%), var(--line-2)); }
+.voice:has(.bad.on) .wave i:nth-child(n+10):nth-child(-n+15) { background: #ff5a5a; }
+.phon { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; font: 700 clamp(18px, 1.8vw, 24px)/1 ui-monospace, Consolas, monospace; }
+.phon li { padding: 10px 14px; border-radius: 8px; color: var(--volt); background: var(--volt-dim); border: 1px solid rgba(200, 245, 71, 0.4); }
+.phon .bad { color: #ff7a7a; background: rgba(255, 90, 90, 0.12); border-color: rgba(255, 90, 90, 0.5); }
+.js .phon li:not(.on) { transform: translateY(12px); }
+.v-tip { font: 600 clamp(17px, 1.6vw, 21px)/1.3 var(--display); color: #ff9a9a; }
+
+/* WordFlow 4: dashboard scans in top to bottom, role tags pin on */
+.dash { position: relative; }
+.js .dash img { clip-path: inset(0 0 calc((1 - clamp(0, var(--p) / 0.4, 1)) * 100%) 0); }
+.tag { position: absolute; padding: 8px 14px; border-radius: 99px; font: 700 clamp(14px, 1.3vw, 17px)/1 var(--display); color: var(--on-accent); background: var(--volt); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
+.tag.t1 { top: 8%; right: -2%; }
+.tag.t2 { bottom: 10%; left: -2%; background: var(--legendary); }
+.js .tag:not(.on) { transform: scale(0.4); }
+@media (max-width: 860px) { .tag.t1 { right: 4%; } .tag.t2 { left: 4%; } }
