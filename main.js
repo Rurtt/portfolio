@@ -655,7 +655,7 @@
         c.y0 = k > 0 && k < 1 ? k * vh * 0.3 : 0;
         c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.04).toFixed(4)})` : "";
         c.style.setProperty("--k", c.y0 ? k.toFixed(3) : 0);
-        c.nextElementSibling.style.setProperty("--kin", k.toFixed(3)); // how far the next panel has risen (Main Quest 2 widens with it)
+        c.nextElementSibling.style.setProperty("--kin", k > 0 && k < 1 ? k.toFixed(3) : 1); // how far the next panel has risen (Main Quest 2 grows with it); full size when not moving
       });
       if (!track) return;
       if (calm || !big.matches) {
