@@ -493,6 +493,15 @@
     $(".spin").addEventListener("click", roll);
   }
 
+  // ---------- ZeiTop macropad: press order sets each key's delay; .go fires the sequence once ----------
+  const pad = $(".pad");
+  if (pad) {
+    const keys = pad.querySelectorAll(".key");
+    [0, 1, 4, 8, 6, 2, 7].forEach((k, i) => keys[k].style.setProperty("--k", i));
+    const once = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { once.disconnect(); pad.classList.add("go"); } }), { threshold: 0.6 });
+    once.observe(pad);
+  }
+
   // ---------- HUD: XP bar = scroll progress; link of the section in mid-screen gets aria-current ----------
   const hud = $(".hud");
   if (hud) {
