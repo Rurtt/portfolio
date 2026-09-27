@@ -54,12 +54,12 @@
     lp.frequency.setValueAtTime(cut0, t);
     lp.frequency.exponentialRampToValueAtTime(cut1, t + dur);
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(vol * 0.56, t + 0.015); // -5 dB: user found the hits too loud
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     lp.connect(g).connect(out);
     fs.forEach((f) => [-7, 7].forEach((c) => { const o = ac.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.detune.value = c; o.connect(lp); o.start(t); o.stop(t + dur + 0.02); }));
   };
-  const kick = (at = 0, vol = 0.3, f0 = 150, f1 = 38, dur = 0.5) => tone(f0, at, dur, "sine", vol, f1);
+  const kick = (at = 0, vol = 0.17, f0 = 150, f1 = 38, dur = 0.5) => tone(f0, at, dur, "sine", vol, f1);
   const NOTES = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093, 2349]; // combos climb this scale
   const SFX = {
     key: () => { noise(0.03, 0.05, 0, 3500); tone(1600 + Math.random() * 400, 0, 0.02, "square", 0.01); },
@@ -67,7 +67,7 @@
     blip: () => tone(880, 0, 0.06, "square", 0.03),
     note: (i = 0) => tone(NOTES[i % NOTES.length], 0, 0.16, "triangle", 0.05),
     err: () => tone(160, 0, 0.22, "sawtooth", 0.035, 100),
-    boom: () => { noise(0.45, 0.1, 0, 600, 120); tone(85, 0, 0.35, "sine", 0.1, 45); }, // soft thud, not a jump scare
+    boom: () => { noise(0.45, 0.056, 0, 600, 120); tone(85, 0, 0.35, "sine", 0.056, 45); }, // soft thud, not a jump scare
     over: () => arp([440, 370, 311, 262], 0.2, "triangle", 0.05),
     ok: () => arp([523, 659, 784, 1047], 0.08, "sine", 0.06),
     start: () => arp([660, 880], 0.09, "square", 0.03),
@@ -103,41 +103,41 @@
       o.stop(t + 0.52);
     },
     // pack intro: foil tearing, then a stadium walkout: riser > hit (kick + crack + brass stab), each beat a step higher
-    tear: () => { noise(0.55, 0.12, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
+    tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
     riser: (big) => { const d = big ? 0.6 : 0.5; noise(d, big ? 0.12 : 0.08, 0, 300, 9000, 0.8); tone(180, 0, d, "sawtooth", big ? 0.03 : 0.02, big ? 1400 : 900); },
     beat: (i = 0) => {
       const r = [110, 131, 165][i % 3];
-      kick(0, 0.4);
-      noise(0.14, 0.2, 0, 3000, 900, 0.7);
+      kick(0, 0.22);
+      noise(0.14, 0.11, 0, 3000, 900, 0.7);
       stab([r, r * 1.5, r * 2, r * 3], 0, 0.8, 0.05);
       noise(1.1, 0.05, 0.05, 900, 400, 0.5); // crowd rumble tail
     },
     reveal: () => {
-      kick(0, 0.45, 170, 35, 0.8);
-      noise(0.2, 0.25, 0, 4000, 1000, 0.7);
+      kick(0, 0.25, 170, 35, 0.8);
+      noise(0.2, 0.14, 0, 4000, 1000, 0.7);
       stab([220, 277, 330, 440, 554, 659], 0, 1.8, 0.06, 5000, 500);
-      noise(1.8, 0.09, 0.02, 700, 1500, 0.4); // crowd roar swells up
+      noise(1.8, 0.05, 0.02, 700, 1500, 0.4); // crowd roar swells up
       arp([1319, 1568, 1976, 2637, 3136], 0.07, "sine", 0.04, 0.15);
     },
     // real slot machine: reels rattle high-low-high-low and slow down, each reel lands with a clunk, then the bell rings with coins dropping
     spin: (len = 1.8) => {
       for (let t = 0, gap = 0.05, i = 0; t < len; t += gap, gap *= 1.04, i++) {
-        tone(i % 2 ? 660 : 440, t, 0.045, "square", 0.05);
-        noise(0.02, 0.07, t, 3200, 3200, 2);
+        tone(i % 2 ? 660 : 440, t, 0.045, "square", 0.028);
+        noise(0.02, 0.04, t, 3200, 3200, 2);
       }
     },
-    lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.14, i * 0.045, 2600, 2600, 3); kick(0.3, 0.25, 140, 60, 0.2); noise(0.06, 0.12, 0.3, 1200); },
-    stop: () => { kick(0, 0.3, 200, 70, 0.14); noise(0.04, 0.16, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
+    lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.08, i * 0.045, 2600, 2600, 3); kick(0.3, 0.14, 140, 60, 0.2); noise(0.06, 0.07, 0.3, 1200); },
+    stop: () => { kick(0, 0.17, 200, 70, 0.14); noise(0.04, 0.09, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
     payout: () => {
-      for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.09); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
+      for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.05); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
       for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
     },
-    curtain: () => { noise(0.7, 0.12, 0, 150, 1400, 0.5); kick(0.05, 0.18, 90, 40, 0.5); },
+    curtain: () => { noise(0.7, 0.07, 0, 150, 1400, 0.5); kick(0.05, 0.1, 90, 40, 0.5); },
     rankup: () => { arp([392, 523, 659, 784, 1047], 0.07, "sawtooth", 0.025); noise(0.6, 0.02, 0.3, 8000, 6000); },
     page: () => noise(0.18, 0.06, 0, 2500, 5500, 0.7),
     quest: () => { noise(0.45, 0.05, 0, 300, 2400, 0.6); arp([659, 784, 988, 1319], 0.1, "triangle", 0.05, 1.1); },
     invite: () => { tone(1175, 0, 0.25, "sine", 0.06); tone(1568, 0.14, 0.45, "sine", 0.06); },
-    slam: () => { tone(70, 0, 0.35, "sine", 0.1, 40); noise(0.2, 0.05, 0, 800, 200); },
+    slam: () => { tone(70, 0, 0.35, "sine", 0.056, 40); noise(0.2, 0.028, 0, 800, 200); },
   };
   const sfx = (name, i) => { if (sound && out && SFX[name]) try { SFX[name](i); } catch {} };
   const wake = () => {
@@ -206,7 +206,7 @@
   if (side) {
     const CH = ["rov", "posn", "zeitop", "ctf", "wordflow", "docode"], ORDER = { legendary: 0, epic: 1, rare: 2 };
     side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
-      <a class="mq-card rar-${q.rarity} sheen reveal" data-sfx="blip" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
+      <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
         <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
         <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">
@@ -704,7 +704,7 @@
   if (rl) {
     const n = (r) => Q.filter((q) => q.rarity === r).length;
     rl.innerHTML = [["Quests Cleared", Q.length, ""], ["Main Quests", 2, "gold"], ["Legendary", n("legendary"), "rar-legendary"], ["Epic", n("epic"), "rar-epic"], ["Rare", n("rare"), "rar-rare"]]
-      .map(([k, v, c], i) => `<div class="${c}" data-at="${(0.14 + i * 0.08).toFixed(2)}" data-sfx="blip"><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("");
+      .map(([k, v, c], i) => `<div class="${c}" data-at="${(0.14 + i * 0.08).toFixed(2)}"><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("");
   }
 
   // ---------- combos: a [data-seq="gap ms"] part lights its [data-n] children one by one when it turns on, each with a rising note (or data-seq-sfx);
@@ -754,7 +754,7 @@
     const type = (el, p) => {
       const [a, z] = el.dataset.type.split(",").map(Number), n = Math.round(el.gs.length * Math.min(1, Math.max(0, (p - a) / (z - a))));
       if (n === el.shown) return;
-      if (n > el.shown && el.shown >= 0) sfx("key");
+      if (n > el.shown && el.shown >= 0 && el.closest(".words")) sfx("key");
       el.shown = n;
       el.gs.forEach((g, i) => { g.classList.toggle("in", i < n); g.classList.toggle("cur", i === n - 1 && n < el.gs.length); });
     };
