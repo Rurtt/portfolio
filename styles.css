@@ -582,22 +582,14 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
   .ch-mark { font-size: 16px; letter-spacing: 0.16em; line-height: 1.4; }
 }
 .chapter .btn { margin-top: 26px; }
-/* transition words: pinned. Beat 1 = lead-in alone (the pause), then each line fades in as you scroll */
-.words { height: 290svh; position: relative; view-timeline-name: --words; border-bottom: 1px solid var(--line); }
-.words-stage { position: sticky; top: 0; height: 100svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); text-align: center; padding: 64px 20px 0; }
+/* transition words: one screen, no pinning. Once in view the three lines play by themselves one after another (less scrolling) */
+.words { position: relative; border-bottom: 1px solid var(--line); }
+.words-stage { min-height: 80svh; display: grid; place-content: center; gap: clamp(28px, 5svh, 48px); text-align: center; padding: 64px 20px; }
 .words p { font: 700 clamp(40px, 7.5vw, 112px)/1.1 var(--display); color: var(--text); }
 .words .w-fall { color: #ff5a5a; }
 .words .w-back { font: 600 clamp(30px, 4vw, 56px)/1.3 var(--display); color: var(--text-2); }
-.words .w-rise { color: var(--volt); }
-@supports (animation-timeline: view()) {
-  .words .w-back { animation: back-dim linear both; animation-timeline: --words; animation-range: contain 22% contain 32%; }
-  .words p { animation: line-in linear both; animation-timeline: --words; }
-  .words p:nth-of-type(1) { animation-range: contain 32% contain 46%; }
-  .words p:nth-of-type(2) { animation-range: contain 48% contain 62%; }
-  .words p:nth-of-type(3) { animation-range: contain 64% contain 78%; }
-  @keyframes back-dim { to { opacity: 0.45; } }
-  @keyframes line-in { from { opacity: 0; transform: translateY(24px); } }
-}
+.js .words p.reveal:nth-of-type(1) { transition-delay: 0.6s; }
+.js .words p.reveal:nth-of-type(2) { transition-delay: 1.3s; }
 
 /* chapter 1: big title */
 .chapter .ch-big { font-size: clamp(64px, 10vw, 140px); line-height: 0.95; letter-spacing: -0.02em; }
@@ -641,8 +633,8 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
   .js .wf-stage > .wf-m.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
   .js .wf-stage .wf-stat { min-height: 0; aspect-ratio: 16 / 10; max-height: 56svh; }
   .js .wf-stage img { max-height: 76svh; }
-  .js .wf-step { min-height: 90svh; align-content: center; padding: 0; }
-  .js .wf { margin-top: -18svh; }
+  .js .wf-step { min-height: 65svh; align-content: center; padding: 0; }
+  .js .wf { margin-top: -6svh; }
 }
 @media (max-width: 860px) { .wf-stage { display: none; } }
 
@@ -855,4 +847,15 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .wf-intro mark.volt { color: var(--volt); }
 @media (max-width: 480px) { .en-name .ign-line { display: block; } .en-name .sep { display: none; } } /* IGN on its own line, no orphan dot */
 @media (max-width: 340px) { .chapter h2 { font-size: 28px; } .ch-grid > * { min-width: 0; } } /* folded phones (280px): unbreakable Thai headline phrases must fit */
-@media (max-width: 600px) { .pk-sep { display: none; } .pk-beat small .nw { display: block; } } /* phones: POSITION / PRODUCT BUILDER on two clean lines */
+.pk-sep { display: none; } .pk-beat small .nw { display: block; } /* PB / POSITION / PRODUCT BUILDER: each on its own line */
+
+/* SFX toggle (HUD + pack) */
+.sfx-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line-2); background: transparent; color: var(--text-3); cursor: pointer; font: 600 13px/1 var(--display); letter-spacing: 0.1em; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+.sfx-btn svg { width: 18px; height: 18px; }
+.sfx-btn .w { opacity: 0; }
+.sfx-btn[aria-pressed="true"] { color: var(--volt); border-color: var(--volt); background: var(--volt-dim); }
+.sfx-btn[aria-pressed="true"] .w { opacity: 1; }
+.sfx-btn:hover { color: var(--text); }
+.pk-sfx { position: absolute; top: 16px; left: 16px; z-index: 3; min-height: 44px; border-radius: 99px; background: rgba(18, 22, 30, 0.8); font-size: 15px; letter-spacing: 0.04em; }
+@media (max-width: 1199px) { .hud .sfx-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .hud .sfx-btn { min-width: 44px; justify-content: center; position: relative; } }
+@media (pointer: coarse) { .sfx-btn { min-height: 44px; } }

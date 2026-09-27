@@ -13,6 +13,112 @@
   const Q = window.QUESTS || [];
   const T = (src) => src.replace("assets/", "assets/t/"); // 480px thumbnail of the same image
 
+  // ---------- SFX: tiny synth (Web Audio, no files). On by default (off-switch remembered); browsers only allow sound after the first tap/key,
+  // so the pack tap starts it. Only a few sounds: pack + walkout, slot machine, copy. One master gain + limiter so nothing jump-scares ----------
+  let ac = null, out = null, sound = true;
+  try { sound = localStorage.getItem("sfx") !== "0"; } catch {}
+  const tone = (f, at = 0, dur = 0.12, type = "square", vol = 0.05, f2 = f) => {
+    const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f, t);
+    o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(out);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  };
+  // filtered noise, band sweeps f0 -> f1 (tears, whooshes, shutters, crackle)
+  const noise = (dur = 0.3, vol = 0.08, at = 0, f0 = 1200, f1 = f0, q = 0.8) => {
+    const t = ac.currentTime + at, b = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(), bp = ac.createBiquadFilter(), g = ac.createGain();
+    s.buffer = b;
+    bp.type = "bandpass";
+    bp.Q.value = q;
+    bp.frequency.setValueAtTime(f0, t);
+    bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + Math.min(0.05, dur / 3));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(bp).connect(g).connect(out);
+    s.start(t);
+  };
+  const arp = (fs, gap = 0.08, type = "square", vol = 0.04, at = 0) => fs.forEach((f, i) => tone(f, at + i * gap, gap * 1.8, type, vol));
+  // brass-ish chord: two detuned saws per note through a lowpass that closes (walkout stabs)
+  const stab = (fs, at = 0, dur = 0.9, vol = 0.05, cut0 = 3200, cut1 = 350) => {
+    const t = ac.currentTime + at, lp = ac.createBiquadFilter(), g = ac.createGain();
+    lp.type = "lowpass";
+    lp.frequency.setValueAtTime(cut0, t);
+    lp.frequency.exponentialRampToValueAtTime(cut1, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol * 0.56, t + 0.015); // -5 dB: user found the hits too loud
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    lp.connect(g).connect(out);
+    fs.forEach((f) => [-7, 7].forEach((c) => { const o = ac.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.detune.value = c; o.connect(lp); o.start(t); o.stop(t + dur + 0.02); }));
+  };
+  const kick = (at = 0, vol = 0.17, f0 = 150, f1 = 38, dur = 0.5) => tone(f0, at, dur, "sine", vol, f1);
+  const SFX = {
+    // pack: foil tear, then walkout stingers, each beat a step higher (all treble, no bass); card reveal highest; card click = bright ting
+    tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
+    beat: (i = 0) => {
+      const r = [659, 880, 1175][i % 3];
+      noise(0.1, 0.07, 0, 7000, 4000, 1);
+      stab([r, r * 1.5, r * 2], 0, 0.7, 0.05, 9000, 2500);
+      tone(r * 2, 0.02, 0.5, "sine", 0.04);
+    },
+    reveal: () => {
+      noise(0.15, 0.08, 0, 9000, 5000, 1);
+      stab([1319, 1661, 1976, 2637], 0, 1.4, 0.05, 11000, 3000);
+      arp([1976, 2637, 3136, 3951], 0.07, "sine", 0.04, 0.1);
+      noise(1.2, 0.025, 0.1, 9000, 7000, 1);
+    },
+    ting: () => { stab([1319, 1976, 2637], 0, 0.9, 0.05, 11000, 4000); tone(2637, 0, 0.8, "sine", 0.05); },
+    // real slot machine: reels rattle high-low and slow down, each reel lands with a clunk, then the bell rings with coins dropping
+    spin: (len = 1.8) => {
+      for (let t = 0, gap = 0.05, i = 0; t < len; t += gap, gap *= 1.04, i++) {
+        tone(i % 2 ? 660 : 440, t, 0.045, "square", 0.028);
+        noise(0.02, 0.04, t, 3200, 3200, 2);
+      }
+    },
+    lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.08, i * 0.045, 2600, 2600, 3); kick(0.3, 0.14, 140, 60, 0.2); noise(0.06, 0.07, 0.3, 1200); },
+    stop: () => { kick(0, 0.17, 200, 70, 0.14); noise(0.04, 0.09, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
+    payout: () => {
+      for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.05); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
+      for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
+    },
+    coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
+  };
+  const sfx = (name, i) => { if (sound && out && SFX[name]) try { SFX[name](i); } catch {} };
+  const wake = () => {
+    if (!ac) {
+      const A = window.AudioContext || window.webkitAudioContext;
+      if (!A) return;
+      ac = new A();
+      const lim = ac.createDynamicsCompressor();
+      lim.threshold.value = -8;
+      lim.knee.value = 4;
+      lim.ratio.value = 12;
+      out = ac.createGain();
+      out.gain.value = 1.6; // user: everything was too quiet; the limiter still caps the loud hits
+      out.connect(lim).connect(ac.destination);
+    }
+    if (ac.state === "suspended") ac.resume();
+  };
+  const sfxBtns = document.querySelectorAll(".sfx-btn");
+  const paint = () => sfxBtns.forEach((b) => b.setAttribute("aria-pressed", sound));
+  sfxBtns.forEach((b) => b.addEventListener("click", () => {
+    sound = !sound;
+    try { localStorage.setItem("sfx", sound ? "1" : "0"); } catch {}
+    wake();
+    paint();
+    sfx("coin");
+  }));
+  // the audio context can only start on a real tap/key
+  ["pointerdown", "keydown"].forEach((ev) => addEventListener(ev, () => sound && wake(), { once: true, capture: true }));
+  paint();
+
   // ---------- home: timeline (newest first, grouped by year) ----------
   const tl = $("#timeline");
   if (tl) {
@@ -360,7 +466,7 @@
   document.querySelectorAll("[data-copy]").forEach((b) => {
     b.addEventListener("click", async () => {
       const old = b.textContent;
-      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; }
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; sfx("coin"); }
       catch { b.textContent = "คัดลอกไม่ได้"; }
       setTimeout(() => (b.textContent = old), 1500);
     });
@@ -412,6 +518,7 @@
         const c = (shown = center());
         doc.classList.add("go");
         pk.classList.add("revealed");
+        sfx("reveal");
         held = card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
         flip.animate([{ transform: "rotateY(180deg)" }, { transform: "rotateY(-360deg)" }], { duration: 900, easing: OUT });
         $(".pk-enter", pk).focus();
@@ -423,6 +530,7 @@
         timers.forEach(clearTimeout);
         doc.classList.add("go");
         pk.classList.add("pk-out");
+        sfx("ting");
         const moves = [$(".hero-copy", heroEl).animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 600, delay: from ? 300 : 0, easing: OUT, fill: "backwards" })];
         if (from) { held.cancel(); moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT })); }
         Promise.all(moves.map((a) => a.finished)).then(() => {
@@ -436,7 +544,7 @@
       const onKey = (e) => {
         if (e.key === "Escape") return enter();
         if (e.key !== "Tab" || stage === 3) return;
-        const live = [$(".pk-skip", pk), stage === 0 && $(".pk-pack", pk), stage === 2 && $(".pk-enter", pk)].filter(Boolean);
+        const live = [$(".pk-skip", pk), $(".pk-sfx", pk), stage === 0 && $(".pk-pack", pk), stage === 2 && $(".pk-enter", pk)].filter(Boolean);
         const i = live.indexOf(document.activeElement);
         e.preventDefault();
         live[(i + (e.shiftKey ? -1 : 1) + live.length) % live.length].focus();
@@ -445,8 +553,10 @@
         if (stage) return;
         stage = 1;
         pk.classList.add("opening");
+        wake();
+        sfx("tear");
         $(".pk-skip", pk).focus(); // the pack bursts away; do not leave focus on an invisible button
-        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => pk.classList.add(c), t)));
+        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c], i) => timers.push(setTimeout(() => { pk.classList.add(c); sfx("beat", i); }, t)));
         timers.push(setTimeout(reveal, 3550));
       });
       $(".pk-skip", pk).addEventListener("click", enter);
@@ -484,17 +594,22 @@
     reels.innerHTML = [...FACE].map((c) => (c === "," ? '<span class="reel comma"><i><span>,</span></i></span>' : '<span class="reel"><i><span>0</span></i></span>')).join("");
     const strips = [...reels.querySelectorAll(".reel:not(.comma) i")], job = $(".next-job"), machine = $(".slot-machine"), lever = $(".sm-lever");
     let pulse = 0;
+    let stops = [];
     const roll = () => {
+      stops.forEach(clearTimeout);
+      stops = [];
       strips.forEach((s, k) => {
         s.getAnimations().forEach((a) => a.cancel());
         s.innerHTML = ["0", ...Array.from({ length: 12 }, () => (Math.random() * 10) | 0), digits[k]].map((d) => `<span>${d}</span>`).join("");
         if (calm) { s.style.transform = "translateY(-13em)"; return; }
         s.animate([{ transform: "translateY(0)" }, { transform: "translateY(-13em)" }], { duration: 900 + k * 220, easing: "cubic-bezier(.15,.8,.25,1)", fill: "forwards" });
+        stops.push(setTimeout(() => sfx("stop"), 820 + k * 220));
       });
+      if (!calm) sfx("spin", 1.75);
       clearTimeout(pulse);
       job.classList.remove("ping");
       machine.classList.remove("idle");
-      pulse = setTimeout(() => { job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
+      pulse = setTimeout(() => { sfx("payout"); job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
@@ -502,6 +617,7 @@
     lever.addEventListener("click", () => {
       lever.classList.remove("pull"); void lever.offsetWidth; // restart the pull animation on every pull
       lever.classList.add("pull");
+      sfx("lever");
       roll();
     });
   }
