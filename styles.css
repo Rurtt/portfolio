@@ -960,7 +960,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .wf-intro mark.volt { color: var(--volt); }
 @media (max-width: 480px) { .en-name .ign-line { display: block; } .en-name .sep { display: none; } } /* IGN on its own line, no orphan dot */
 @media (max-width: 340px) { .chapter h2 { font-size: 28px; } .ch-grid > * { min-width: 0; } } /* folded phones (280px): unbreakable Thai headline phrases must fit */
-@media (max-width: 600px) { .pk-sep { display: none; } .pk-beat small .nw { display: block; } } /* phones: POSITION / PRODUCT BUILDER on two clean lines */
+.pk-sep { display: none; } .pk-beat small .nw { display: block; } /* PB / POSITION / PRODUCT BUILDER: each on its own line */
 
 /* ============ MAIN QUEST STEPS as mini scenes: each .wf-step gets --p (0 when it reaches mid-screen, 1 when it leaves); its media (maybe in the pinned stage) gets the same --p + .on parts ============ */
 .js .wf-m [data-at] { transition: opacity 0.4s var(--ease), transform 0.5s var(--ease); }
