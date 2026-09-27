@@ -88,6 +88,13 @@
       for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.05); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
       for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
     },
+    // game start (Ch.1): tape pushed in = plastic slide, click-clack, latch clunk, then the motor spins up
+    tape: () => {
+      noise(0.16, 0.05, 0, 1800, 2600, 3);
+      noise(0.02, 0.12, 0.17, 3000, 3000, 2); noise(0.02, 0.1, 0.23, 2200, 2200, 2);
+      tone(180, 0.25, 0.08, "square", 0.05, 120); noise(0.05, 0.08, 0.25, 700, 700, 1.5);
+      tone(90, 0.4, 0.5, "sawtooth", 0.015, 140); noise(0.5, 0.02, 0.4, 400, 600, 2);
+    },
     coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
   };
   const sfx = (name, i) => { if (sound && out && SFX[name]) try { SFX[name](i); } catch {} };
@@ -641,13 +648,13 @@
   const els = document.querySelectorAll(".reveal");
   if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); sfx(en.target.dataset.sfx); }
   }), { rootMargin: "0px 0px -8% 0px" });
   els.forEach((el) => io.observe(el));
 
   // story beats (e.g. battery boom) fire later, once well inside the screen, so the reader sees them happen
   const pop = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); pop.unobserve(en.target); }
+    if (en.isIntersecting) { en.target.classList.add("in"); pop.unobserve(en.target); sfx(en.target.dataset.sfx); }
   }), { rootMargin: "0px 0px -30% 0px" });
   document.querySelectorAll(".pop").forEach((el) => pop.observe(el));
 })();

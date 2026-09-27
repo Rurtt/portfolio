@@ -694,10 +694,10 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .js .ch-copy.in .gold-shine { animation: goldsweep 1.4s 0.5s ease-in-out both; }
 @keyframes goldsweep { from { background-position: 100% 0; } 50% { filter: drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); } to { background-position: 0 0; } }
 /* as the shine passes, the team photo (medals on) pulses gold once (echo of the hero badge pulse) */
-.js .duo.reveal.in img:nth-child(2) { animation: goldpulse 1.3s 1s ease-out both; }
+.js .duo.in img:nth-child(2) { animation: goldpulse 1.3s 1s ease-out both; }
 @keyframes goldpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0.85); border-color: var(--legendary); } 60% { border-color: var(--legendary); } 100% { box-shadow: 0 0 0 22px rgba(245, 197, 66, 0); } }
-.js .duo.reveal img { transition: opacity 0.6s var(--ease), transform 0.7s var(--ease); }
-.js .duo.reveal:not(.in) img { opacity: 0; transform: translateY(48px); }
+.js .duo img { transition: opacity 0.6s var(--ease), transform 0.7s var(--ease); }
+.js .duo:not(.in) img { opacity: 0; transform: translateY(48px); }
 .duo img:nth-child(2) { transition-delay: 0.15s; }
 .duo img:nth-child(3) { transition-delay: 0.3s; }
 
@@ -859,3 +859,30 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .pk-sfx { position: absolute; top: 16px; left: 16px; z-index: 3; min-height: 44px; border-radius: 99px; background: rgba(18, 22, 30, 0.8); font-size: 15px; letter-spacing: 0.04em; }
 @media (max-width: 1199px) { .hud .sfx-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .hud .sfx-btn { min-width: 44px; justify-content: center; position: relative; } }
 @media (pointer: coarse) { .sfx-btn { min-height: 44px; } }
+
+/* chapter worlds (minimal): each chapter has its own tint, and its photo enters its own way once when it scrolls in. No pinning, no extra scroll */
+.ch-gamer, .ch-posn, .ch-comeback, .ch-now { overflow-x: clip; } /* entrances start off-frame; never widen the page */
+.ch-gamer { --ch: var(--epic); background: radial-gradient(60% 55% at 30% 50%, rgba(183, 148, 255, 0.13), transparent 70%), #0b0912; }
+.ch-fall { background: radial-gradient(60% 55% at 30% 50%, rgba(255, 90, 90, 0.11), transparent 70%), #0e0707; }
+.ch-posn { --ch: var(--rare); background: radial-gradient(60% 55% at 30% 50%, rgba(111, 178, 255, 0.12), transparent 70%), #070b13; }
+.ch-comeback { background: radial-gradient(60% 55% at 70% 50%, rgba(245, 197, 66, 0.12), transparent 70%), #0d0b06; }
+.ch-now { background: radial-gradient(60% 55% at 30% 50%, rgba(62, 232, 255, 0.1), transparent 70%), #050c0e; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .chapter .ch-media.pop:not(.in) { opacity: 0; }
+  .js .chapter .ch-media.pop.in { animation: 0.8s var(--ease) both; }
+  /* Ch.1: old TV turns on (line > full picture) */
+  .js .ch-gamer .ch-media.pop.in { animation-name: tv-on; }
+  @keyframes tv-on { 0% { opacity: 1; transform: scale(0.9, 0.006); filter: brightness(4); } 45% { transform: scale(1, 0.006); filter: brightness(4); } 100% { transform: none; filter: none; } }
+  /* Ch.2: drops in and thuds */
+  .js .ch-fall .ch-media.pop.in { animation-name: drop-in; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
+  @keyframes drop-in { 0% { opacity: 0; transform: translateY(-90px) rotate(-3deg); } 70% { opacity: 1; transform: translateY(0) rotate(0); } 80% { transform: translateX(-6px); } 90% { transform: translateX(4px); } 100% { transform: none; } }
+  /* Ch.3: slides in from the right */
+  .js .ch-posn .ch-media.pop.in { animation-name: from-right; animation-duration: 1s; animation-timing-function: cubic-bezier(0.3, 0.7, 0.3, 1); }
+  @keyframes from-right { from { opacity: 0; transform: translateX(220px); } }
+  /* Ch.4: iris opens */
+  .js .ch-comeback .ch-media.pop.in { animation-name: iris; }
+  @keyframes iris { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(75% at 50% 50%); } }
+  /* Ch.5: wiped in top to bottom (the cyan scan line rides the edge) */
+  .js .ch-now .ch-media.pop.in { animation-name: wipe-down; animation-duration: 1s; }
+  @keyframes wipe-down { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+}
