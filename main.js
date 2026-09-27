@@ -102,10 +102,9 @@
       o.start(t);
       o.stop(t + 0.52);
     },
-    // pack intro: foil tearing, then a stadium walkout: riser > hit (kick + crack + brass stab), each beat a step higher
+    // pack intro: foil tearing, then walkout stingers, each beat a step higher
     tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
     // all treble, no bass (user): each beat a step higher, the card reveal highest
-    riser: (big) => { const d = big ? 0.6 : 0.5; noise(d, big ? 0.07 : 0.05, 0, 2000, 10000, 0.8); tone(700, 0, d, "triangle", big ? 0.03 : 0.02, big ? 2800 : 2000); },
     beat: (i = 0) => {
       const r = [659, 880, 1175][i % 3];
       noise(0.1, 0.07, 0, 7000, 4000, 1);
@@ -608,7 +607,6 @@
         const calmPk = matchMedia("(prefers-reduced-motion: reduce)").matches;
         const jolt = (px) => calmPk || pk.animate([{ translate: "0 0" }, { translate: `${-px}px ${px / 2}px` }, { translate: `${px * 0.7}px ${-px * 0.6}px` }, { translate: `${-px * 0.4}px ${px * 0.3}px` }, { translate: "0 0" }], { duration: 320, easing: "ease-out" });
         [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c], i) => {
-          timers.push(setTimeout(() => sfx("riser"), t - 500));
           timers.push(setTimeout(() => {
             pk.classList.add(c);
             sfx("beat", i);
@@ -616,7 +614,6 @@
             if (!calmPk) $(".pk-flash", pk).animate([{ opacity: 0.25 + i * 0.1 }, { opacity: 0 }], { duration: 350, easing: "ease-out" });
           }, t));
         });
-        timers.push(setTimeout(() => sfx("riser", 1), 2950));
         timers.push(setTimeout(() => { reveal(); jolt(16); }, 3550));
       });
       $(".pk-skip", pk).addEventListener("click", enter);
