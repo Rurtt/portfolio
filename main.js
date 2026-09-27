@@ -47,6 +47,19 @@
     s.start(t);
   };
   const arp = (fs, gap = 0.08, type = "square", vol = 0.04, at = 0) => fs.forEach((f, i) => tone(f, at + i * gap, gap * 1.8, type, vol));
+  // brass-ish chord: two detuned saws per note through a lowpass that closes (walkout stabs)
+  const stab = (fs, at = 0, dur = 0.9, vol = 0.05, cut0 = 3200, cut1 = 350) => {
+    const t = ac.currentTime + at, lp = ac.createBiquadFilter(), g = ac.createGain();
+    lp.type = "lowpass";
+    lp.frequency.setValueAtTime(cut0, t);
+    lp.frequency.exponentialRampToValueAtTime(cut1, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    lp.connect(g).connect(out);
+    fs.forEach((f) => [-7, 7].forEach((c) => { const o = ac.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.detune.value = c; o.connect(lp); o.start(t); o.stop(t + dur + 0.02); }));
+  };
+  const kick = (at = 0, vol = 0.3, f0 = 150, f1 = 38, dur = 0.5) => tone(f0, at, dur, "sine", vol, f1);
   const NOTES = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093, 2349]; // combos climb this scale
   const SFX = {
     key: () => { noise(0.03, 0.05, 0, 3500); tone(1600 + Math.random() * 400, 0, 0.02, "square", 0.01); },
@@ -89,17 +102,37 @@
       o.start(t);
       o.stop(t + 0.52);
     },
-    // pack intro: foil tearing, walk-out stingers, card reveal sparkle
-    tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.05, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
-    beat: () => { noise(0.35, 0.05, 0, 300, 1800, 0.6); tone(98, 0, 0.5, "sine", 0.08, 82); tone(784, 0.05, 0.45, "triangle", 0.02); },
-    reveal: () => { arp([1047, 1319, 1568, 2093, 2637], 0.06, "sine", 0.035); noise(0.7, 0.025, 0, 9000, 6000, 1); },
-    // slot machine: lever ratchet, reel stops, coin-cascade payout
-    lever: () => { for (let i = 0; i < 5; i++) noise(0.025, 0.07, i * 0.05, 2800, 2800, 3); },
-    stop: () => { tone(260, 0, 0.06, "square", 0.035); noise(0.03, 0.04, 0, 2000); },
-    payout: () => {
-      for (let i = 0; i < 16; i++) tone([1319, 1568, 1760, 2093][i % 4] + Math.random() * 30, i * 0.065, 0.09, "square", 0.022);
-      arp([1047, 1319, 1568, 2093], 0.09, "triangle", 0.05, 1.1);
+    // pack intro: foil tearing, then a stadium walkout: riser > hit (kick + crack + brass stab), each beat a step higher
+    tear: () => { noise(0.55, 0.12, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.09, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
+    riser: (big) => { const d = big ? 0.6 : 0.5; noise(d, big ? 0.12 : 0.08, 0, 300, 9000, 0.8); tone(180, 0, d, "sawtooth", big ? 0.03 : 0.02, big ? 1400 : 900); },
+    beat: (i = 0) => {
+      const r = [110, 131, 165][i % 3];
+      kick(0, 0.4);
+      noise(0.14, 0.2, 0, 3000, 900, 0.7);
+      stab([r, r * 1.5, r * 2, r * 3], 0, 0.8, 0.05);
+      noise(1.1, 0.05, 0.05, 900, 400, 0.5); // crowd rumble tail
     },
+    reveal: () => {
+      kick(0, 0.45, 170, 35, 0.8);
+      noise(0.2, 0.25, 0, 4000, 1000, 0.7);
+      stab([220, 277, 330, 440, 554, 659], 0, 1.8, 0.06, 5000, 500);
+      noise(1.8, 0.09, 0.02, 700, 1500, 0.4); // crowd roar swells up
+      arp([1319, 1568, 1976, 2637, 3136], 0.07, "sine", 0.04, 0.15);
+    },
+    // real slot machine: reels rattle high-low-high-low and slow down, each reel lands with a clunk, then the bell rings with coins dropping
+    spin: (len = 1.8) => {
+      for (let t = 0, gap = 0.05, i = 0; t < len; t += gap, gap *= 1.04, i++) {
+        tone(i % 2 ? 660 : 440, t, 0.045, "square", 0.05);
+        noise(0.02, 0.07, t, 3200, 3200, 2);
+      }
+    },
+    lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.14, i * 0.045, 2600, 2600, 3); kick(0.3, 0.25, 140, 60, 0.2); noise(0.06, 0.12, 0.3, 1200); },
+    stop: () => { kick(0, 0.3, 200, 70, 0.14); noise(0.04, 0.16, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
+    payout: () => {
+      for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.09); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
+      for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
+    },
+    curtain: () => { noise(0.7, 0.12, 0, 150, 1400, 0.5); kick(0.05, 0.18, 90, 40, 0.5); },
     rankup: () => { arp([392, 523, 659, 784, 1047], 0.07, "sawtooth", 0.025); noise(0.6, 0.02, 0.3, 8000, 6000); },
     page: () => noise(0.18, 0.06, 0, 2500, 5500, 0.7),
     quest: () => { noise(0.45, 0.05, 0, 300, 2400, 0.6); arp([659, 784, 988, 1319], 0.1, "triangle", 0.05, 1.1); },
@@ -113,10 +146,11 @@
       if (!A) return;
       ac = new A();
       const lim = ac.createDynamicsCompressor();
-      lim.threshold.value = -18;
-      lim.ratio.value = 8;
+      lim.threshold.value = -8;
+      lim.knee.value = 4;
+      lim.ratio.value = 12;
       out = ac.createGain();
-      out.gain.value = 0.6;
+      out.gain.value = 1.6; // user: everything was too quiet; the limiter still caps the loud hits
       out.connect(lim).connect(ac.destination);
     }
     if (ac.state === "suspended") ac.resume();
@@ -572,8 +606,19 @@
         pk.classList.add("opening");
         sfx("tear");
         $(".pk-skip", pk).focus(); // the pack bursts away; do not leave focus on an invisible button
-        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => { pk.classList.add(c); sfx("beat"); }, t)));
-        timers.push(setTimeout(reveal, 3550));
+        const calmPk = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const jolt = (px) => calmPk || pk.animate([{ translate: "0 0" }, { translate: `${-px}px ${px / 2}px` }, { translate: `${px * 0.7}px ${-px * 0.6}px` }, { translate: `${-px * 0.4}px ${px * 0.3}px` }, { translate: "0 0" }], { duration: 320, easing: "ease-out" });
+        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c], i) => {
+          timers.push(setTimeout(() => sfx("riser"), t - 500));
+          timers.push(setTimeout(() => {
+            pk.classList.add(c);
+            sfx("beat", i);
+            jolt(6 + i * 4);
+            if (!calmPk) $(".pk-flash", pk).animate([{ opacity: 0.25 + i * 0.1 }, { opacity: 0 }], { duration: 350, easing: "ease-out" });
+          }, t));
+        });
+        timers.push(setTimeout(() => sfx("riser", 1), 2950));
+        timers.push(setTimeout(() => { reveal(); jolt(16); }, 3550));
       });
       $(".pk-skip", pk).addEventListener("click", enter);
       $(".pk-enter", pk).addEventListener("click", enter);
@@ -623,6 +668,7 @@
         s.animate([{ transform: "translateY(0)" }, { transform: "translateY(-13em)" }], { duration: 900 + k * 220, easing: "cubic-bezier(.15,.8,.25,1)", fill: "forwards" });
         stops.push(setTimeout(() => sfx("stop"), 820 + k * 220));
       });
+      if (!calm) sfx("spin", 1.75);
       clearTimeout(pulse);
       job.classList.remove("ping");
       machine.classList.remove("idle");
@@ -693,7 +739,36 @@
   if (scenes.length) {
     const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, wide = matchMedia("(min-width: 861px) and (min-height: 700px)");
     const all = (s, q) => [...new Set([...s.querySelectorAll(q), ...(s.media ? s.media.querySelectorAll(q) : [])])];
-    const parts = scenes.map((s) => [all(s, "[data-at]"), all(s, "[data-count]"), all(s, "[data-keys]")]);
+    const parts = scenes.map((s) => [all(s, "[data-at]"), all(s, "[data-count]"), all(s, "[data-keys]"), all(s, "[data-type]")]);
+    // [data-type="p0,p1"]: text types itself in (grapheme by grapheme, so Thai vowels/tone marks never dangle) as --p runs p0 -> p1.
+    // Each grapheme becomes a .g span that is transparent until typed: layout never jumps, markup (<mark>, .nw) stays, screen readers still read it all
+    const graphemes = (s) => (Intl.Segmenter ? [...new Intl.Segmenter("th", { granularity: "grapheme" }).segment(s)].map((g) => g.segment) : [...s]);
+    document.querySelectorAll("[data-type]").forEach((el) => {
+      const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), texts = [];
+      while (w.nextNode()) texts.push(w.currentNode);
+      texts.forEach((t) => t.replaceWith(...graphemes(t.data).map((g) => { if (!g.trim()) return g; const s = document.createElement("span"); s.className = "g"; s.textContent = g; return s; })));
+      el.gs = [...el.querySelectorAll(".g")];
+      el.shown = -1;
+      el.classList.add("typer");
+    });
+    const type = (el, p) => {
+      const [a, z] = el.dataset.type.split(",").map(Number), n = Math.round(el.gs.length * Math.min(1, Math.max(0, (p - a) / (z - a))));
+      if (n === el.shown) return;
+      if (n > el.shown && el.shown >= 0) sfx("key");
+      el.shown = n;
+      el.gs.forEach((g, i) => { g.classList.toggle("in", i < n); g.classList.toggle("cur", i === n - 1 && n < el.gs.length); });
+    };
+    // curtain panels (hero > DoCode > WordFlow > words): the next section slides up over a .cover, which sinks, shrinks and dims under it
+    const covers = [...document.querySelectorAll(".cover")];
+    const curtain = (vh) => covers.forEach((c) => {
+      const k = calm ? 0 : Math.min(1, Math.max(0, (vh - (c.getBoundingClientRect().bottom - (c.y0 || 0))) / vh));
+      if (k > 0.02 && !c.hit) sfx("curtain");
+      c.hit = k > 0.02;
+      // fully covered (or not yet) = no transform, so #anchors from the nav still land on the real layout position
+      c.y0 = k > 0 && k < 1 ? k * vh * 0.45 : 0;
+      c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.08).toFixed(4)})` : "";
+      c.style.setProperty("--k", c.y0 ? k.toFixed(3) : 0);
+    });
     // sideways tracks: chapters inside .htrack sit side by side; vertical scroll plays chapter i, then pans the row to chapter i+1 (PAN svh of scroll)
     const PAN = 70;
     const tracks = [...document.querySelectorAll(".htrack")].map((t) => {
@@ -709,6 +784,7 @@
     const run = () => {
       q = 0;
       const vh = innerHeight, top = hud ? hud.getBoundingClientRect().bottom : 0;
+      curtain(vh);
       tracks.forEach((k) => {
         k.ps.forEach((s) => (s.hp = null));
         if (!wide.matches || calm) return k.inn.style.removeProperty("--shift");
@@ -750,6 +826,7 @@
           if (p < last) el.lp = p;
           else if (p - last > 0.008) { el.lp = p; if (p > a && last < z) sfx("key"); }
         });
+        parts[i][3].forEach((el) => type(el, p));
       });
     };
     addEventListener("scroll", () => { if (!q) q = requestAnimationFrame(run); }, { passive: true });

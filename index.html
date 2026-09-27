@@ -70,7 +70,7 @@
 
   <main id="main" tabindex="-1">
     <!-- HERO -->
-    <header class="hero" id="top">
+    <header class="hero cover" id="top">
       <div class="pk" id="pack" role="dialog" aria-modal="true" aria-label="เปิดแพ็กการ์ดผู้เล่น" hidden>
         <button class="pk-skip" type="button">ข้าม ›</button>
         <button class="sfx-btn pk-sfx" type="button" aria-pressed="false" aria-label="เสียงเอฟเฟกต์"><svg aria-hidden="true"><use href="#i-sound"/></svg><span>เปิดเสียง</span></button>
@@ -127,13 +127,13 @@
     </header>
 
     <!-- MAIN QUEST 1: DoCode (same pinned-steps layout as WordFlow) -->
-    <section class="chapter ch-wf ch-dc" id="docode" aria-labelledby="dc-title">
+    <section class="chapter ch-wf ch-dc cover" id="docode" aria-labelledby="dc-title">
       <div class="container">
-        <div class="wf-intro reveal">
-          <p class="ch-mark">Main Quest 1 · 2025</p>
+        <div class="wf-intro scene">
+          <p class="ch-mark" data-type=".02,.3">Main Quest 1 · 2025</p>
           <h2 id="dc-title" class="ch-big">DoCode<span class="hl">.</span></h2>
-          <p class="ch-sub">รับทำ<mark>เว็บไซต์</mark>และ <mark>SEO</mark></p>
-          <div class="chips"><span class="chip gold">Founder</span><span class="chip">ลูกค้าจริง</span><span class="chip">Next.js · SEO</span></div>
+          <p class="ch-sub" data-type=".4,.72">รับทำ<mark>เว็บไซต์</mark>และ <mark>SEO</mark></p>
+          <div class="chips"><span class="chip gold" data-at="0.76" data-sfx="blip">Founder</span><span class="chip" data-at="0.82" data-sfx="blip">ลูกค้าจริง</span><span class="chip" data-at="0.88" data-sfx="blip">Next.js · SEO</span></div>
         </div>
         <div class="wf">
           <div class="wf-stage"></div>
@@ -171,13 +171,13 @@
     </section>
 
     <!-- MAIN QUEST -->
-    <section class="chapter ch-wf" id="main-quest" aria-labelledby="ch5-title">
+    <section class="chapter ch-wf cover" id="main-quest" aria-labelledby="ch5-title">
       <div class="container">
-        <div class="wf-intro reveal" id="wordflow">
-          <p class="ch-mark">Main Quest 2 · 2026</p>
+        <div class="wf-intro scene" id="wordflow">
+          <p class="ch-mark" data-type=".02,.3">Main Quest 2 · 2026</p>
           <h2 id="ch5-title" class="ch-big">WordFlow<span class="hl">.</span></h2>
-          <p class="ch-sub">เกมฝึกอ่านภาษาไทย <span class="nw">สำหรับ<mark class="volt">เด็ก LD</mark> ด้านการอ่าน</span></p>
-          <div class="chips"><span class="chip gold">ทุน NSC ครั้งที่ 28</span><span class="chip">Product Manager</span><span class="chip">4 เดือน</span><span class="chip">ที่ปรึกษา RainyKids Clinic</span></div>
+          <p class="ch-sub" data-type=".4,.72">เกมฝึกอ่านภาษาไทย <span class="nw">สำหรับ<mark class="volt">เด็ก LD</mark> ด้านการอ่าน</span></p>
+          <div class="chips"><span class="chip gold" data-at="0.76" data-sfx="blip">ทุน NSC ครั้งที่ 28</span><span class="chip" data-at="0.82" data-sfx="blip">Product Manager</span><span class="chip" data-at="0.88" data-sfx="blip">4 เดือน</span><span class="chip" data-at="0.94" data-sfx="blip">ที่ปรึกษา RainyKids Clinic</span></div>
         </div>
         <div class="wf">
           <div class="wf-stage"></div>
@@ -195,7 +195,7 @@
               <div><p class="eyebrow">AI</p><h3>AI ฟังการออกเสียง<br>ระดับหน่วยเสียง</h3><p class="ch-sub">ใช้โมเดล ReVoiceAI อ้างอิง IPA <span class="nw">บอกได้ว่าเด็กพลาดตรงไหน</span></p></div>
             </div>
             <div class="wf-step">
-              <div class="wf-m dash"><i class="fx" data-at=".02" data-sfx="scan"></i><img src="assets/wf-dash.webp" alt="Dashboard สำหรับแพทย์และผู้ปกครอง" width="1400" height="797" loading="lazy"><span class="tag t1" data-at=".45" data-sfx="blip" aria-hidden="true">แพทย์</span><span class="tag t2" data-at=".55" data-sfx="blip" aria-hidden="true">ผู้ปกครอง</span></div>
+              <div class="wf-m dash"><i class="fx" data-at=".02" data-sfx="scan"></i><img src="assets/wf-dash.webp" alt="Dashboard สำหรับแพทย์และผู้ปกครอง" width="1400" height="797" loading="lazy"></div>
               <div><p class="eyebrow">ผลลัพธ์</p><h3>Dashboard ให้แพทย์<br>และผู้ปกครองดูพัฒนาการ</h3><p class="ch-sub">Unity · FastAPI · Firebase · Next.js</p><a class="btn btn-primary" href="quest.html?q=wordflow">เปิดบันทึกภารกิจ WordFlow <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
             </div>
           </div>
@@ -206,9 +206,9 @@
     <!-- TRANSITION WORDS: bridge into the backstory -->
     <section class="words scene pin" aria-label="เรื่องย่อ" style="--len:290">
       <div class="words-stage">
-        <small class="w-back">แต่ก่อนมาถึงตรงนี้</small>
-        <p data-at=".34" data-sfx="beat">ผมเป็นแค่เกมเมอร์</p>
-        <p class="w-fall" data-at=".5" data-sfx="boom">ที่ทำอะไรไม่เป็นเลย</p>
+        <small class="w-back" data-type="0,.14">แต่ก่อนมาถึงตรงนี้</small>
+        <p data-type=".28,.44" data-at=".28" data-sfx="beat">ผมเป็นแค่เกมเมอร์</p>
+        <p class="w-fall" data-type=".5,.66" data-at=".67" data-sfx="boom">ที่ทำอะไรไม่เป็นเลย</p>
       </div>
     </section>
 

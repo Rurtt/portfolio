@@ -583,12 +583,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .words .w-rise { color: var(--volt); }
 @supports (animation-timeline: view()) {
   .words .w-back { animation: back-dim linear both; animation-timeline: --words; animation-range: contain 22% contain 32%; }
-  .words p { animation: line-in linear both; animation-timeline: --words; }
-  .words p:nth-of-type(1) { animation-range: contain 32% contain 46%; }
-  .words p:nth-of-type(2) { animation-range: contain 48% contain 62%; }
-  .words p:nth-of-type(3) { animation-range: contain 64% contain 78%; }
   @keyframes back-dim { to { opacity: 0.45; } }
-  @keyframes line-in { from { opacity: 0; transform: translateY(24px); } }
 }
 
 /* chapter 1: big title */
@@ -616,7 +611,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 @media (min-width: 861px) {
   .js .wf { grid-template-columns: 1.15fr 0.85fr; column-gap: 56px; }
   .js .wf-stage { position: sticky; top: 64px; height: calc(100svh - 64px); display: grid; place-items: center; }
-  .js .wf-stage > .wf-m { grid-area: 1 / 1; width: 100%; opacity: 0; visibility: hidden; transform: scale(0.96); transition: opacity 0.45s var(--ease), transform 0.45s var(--ease), visibility 0s 0.45s; }
+  .js .wf-stage > .wf-m { grid-area: 1 / 1; width: 100%; opacity: 0; visibility: hidden; transform: translateY(90px) scale(0.9); transition: opacity 0.45s var(--ease), transform 0.7s var(--ease), visibility 0s 0.45s; }
   .js .wf-stage > .wf-m.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
   .js .wf-stage .wf-stat { min-height: 0; aspect-ratio: 16 / 10; max-height: 56svh; }
   .js .wf-stage img { max-height: 76svh; }
@@ -1030,11 +1025,6 @@ html:not(.js) .kids i { opacity: 1; }
 /* WordFlow 4: dashboard scans in top to bottom, role tags pin on */
 .dash { position: relative; }
 .js .dash img { clip-path: inset(0 0 calc((1 - clamp(0, var(--p) / 0.4, 1)) * 100%) 0); }
-.tag { position: absolute; padding: 8px 14px; border-radius: 99px; font: 700 clamp(14px, 1.3vw, 17px)/1 var(--display); color: var(--on-accent); background: var(--volt); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
-.tag.t1 { top: 8%; right: -2%; }
-.tag.t2 { bottom: 10%; left: -2%; background: var(--legendary); }
-.js .tag:not(.on) { transform: scale(0.4); }
-@media (max-width: 860px) { .tag.t1 { right: 4%; } .tag.t2 { left: 4%; } }
 
 /* ============ ROUND 3: sideways tracks, combos, hobby / next quest / invite moments ============ */
 .fx { display: none; } /* sound-only beat markers */
@@ -1107,3 +1097,23 @@ html:not(.js) .kids i { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .gm-press .dots::after { content: "..."; } }
 .route { font-size: clamp(30px, 4.6vw, 64px); }
 .route .rt-a { white-space: nowrap; }
+
+/* ============ pre-chapter hype (hero > DoCode > WordFlow > words) ============ */
+/* curtain panels: each section slides up over the .cover before it (main.js "curtain" sinks/shrinks/dims the cover) */
+.cover { position: relative; transform-origin: 50% 100%; }
+.cover::after { content: ""; position: absolute; inset: 0; z-index: 5; background: #000; opacity: calc(var(--k, 0) * 0.8); pointer-events: none; }
+.cover + * { position: relative; z-index: 2; background-color: var(--bg); border-radius: 32px 32px 0 0; box-shadow: 0 -30px 70px rgba(0, 0, 0, 0.6); border-top: 1px solid var(--line-2); }
+@media (max-width: 860px) { .cover + * { border-radius: 22px 22px 0 0; } }
+/* big titles: huge + chrome gradient, settle as the panel rises (--p from the scene engine) */
+.js .wf-intro.scene .ch-big { background: linear-gradient(180deg, #fff 35%, #8a92a3); -webkit-background-clip: text; background-clip: text; color: transparent;
+  transform: scale(calc(1.3 - 0.3 * min(1, var(--p, 1) * 1.7))); opacity: min(1, calc(var(--p, 1) * 3)); }
+.js .wf-intro.scene .ch-big .hl { -webkit-text-fill-color: var(--volt); }
+.js .wf-intro [data-at] { transition: opacity 0.35s var(--ease), transform 0.45s var(--ease); }
+.js .wf-intro [data-at]:not(.on) { opacity: 0; transform: translateY(14px) scale(0.85); }
+/* typing ([data-type]): each grapheme waits transparent; a block caret rides the last typed one */
+.js .typer .g { opacity: 0; }
+.js .typer .g.in { opacity: 1; }
+.typer .g.cur { position: relative; }
+.typer .g.cur::after { content: ""; position: absolute; left: 100%; top: 0.12em; bottom: 0.08em; width: 0.08em; margin-left: 0.06em; background: currentColor; animation: pk-blink 0.7s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .js .typer .g { opacity: 1; } .cover::after { display: none; } }
+@media (max-width: 560px) { .js .wf-intro.scene .ch-big { transform: scale(calc(1.12 - 0.12 * min(1, var(--p, 1) * 1.7))); } }
