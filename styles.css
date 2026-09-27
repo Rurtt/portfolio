@@ -170,21 +170,45 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .sheet-info .info { margin-top: 0; }
 .sheet-info .block-label { margin-top: 0; }
 
-/* first-visit intro (JS drives it; see main.js) */
-.veil { display: none; }
-.intro .veil {
-  display: block; position: fixed; inset: 0; z-index: 200; overflow: hidden; pointer-events: none;
-  background: radial-gradient(640px 640px at 50% 50%, rgba(245, 197, 66, 0.1), transparent 70%), var(--bg);
-}
-.veil i { position: absolute; left: 50%; top: 50%; opacity: 0; border-radius: 50%; }
-.veil .rays {
-  width: 160vmax; height: 160vmax; margin: -80vmax 0 0 -80vmax;
-  background: repeating-conic-gradient(from 0deg, rgba(245, 197, 66, 0.28) 0 4deg, transparent 4deg 15deg);
-  -webkit-mask: radial-gradient(circle, #000 8%, transparent 55%); mask: radial-gradient(circle, #000 8%, transparent 55%);
-}
-.veil .flash { width: 120vmax; height: 120vmax; margin: -60vmax 0 0 -60vmax; background: radial-gradient(circle, rgba(255, 244, 200, 0.9), rgba(245, 197, 66, 0.35) 25%, transparent 60%); }
+/* FUT pack opening (first visit only; JS drives it, see main.js): pack > walkout beats (flag, PB, DoCode) > real hero card lands > enter */
+html.intro { overflow: hidden; }
+.intro.go .tilt { cursor: pointer; }
+.pk { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; overflow: hidden; background: radial-gradient(900px 700px at 50% 55%, #1b2210, var(--bg) 70%); transition: opacity 0.5s var(--ease); }
+.pk[hidden] { display: none; }
+.pk.pk-out { opacity: 0; pointer-events: none; }
+.pk > * { grid-area: 1 / 1; }
+.pk-skip { position: absolute; top: 16px; right: 16px; z-index: 3; min-height: 44px; padding: 8px 18px; border-radius: 99px; border: 1px solid var(--line-2); background: rgba(18, 22, 30, 0.8); color: var(--text-2); font: 600 15px var(--display); cursor: pointer; }
+.pk-pack { position: relative; width: min(72vw, 46vh); aspect-ratio: 5 / 7; border: 0; padding: 0; border-radius: 16px; cursor: pointer;
+  background: linear-gradient(135deg, #2a3314, var(--volt) 45%, #f5f9d8 50%, var(--volt) 55%, #2a3314); background-size: 250% 250%;
+  box-shadow: 0 0 70px rgba(200, 245, 71, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.3); animation: pk-foil 3s linear infinite, pk-bob 2.4s ease-in-out infinite; }
+.pk-pack small { position: absolute; inset: 12% 0 auto; font: 600 clamp(11px, 1.6vh, 14px) var(--display); letter-spacing: 0.3em; color: var(--on-accent); }
+.pk-pack b { position: absolute; inset: auto 0 14%; font: 700 clamp(24px, 5vh, 44px) var(--display); letter-spacing: 0.1em; color: var(--on-accent); }
+.pk-pack i { position: absolute; left: 50%; top: 50%; width: 42%; aspect-ratio: 1; translate: -50% -60%; rotate: 45deg; border: 3px solid var(--on-accent); border-radius: 8px; }
+.pk-hint { align-self: end; margin-bottom: max(28px, 7vh); font: 600 17px var(--display); color: var(--volt); animation: pk-blink 1.4s ease-in-out infinite; }
+.pk-rays { position: absolute; left: 50%; top: 50%; margin: -110vmax 0 0 -110vmax; width: 220vmax; height: 220vmax; opacity: 0; pointer-events: none; background: repeating-conic-gradient(rgba(245, 197, 66, 0.15) 0 8deg, transparent 8deg 20deg); animation: pk-spin 14s linear infinite; }
+.pk-beat { display: grid; justify-items: center; gap: 18px; opacity: 0; pointer-events: none; text-align: center; padding: 0 16px; }
+.pk-beat strong { font: 700 clamp(80px, 22vw, 160px)/1 var(--display); color: var(--legendary); text-shadow: 0 0 40px rgba(245, 197, 66, 0.6); }
+.pk-beat strong.volt { font-size: clamp(52px, 14vw, 110px); color: var(--volt); text-shadow: 0 0 40px rgba(200, 245, 71, 0.5); }
+.pk-beat small { font: 600 clamp(18px, 2.8vw, 24px)/1.3 var(--display); letter-spacing: 0.24em; color: var(--text); }
+.pk-flag { width: min(60vw, 320px); aspect-ratio: 3 / 2; border-radius: 6px; background: linear-gradient(#a51931 0 16.67%, #f4f5f8 0 33.33%, #2d2a4a 0 66.67%, #f4f5f8 0 83.33%, #a51931 0); box-shadow: 0 0 50px rgba(255, 255, 255, 0.2); }
+.pk-flash { width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; }
+.pk-enter { align-self: end; margin-bottom: max(24px, 5vh); opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+.pk.opening .pk-pack { animation: pk-shake 0.5s linear, pk-burst 0.35s 0.5s var(--ease) forwards; pointer-events: none; }
+.pk.opening .pk-hint { display: none; }
+.pk.b1 .pk-rays { opacity: 1; transition: opacity 0.4s; }
+.pk.b1 .pk-b1, .pk.b2 .pk-b2, .pk.b3 .pk-b3 { animation: pk-beat 0.9s var(--ease) forwards; }
+.pk.revealed .pk-flash { animation: pk-flash 0.5s ease-out; }
+.pk.revealed .pk-enter { opacity: 1; pointer-events: auto; }
+@keyframes pk-foil { to { background-position: 250% 250%; } }
+@keyframes pk-bob { 50% { translate: 0 -10px; } }
+@keyframes pk-blink { 50% { opacity: 0.35; } }
+@keyframes pk-spin { to { rotate: 360deg; } }
+@keyframes pk-shake { 20%, 60% { rotate: -4deg; } 40%, 80% { rotate: 4deg; } }
+@keyframes pk-burst { to { scale: 1.6; opacity: 0; filter: brightness(3); } }
+@keyframes pk-beat { 0% { opacity: 0; scale: 0.6; } 25% { opacity: 1; scale: 1; } 80% { opacity: 1; scale: 1.04; } 100% { opacity: 0; scale: 1.3; } }
+@keyframes pk-flash { from { opacity: 0.9; } to { opacity: 0; } }
 .intro .tilt { position: relative; z-index: 201; }
-.intro:not(.go) .tilt, .intro:not(.go) .hero-copy { opacity: 0; }
+.intro:not(.go) .tilt, .intro:not(.go) .hero-copy { opacity: 0; pointer-events: none; } /* hidden card sits over the pack on phones: must not eat the tap */
 
 @media (max-width: 960px) {
   .hero { min-height: 0; }

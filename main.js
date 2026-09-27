@@ -393,76 +393,60 @@
         heroEl.classList.remove("hot");
       });
     }
-    // fonts load without blocking paint now, so wait for them + the portrait before measuring and playing (as in 63867cb); cap the wait
-    const ready = Promise.race([
-      Promise.all([document.fonts ? document.fonts.ready : 0, card.querySelector(".char img").decode().catch(() => {})]),
-      new Promise((r) => setTimeout(r, 2500)),
-    ]);
-    if (doc.classList.contains("intro")) ready.then(() => {
+    // first visit: FUT pack opening. pack > 3 walkout beats > real hero card flips in at screen centre > click card / button / skip / Esc to enter
+    const pk = $("#pack");
+    if (doc.classList.contains("intro") && pk) {
       try { sessionStorage.setItem("intro", "1"); } catch {}
-      const flip = card.querySelector(".flip");
-      const lvText = card.querySelector(".lv").lastChild, lv = +lvText.textContent;
-      const r = card.getBoundingClientRect();
-      // rect is in screen px, but translate runs inside body{zoom} on big screens, so divide by zoom
-      const z = parseFloat(getComputedStyle(document.body).zoom) || 1, vw = doc.clientWidth, vh = innerHeight;
-      const fx = (vw / 2 - (r.left + r.width / 2)) / z, fy = (vh / 2 - (r.top + r.height / 2)) / z;
-      const fs = Math.min(1.15, (vh * 0.7) / r.height, (vw * 0.86) / r.width);
-      const center = { translate: `${fx}px ${fy}px`, scale: `${fs}` };
-      const OUT = "cubic-bezier(0.22, 1, 0.36, 1)", BACK = "cubic-bezier(0.34, 1.4, 0.64, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
-      const anims = [];
-      const run = (el, kf, delay, duration, easing, fill = "both") => anims.push(el.animate(kf, { delay, duration, easing, fill }));
-      const $$ = (s) => heroEl.querySelector(s);
-
-      // 1. face-down card rises in, then charges up (tilts back, dips, glows)
-      run(card, [{ opacity: 0, translate: `${fx}px ${fy + 70}px`, scale: `${fs * 0.88}` }, { opacity: 1, ...center }], 0, 700, OUT);
-      run(flip, [{ transform: "rotateY(180deg)" }, { transform: "rotateY(208deg) scale(0.94)" }], 450, 420, "cubic-bezier(0.45, 0, 0.55, 1)");
-      run($$(".card-back"), [{ filter: "brightness(1)" }, { filter: "brightness(1.9)" }], 450, 420, "ease-in");
-      heroEl.querySelectorAll(".stars s").forEach((st, i) => run(st, [
-        { opacity: 0.25, transform: "scale(1)" },
-        { opacity: 1, transform: "scale(1.6)", color: "#fff6d0", offset: 0.35 },
-        { opacity: 1, transform: "scale(1)" },
-      ], 300 + i * 90, 380, BACK));
-      // 2. release: 1.5-turn spin that decelerates into a small overshoot, with a punch
-      run(flip, [
-        { transform: "rotateY(208deg) scale(0.94)" },
-        { transform: "rotateY(-372deg) scale(1.07)", offset: 0.72 },
-        { transform: "rotateY(-360deg) scale(1)" },
-      ], 870, 1000, OUT, "forwards");
-      // 3. reveal impact: light rays, flash, shine across the card, badge pulse
-      run($$(".veil .rays"), [{ opacity: 0, transform: "scale(0.3) rotate(0deg)" }, { opacity: 1, offset: 0.18 }, { opacity: 0, transform: "scale(1.2) rotate(40deg)" }], 1120, 1400, OUT);
-      run($$(".veil .flash"), [{ opacity: 0, transform: "scale(0.2)" }, { opacity: 0.85, offset: 0.12 }, { opacity: 0, transform: "scale(1)" }], 1120, 800, OUT);
-      run($$(".shine"), [{ backgroundPosition: "150% 0" }, { backgroundPosition: "-150% 0" }], 1300, 900, INOUT);
-      run($$(".char-plate .rar"), [{ boxShadow: "0 0 0 0 rgba(245, 197, 66, 0.9)", background: "rgba(245, 197, 66, 0.45)" }, { boxShadow: "0 0 0 14px rgba(245, 197, 66, 0)" }], 1450, 900, "ease-out", "forwards");
-      // 4. card glides into its slot while the page fades in around it
-      run(card, [center, { translate: "0px 0px", scale: "1" }], 1850, 850, INOUT, "forwards");
-      run($$(".veil"), [{ opacity: 1 }, { opacity: 0 }], 1900, 650, "ease-out");
-      [...$$(".hero-copy").children].forEach((el, i) => {
-        if (el.classList.contains("proof")) return;
-        const kf = el.tagName === "H1"
-          ? [{ clipPath: "inset(-20% 100% -40% 0)" }, { clipPath: "inset(-20% -5% -40% 0)" }]
-          : [{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }];
-        run(el, kf, 2250 + i * 70, 750, OUT);
+      pk.hidden = false;
+      const flip = $(".flip", card), OUT = "cubic-bezier(0.22, 1, 0.36, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
+      const timers = [];
+      let stage = 0; // 0 sealed, 1 opening, 2 card shown, 3 leaving
+      // card rect is in screen px, but translate runs inside body{zoom} on big screens, so divide by zoom (as the tarot did)
+      const center = () => {
+        const r = card.getBoundingClientRect(), z = parseFloat(getComputedStyle(document.body).zoom) || 1, vw = doc.clientWidth, vh = innerHeight;
+        const s = Math.min(1.1, (vh * 0.62) / r.height, (vw * 0.86) / r.width);
+        return { translate: `${(vw / 2 - (r.left + r.width / 2)) / z}px ${(vh * 0.46 - (r.top + r.height / 2)) / z}px`, scale: `${s}` };
+      };
+      const reveal = () => {
+        stage = 2;
+        const c = center();
+        doc.classList.add("go");
+        pk.classList.add("revealed");
+        card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
+        flip.animate([{ transform: "rotateY(180deg)" }, { transform: "rotateY(-360deg)" }], { duration: 900, easing: OUT });
+        $(".pk-enter", pk).focus();
+      };
+      const enter = () => {
+        if (stage === 3) return;
+        const from = stage === 2 ? center() : null;
+        stage = 3;
+        timers.forEach(clearTimeout);
+        doc.classList.add("go");
+        pk.classList.add("pk-out");
+        const moves = [$(".hero-copy", heroEl).animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 600, delay: from ? 300 : 0, easing: OUT, fill: "backwards" })];
+        if (from) moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT }));
+        Promise.all(moves.map((a) => a.finished)).then(() => {
+          card.getAnimations().forEach((a) => a.cancel());
+          pk.remove();
+          doc.classList.remove("intro", "go");
+          removeEventListener("keydown", onKey);
+          $("#main").focus({ preventScroll: true });
+        });
+      };
+      const onKey = (e) => { if (e.key === "Escape") enter(); };
+      $(".pk-pack", pk).addEventListener("click", () => {
+        if (stage) return;
+        stage = 1;
+        pk.classList.add("opening");
+        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => pk.classList.add(c), t)));
+        timers.push(setTimeout(reveal, 3550));
       });
-      heroEl.querySelectorAll(".proof li").forEach((li, i) => run(li, [{ opacity: 0, transform: "translateX(24px) scale(0.96)" }, { opacity: 1, transform: "none" }], 2600 + i * 80, 650, BACK));
-      doc.classList.add("go");
-
-      let skipped = false;
-      const t0 = performance.now() + 1150;
-      lvText.textContent = "1";
-      requestAnimationFrame(function count(now) {
-        const p = skipped ? 1 : Math.min(1, Math.max(0, (now - t0) / 700));
-        lvText.textContent = Math.max(1, Math.round(lv * (1 - (1 - p) ** 3)));
-        if (p < 1) requestAnimationFrame(count);
-      });
-      const evs = ["click", "keydown", "wheel", "touchstart"];
-      const skip = () => { skipped = true; anims.forEach((a) => a.finish()); };
-      evs.forEach((ev) => addEventListener(ev, skip, { passive: true }));
-      Promise.all(anims.map((a) => a.finished)).then(() => {
-        anims.forEach((a) => a.cancel());
-        doc.classList.remove("intro", "go");
-        evs.forEach((ev) => removeEventListener(ev, skip));
-      });
-    });
+      $(".pk-skip", pk).addEventListener("click", enter);
+      $(".pk-enter", pk).addEventListener("click", enter);
+      card.addEventListener("click", () => { if (stage === 2) enter(); });
+      addEventListener("keydown", onKey);
+      $(".pk-pack", pk).focus();
+    }
   }
 
   // ---------- WordFlow chapter: wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
