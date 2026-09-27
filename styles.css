@@ -311,6 +311,7 @@ section.block { padding: 96px 0; border-bottom: 1px solid var(--line); }
 .sec-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 40px; flex-wrap: wrap; }
 .sec-head h2 { font-size: clamp(28px, 4vw, 40px); margin-top: 12px; }
 .sec-head p { color: var(--text-2); max-width: 460px; }
+.sec-head .eyebrow { font-size: 16px; }
 @media (max-width: 760px) { section.block { padding: 72px 0; } }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 28px; }
 .panel h3 { font-size: 20px; }
