@@ -4,7 +4,7 @@
   // Thai has no spaces between words, so browsers may wrap mid-word (ผู้|ใช้). Each space-separated phrase up to 20 chars
   // is one unit (.ph) that only wraps inside itself if wider than the line; longer ones wrap normally. KEEP words never split. *x* = highlight.
   // ponytail: compound words the line breaker splits in our copy (found by a wrap audit at 320-1920px); add more if new text breaks badly
-  const KEEP = /ผลงาน|ตรงไหน|พร้อมกัน|ร่วมกัน|โปรดักต์|โปรเจกต์|เสียบสาย|เวลาจำกัด|ผู้ใช้|ผู้ปกครอง|ผู้เชี่ยวชาญ|ต่างระบบ|ตัวแอป|ปัญหาจริง|ใช้จริง|ประเทศไทย|วิธีคิด|ทันที|เขียนโค้ด|บทบาท|เปิดแอป|ผจญภัย|มหาวิทยาลัย|ยากกว่า|ส่งงาน|เป้าหมาย|โครงงาน|ขั้นตอน|ความ(?:พยายาม|กดดัน|คาดหวัง)|ครั้งแรก|หน่วยเสียง|สิ่งจำเป็น|ต่างคนต่างทำ|คุณค่า|ลูกค้า|ข้อมูล|ละเอียดอ่อน|มิตรภาพ|จริงจัง|ใช้ได้จริง|แผนสำรอง|หลายส่วน|กลับบ้าน/g;
+  const KEEP = /ผลงาน|ตรงไหน|พร้อมกัน|ร่วมกัน|โปรดักต์|โปรเจกต์|เสียบสาย|เวลาจำกัด|ผู้ใช้|ผู้ปกครอง|ผู้เชี่ยวชาญ|ต่างระบบ|ตัวแอป|ปัญหาจริง|ใช้จริง|ประเทศไทย|วิธีคิด|ทันที|เขียนโค้ด|บทบาท|เปิดแอป|ผจญภัย|มหาวิทยาลัย|ยากกว่า|ส่งงาน|เป้าหมาย|โครงงาน|ขั้นตอน|ความ(?:พยายาม|กดดัน|คาดหวัง)|ครั้งแรก|หน่วยเสียง|สิ่งจำเป็น|ต่างคนต่างทำ|คุณค่า|ลูกค้า|ข้อมูล|ละเอียดอ่อน|มิตรภาพ|จริงจัง|ใช้ได้จริง|แผนสำรอง|หลายส่วน|กลับบ้าน|กว่าที่คิด|เบื้องหลัง/g;
   const hl = (s) => esc(s).split(/ (?=(?:[^*]*\*[^*]*\*)*[^*]*$)/).map((c) => ((c = c.replace(KEEP, '<span class="nw">$&</span>'), c.replace(/<[^>]+>/g, "").length <= 20 ? `<span class="ph">${c}</span>` : c)).replace(/\*(.+?)\*/g, '<b class="hl">$1</b>')).join(" ").replace(/\n/g, "<br>");
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -400,7 +400,7 @@
       pk.hidden = false;
       const flip = $(".flip", card), OUT = "cubic-bezier(0.22, 1, 0.36, 1)", INOUT = "cubic-bezier(0.65, 0, 0.35, 1)";
       const timers = [];
-      let stage = 0, shown = null; // stage: 0 sealed, 1 opening, 2 card shown, 3 leaving; shown = centre pose the card was revealed at
+      let stage = 0, shown = null, held = null; // stage: 0 sealed, 1 opening, 2 card shown, 3 leaving; shown = centre pose the card was revealed at
       // card rect is in screen px, but translate runs inside body{zoom} on big screens, so divide by zoom (as the tarot did)
       const center = () => {
         const r = card.getBoundingClientRect(), z = parseFloat(getComputedStyle(document.body).zoom) || 1, vw = doc.clientWidth, vh = innerHeight;
@@ -412,7 +412,7 @@
         const c = (shown = center());
         doc.classList.add("go");
         pk.classList.add("revealed");
-        card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
+        held = card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
         flip.animate([{ transform: "rotateY(180deg)" }, { transform: "rotateY(-360deg)" }], { duration: 900, easing: OUT });
         $(".pk-enter", pk).focus();
       };
@@ -424,7 +424,7 @@
         doc.classList.add("go");
         pk.classList.add("pk-out");
         const moves = [$(".hero-copy", heroEl).animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 600, delay: from ? 300 : 0, easing: OUT, fill: "backwards" })];
-        if (from) moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT }));
+        if (from) { held.cancel(); moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT })); }
         Promise.all(moves.map((a) => a.finished)).then(() => {
           card.getAnimations().forEach((a) => a.cancel());
           pk.remove();
