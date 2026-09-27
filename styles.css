@@ -119,10 +119,16 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .role { margin-top: 6px; font: 600 clamp(20px, 2vw, 26px)/1.4 var(--display); }
 .role b { color: var(--volt); }
 .proof { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 10px; margin-top: 28px; }
-.proof li { --rc: var(--legendary); padding: 10px 16px 10px 14px; border-left: 2px solid var(--rc); background: linear-gradient(90deg, rgba(245, 197, 66, 0.12), transparent); line-height: 1.3; }
+.proof li { --rc: var(--legendary); padding: 0; border-left: 2px solid var(--rc); background: linear-gradient(90deg, rgba(245, 197, 66, 0.12), transparent); line-height: 1.3; }
 .proof li.rar-epic { --rc: var(--epic); background: linear-gradient(90deg, rgba(183, 148, 255, 0.12), transparent); }
 .proof b { display: block; font: 700 clamp(17px, 1.4vw, 20px)/1.25 var(--display); color: var(--rc); }
 .proof span { font-size: 15px; color: var(--text-2); }
+/* each proof opens its quest page (certificate = evidence); arrow + hover say it is clickable */
+.proof a { position: relative; display: block; padding: 10px 36px 10px 14px; color: inherit; text-decoration: none; transition: background 0.2s; }
+.proof a svg { position: absolute; right: 12px; top: 50%; width: 16px; height: 16px; translate: 0 -50%; color: var(--rc); opacity: 0.55; transition: opacity 0.2s, translate 0.2s var(--ease); }
+.proof a:hover, .proof a:focus-visible { background: color-mix(in srgb, var(--rc) 12%, transparent); }
+.proof a:hover svg, .proof a:focus-visible svg { opacity: 1; translate: 4px -50%; }
+.proof a:focus-visible { outline: 2px solid var(--rc); outline-offset: 2px; }
 
 /* holo card: .tilt (mouse tilt + intro fly) > .flip (intro spin) > front .char-wrap + .card-back */
 .tilt {
