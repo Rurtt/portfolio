@@ -14,44 +14,113 @@
   const T = (src) => src.replace("assets/", "assets/t/"); // 480px thumbnail of the same image
   const hud = $(".hud");
 
-  // ---------- SFX: tiny synth (Web Audio, no files). Off until the viewer turns it on (browsers block sound before a tap); choice remembered ----------
-  let ac = null, sound = false;
+  // ---------- SFX: tiny synth (Web Audio, no files). Off until the viewer turns it on (browsers block sound before a tap); choice remembered.
+  // Everything goes through one master gain + limiter so nothing jump-scares ----------
+  let ac = null, out = null, sound = false;
   try { sound = localStorage.getItem("sfx") === "1"; } catch {}
-  const tone = (f, at = 0, dur = 0.12, type = "square", vol = 0.06, f2 = f) => {
+  const tone = (f, at = 0, dur = 0.12, type = "square", vol = 0.05, f2 = f) => {
     const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
     o.type = type;
     o.frequency.setValueAtTime(f, t);
     o.frequency.exponentialRampToValueAtTime(f2, t + dur);
-    g.gain.setValueAtTime(vol, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g).connect(ac.destination);
+    o.connect(g).connect(out);
     o.start(t);
-    o.stop(t + dur);
+    o.stop(t + dur + 0.02);
   };
-  const noise = (dur = 0.4, vol = 0.25, at = 0) => {
-    const b = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 2;
-    const s = ac.createBufferSource(), g = ac.createGain();
-    s.buffer = b; g.gain.value = vol;
-    s.connect(g).connect(ac.destination);
-    s.start(ac.currentTime + at);
+  // filtered noise, band sweeps f0 -> f1 (tears, whooshes, shutters, crackle)
+  const noise = (dur = 0.3, vol = 0.08, at = 0, f0 = 1200, f1 = f0, q = 0.8) => {
+    const t = ac.currentTime + at, b = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(), bp = ac.createBiquadFilter(), g = ac.createGain();
+    s.buffer = b;
+    bp.type = "bandpass";
+    bp.Q.value = q;
+    bp.frequency.setValueAtTime(f0, t);
+    bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + Math.min(0.05, dur / 3));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(bp).connect(g).connect(out);
+    s.start(t);
   };
-  const arp = (fs, gap = 0.08, type = "square", vol = 0.05) => fs.forEach((f, i) => tone(f, i * gap, gap * 1.6, type, vol));
+  const arp = (fs, gap = 0.08, type = "square", vol = 0.04, at = 0) => fs.forEach((f, i) => tone(f, at + i * gap, gap * 1.8, type, vol));
+  const NOTES = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093, 2349]; // combos climb this scale
   const SFX = {
-    tick: () => tone(1800, 0, 0.03, "sine", 0.03),
-    blip: () => tone(880, 0, 0.06),
-    err: () => tone(150, 0, 0.28, "sawtooth", 0.07, 90),
-    boom: () => { noise(0.6, 0.35); tone(90, 0, 0.5, "sine", 0.3, 30); },
-    over: () => arp([440, 370, 311, 262], 0.2, "triangle", 0.09),
-    ok: () => arp([523, 659, 784, 1047], 0.08, "sine", 0.09),
-    start: () => arp([660, 880], 0.09),
-    plug: () => { noise(0.05, 0.2); tone(1200, 0.05, 0.05, "sine", 0.05); tone(300, 0.12, 0.35, "sine", 0.08, 900); },
-    coin: () => { tone(988, 0, 0.08); tone(1319, 0.08, 0.3); },
-    flag: () => arp([784, 988, 1175, 1568], 0.07, "triangle", 0.08),
-    win: () => arp([523, 523, 523, 698, 880, 1047], 0.11, "square", 0.05),
+    key: () => { noise(0.03, 0.05, 0, 3500); tone(1600 + Math.random() * 400, 0, 0.02, "square", 0.01); },
+    tick: () => tone(1800, 0, 0.03, "sine", 0.025),
+    blip: () => tone(880, 0, 0.06, "square", 0.03),
+    note: (i = 0) => tone(NOTES[i % NOTES.length], 0, 0.16, "triangle", 0.05),
+    err: () => tone(160, 0, 0.22, "sawtooth", 0.035, 100),
+    boom: () => { noise(0.45, 0.1, 0, 600, 120); tone(85, 0, 0.35, "sine", 0.1, 45); }, // soft thud, not a jump scare
+    over: () => arp([440, 370, 311, 262], 0.2, "triangle", 0.05),
+    ok: () => arp([523, 659, 784, 1047], 0.08, "sine", 0.06),
+    start: () => arp([660, 880], 0.09, "square", 0.03),
+    boot: () => { tone(220, 0, 0.5, "sine", 0.05, 880); arp([880, 1175], 0.07, "square", 0.025, 0.45); },
+    crt: () => { noise(0.2, 0.05, 0, 7000, 2500, 2); tone(55, 0, 0.35, "sine", 0.06); },
+    plug: () => { noise(0.04, 0.08, 0, 2500); tone(300, 0.06, 0.3, "sine", 0.05, 900); },
+    coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
+    flag: () => arp([784, 988, 1175, 1568], 0.07, "triangle", 0.05),
+    win: () => arp([523, 523, 523, 698, 880, 1047], 0.11, "square", 0.03),
+    whoosh: () => noise(0.5, 0.07, 0, 250, 2600, 0.6),
+    swipe: () => noise(0.28, 0.05, 0, 1500, 6000, 0.7),
+    flip: () => noise(0.14, 0.06, 0, 3200, 1200, 1.2),
+    shutter: () => { noise(0.04, 0.09, 0, 4200, 4200, 2); noise(0.06, 0.07, 0.07, 2600, 2600, 2); },
+    thud: () => { tone(120, 0, 0.16, "sine", 0.08, 60); noise(0.07, 0.04, 0, 500); },
+    scan: () => tone(420, 0, 0.6, "sine", 0.025, 1700),
+    glitch: () => { for (let i = 0; i < 6; i++) tone(200 + Math.random() * 1800, i * 0.035, 0.03, "square", 0.022); },
+    snap: () => { tone(1000, 0, 0.05, "square", 0.035, 1500); tone(1500, 0.05, 0.1, "triangle", 0.04); },
+    // "ปลา": a buzzy voice through a moving formant
+    voice: () => {
+      const t = ac.currentTime, o = ac.createOscillator(), bp = ac.createBiquadFilter(), g = ac.createGain();
+      o.type = "sawtooth";
+      o.frequency.setValueAtTime(210, t);
+      o.frequency.linearRampToValueAtTime(170, t + 0.45);
+      bp.type = "bandpass";
+      bp.Q.value = 5;
+      bp.frequency.setValueAtTime(500, t);
+      bp.frequency.linearRampToValueAtTime(1100, t + 0.4);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.09, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      o.connect(bp).connect(g).connect(out);
+      o.start(t);
+      o.stop(t + 0.52);
+    },
+    // pack intro: foil tearing, walk-out stingers, card reveal sparkle
+    tear: () => { noise(0.55, 0.07, 0, 1800, 7000, 1.4); for (let i = 0; i < 7; i++) noise(0.03, 0.05, 0.05 + Math.random() * 0.45, 5000 + Math.random() * 3000, 5000, 3); },
+    beat: () => { noise(0.35, 0.05, 0, 300, 1800, 0.6); tone(98, 0, 0.5, "sine", 0.08, 82); tone(784, 0.05, 0.45, "triangle", 0.02); },
+    reveal: () => { arp([1047, 1319, 1568, 2093, 2637], 0.06, "sine", 0.035); noise(0.7, 0.025, 0, 9000, 6000, 1); },
+    // slot machine: lever ratchet, reel stops, coin-cascade payout
+    lever: () => { for (let i = 0; i < 5; i++) noise(0.025, 0.07, i * 0.05, 2800, 2800, 3); },
+    stop: () => { tone(260, 0, 0.06, "square", 0.035); noise(0.03, 0.04, 0, 2000); },
+    payout: () => {
+      for (let i = 0; i < 16; i++) tone([1319, 1568, 1760, 2093][i % 4] + Math.random() * 30, i * 0.065, 0.09, "square", 0.022);
+      arp([1047, 1319, 1568, 2093], 0.09, "triangle", 0.05, 1.1);
+    },
+    rankup: () => { arp([392, 523, 659, 784, 1047], 0.07, "sawtooth", 0.025); noise(0.6, 0.02, 0.3, 8000, 6000); },
+    page: () => noise(0.18, 0.06, 0, 2500, 5500, 0.7),
+    quest: () => { noise(0.45, 0.05, 0, 300, 2400, 0.6); arp([659, 784, 988, 1319], 0.1, "triangle", 0.05, 1.1); },
+    invite: () => { tone(1175, 0, 0.25, "sine", 0.06); tone(1568, 0.14, 0.45, "sine", 0.06); },
+    slam: () => { tone(70, 0, 0.35, "sine", 0.1, 40); noise(0.2, 0.05, 0, 800, 200); },
   };
-  const sfx = (name) => { if (sound && ac && SFX[name]) try { SFX[name](); } catch {} };
-  const wake = () => { if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (A) ac = new A(); } if (ac && ac.state === "suspended") ac.resume(); };
+  const sfx = (name, i) => { if (sound && out && SFX[name]) try { SFX[name](i); } catch {} };
+  const wake = () => {
+    if (!ac) {
+      const A = window.AudioContext || window.webkitAudioContext;
+      if (!A) return;
+      ac = new A();
+      const lim = ac.createDynamicsCompressor();
+      lim.threshold.value = -18;
+      lim.ratio.value = 8;
+      out = ac.createGain();
+      out.gain.value = 0.6;
+      out.connect(lim).connect(ac.destination);
+    }
+    if (ac.state === "suspended") ac.resume();
+  };
   const sfxBtns = document.querySelectorAll(".sfx-btn");
   const paint = () => sfxBtns.forEach((b) => b.setAttribute("aria-pressed", sound));
   sfxBtns.forEach((b) => b.addEventListener("click", () => {
@@ -124,8 +193,8 @@
   // ---------- home: skills ----------
   const skills = $("#skills");
   if (skills) {
-    const row = (s) => `
-      <div class="skill${s.max ? " max" : ""}"${s.can ? ' tabindex="0"' : ""}>
+    const row = (s, i) => `
+      <div class="skill${s.max ? " max" : ""}"${s.can ? ' tabindex="0"' : ""}${i < 8 ? ` data-n="${i}"` : ""}>
         <span class="name">${esc(s.name)}</span>
         <span class="lvbar" style="--lv:${s.lv}" role="img" aria-label="เลเวล ${s.max ? "สูงสุด" : s.lv + " จาก 10"}"></span>
         <span class="lvtxt">${s.max ? "LV MAX" : "LV " + s.lv}</span>
@@ -134,7 +203,7 @@
     // top 8 by level up front, the rest folded (sort is stable, so ties keep data.js order)
     const all = (window.SKILLS || []).flatMap((g) => g.items).sort((a, b) => b.lv - a.lv);
     skills.innerHTML = all.slice(0, 8).map(row).join("") +
-      (all.length > 8 ? `<details class="sk-more"><summary>ดูทั้งหมด (${all.length})</summary>${all.slice(8).map(row).join("")}</details>` : "");
+      (all.length > 8 ? `<details class="sk-more"><summary>ดูทั้งหมด (${all.length})</summary>${all.slice(8).map((s) => row(s, 99)).join("")}</details>` : "");
   }
 
   // ---------- hero card: top 6 attributes as bars ----------
@@ -157,7 +226,7 @@
     svg += `<g class="shape"><polygon class="area" points="${S.map((s, i) => at(i, (R * s.value) / 100).join(",")).join(" ")}"/>`;
     svg += S.map((s, i) => {
       const [x, y] = at(i, (R * s.value) / 100);
-      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" role="img" data-i="${i}" aria-label="${esc(s.key)}: ${esc(s.can)}"/><circle class="pt" cx="${x}" cy="${y}" r="5"/>`;
+      return `<circle class="hit" cx="${x}" cy="${y}" r="16" tabindex="0" role="img" data-i="${i}" aria-label="${esc(s.key)}: ${esc(s.can)}"/><circle class="pt" data-n="${i}" cx="${x}" cy="${y}" r="5"/>`;
     }).join("") + "</g>";
     svg += S.map((s, i) => {
       const [x, y] = at(i, R + 30);
@@ -414,7 +483,7 @@
   document.querySelectorAll("[data-copy]").forEach((b) => {
     b.addEventListener("click", async () => {
       const old = b.textContent;
-      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; }
+      try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "คัดลอกแล้ว"; sfx("coin"); }
       catch { b.textContent = "คัดลอกไม่ได้"; }
       setTimeout(() => (b.textContent = old), 1500);
     });
@@ -466,7 +535,7 @@
         const c = (shown = center());
         doc.classList.add("go");
         pk.classList.add("revealed");
-        sfx("win");
+        sfx("reveal");
         held = card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
         flip.animate([{ transform: "rotateY(180deg)" }, { transform: "rotateY(-360deg)" }], { duration: 900, easing: OUT });
         $(".pk-enter", pk).focus();
@@ -478,6 +547,7 @@
         timers.forEach(clearTimeout);
         doc.classList.add("go");
         pk.classList.add("pk-out");
+        sfx("whoosh");
         const moves = [$(".hero-copy", heroEl).animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 600, delay: from ? 300 : 0, easing: OUT, fill: "backwards" })];
         if (from) { held.cancel(); moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT })); }
         Promise.all(moves.map((a) => a.finished)).then(() => {
@@ -500,9 +570,9 @@
         if (stage) return;
         stage = 1;
         pk.classList.add("opening");
-        sfx("boom");
+        sfx("tear");
         $(".pk-skip", pk).focus(); // the pack bursts away; do not leave focus on an invisible button
-        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => pk.classList.add(c), t)));
+        [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => { pk.classList.add(c); sfx("beat"); }, t)));
         timers.push(setTimeout(reveal, 3550));
       });
       $(".pk-skip", pk).addEventListener("click", enter);
@@ -542,17 +612,21 @@
     reels.innerHTML = [...FACE].map((c) => (c === "," ? '<span class="reel comma"><i><span>,</span></i></span>' : '<span class="reel"><i><span>0</span></i></span>')).join("");
     const strips = [...reels.querySelectorAll(".reel:not(.comma) i")], job = $(".next-job"), machine = $(".slot-machine"), lever = $(".sm-lever");
     let pulse = 0;
+    let stops = [];
     const roll = () => {
+      stops.forEach(clearTimeout);
+      stops = [];
       strips.forEach((s, k) => {
         s.getAnimations().forEach((a) => a.cancel());
         s.innerHTML = ["0", ...Array.from({ length: 12 }, () => (Math.random() * 10) | 0), digits[k]].map((d) => `<span>${d}</span>`).join("");
         if (calm) { s.style.transform = "translateY(-13em)"; return; }
         s.animate([{ transform: "translateY(0)" }, { transform: "translateY(-13em)" }], { duration: 900 + k * 220, easing: "cubic-bezier(.15,.8,.25,1)", fill: "forwards" });
+        stops.push(setTimeout(() => sfx("stop"), 820 + k * 220));
       });
       clearTimeout(pulse);
       job.classList.remove("ping");
       machine.classList.remove("idle");
-      pulse = setTimeout(() => { sfx("coin"); job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
+      pulse = setTimeout(() => { sfx("payout"); job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
@@ -560,7 +634,7 @@
     lever.addEventListener("click", () => {
       lever.classList.remove("pull"); void lever.offsetWidth; // restart the pull animation on every pull
       lever.classList.add("pull");
-      sfx("start");
+      sfx("lever");
       roll();
     });
   }
@@ -587,13 +661,46 @@
       .map(([k, v, c], i) => `<div class="${c}" data-at="${(0.14 + i * 0.08).toFixed(2)}" data-sfx="blip"><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("");
   }
 
+  // ---------- combos: a [data-seq="gap ms"] part lights its [data-n] children one by one when it turns on, each with a rising note (or data-seq-sfx);
+  // [data-to] children count up to that number ----------
+  const calmFx = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const countUp = (el) => {
+    if (calmFx) return;
+    const to = el.dataset.to, dec = (to.split(".")[1] || "").length, t0 = performance.now();
+    const f = (t) => { const k = Math.min(1, (t - t0) / 700); el.textContent = (+to * (1 - (1 - k) ** 3)).toFixed(dec); if (k < 1) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+  };
+  document.querySelectorAll("[data-seq]").forEach((host) => host.addEventListener("on", () => {
+    [...host.querySelectorAll("[data-n]")].forEach((k, i) => setTimeout(() => {
+      k.classList.add("on");
+      sfx(host.dataset.seqSfx || "note", i);
+      if (k.dataset.to) countUp(k);
+    }, calmFx ? 0 : i * +host.dataset.seq));
+  }, { once: true }));
+  // typewriter: [data-typewrite] types its own text (key clicks) when its part turns on
+  document.querySelectorAll("[data-typewrite]").forEach((el) => {
+    const full = el.textContent;
+    (el.closest("[data-at]") || el).addEventListener("on", () => {
+      if (calmFx) return;
+      let i = 0;
+      const t = setInterval(() => { el.textContent = full.slice(0, ++i); if (i % 2) sfx("key"); if (i >= full.length) clearInterval(t); }, 45);
+    }, { once: true });
+  });
+
   // ---------- scroll scenes: .scene.pin pins its .stage on wide screens and scrubs --p 0-1 over the section; elsewhere --p runs while the scene rises into view.
   // [data-at] children get .on once --p passes that value (off again when scrolled back, sfx only going forward); [data-count="from,to,p0,p1"] counts with --p ----------
   const scenes = [...document.querySelectorAll(".scene")];
   if (scenes.length) {
-    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, wide = matchMedia("(min-width: 861px) and (min-height: 600px)");
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, wide = matchMedia("(min-width: 861px) and (min-height: 700px)");
     const all = (s, q) => [...new Set([...s.querySelectorAll(q), ...(s.media ? s.media.querySelectorAll(q) : [])])];
-    const parts = scenes.map((s) => [all(s, "[data-at]"), all(s, "[data-count]")]);
+    const parts = scenes.map((s) => [all(s, "[data-at]"), all(s, "[data-count]"), all(s, "[data-keys]")]);
+    // sideways tracks: chapters inside .htrack sit side by side; vertical scroll plays chapter i, then pans the row to chapter i+1 (PAN svh of scroll)
+    const PAN = 70;
+    const tracks = [...document.querySelectorAll(".htrack")].map((t) => {
+      const ps = [...t.querySelectorAll(".hin > .scene")], play = ps.map((s) => parseFloat(s.style.getPropertyValue("--len")) - 90);
+      t.style.setProperty("--th", play.reduce((a, b) => a + b, 0) + PAN * (ps.length - 1) + "svh");
+      return { t, inn: $(".hin", t), ps, play, seg: 0 };
+    });
     const stageOn = matchMedia("(min-width: 861px)");
     const hs = $(".scene.hs"), track = $("#side-list");
     // side quests: vertical scroll distance = how far the card row overflows, so it slides exactly to its end
@@ -602,16 +709,33 @@
     const run = () => {
       q = 0;
       const vh = innerHeight, top = hud ? hud.getBoundingClientRect().bottom : 0;
+      tracks.forEach((k) => {
+        k.ps.forEach((s) => (s.hp = null));
+        if (!wide.matches || calm) return k.inn.style.removeProperty("--shift");
+        const y = (top - k.t.getBoundingClientRect().top) / (vh / 100);
+        let s0 = 0, shift = 0;
+        k.ps.forEach((s, i) => {
+          s.hp = (y - s0) / k.play[i];
+          if (y > s0 + k.play[i] && i < k.ps.length - 1) shift = i + Math.min(1, (y - s0 - k.play[i]) / PAN);
+          s0 += k.play[i] + PAN;
+        });
+        k.inn.style.setProperty("--shift", shift.toFixed(4));
+        const seg = Math.floor(shift + 0.9);
+        if (seg > k.seg) sfx("whoosh");
+        k.seg = seg;
+      });
       scenes.forEach((s, i) => {
         const r = s.getBoundingClientRect(), pinned = s.classList.contains("pin") || s === hs;
         const raw = calm ? 1
+          : s.hp != null ? s.hp
+          : s.classList.contains("words") ? (top - r.top) / Math.max(1, r.height - vh + top) // own sticky stage on every screen
           : s.media ? (vh * (stageOn.matches ? 0.5 : 0.85) - r.top) / r.height // pinned-steps: 0 when the step reaches mid-screen (its media shows), 1 when it leaves
           : pinned && wide.matches ? (top - r.top) / Math.max(1, r.height - vh + top) : (vh * 0.9 - r.top) / (vh * 0.75);
         const p = Math.min(1, Math.max(0, raw));
         s.style.setProperty("--p", p.toFixed(4));
         if (s.media) s.media.style.setProperty("--p", p.toFixed(4));
         parts[i][0].forEach((b) => {
-          const on = p >= +b.dataset.at;
+          const on = calm || (b.dataset.at === "auto" ? b.getBoundingClientRect().top < vh * 0.8 : p >= +b.dataset.at);
           if (on === b.classList.contains("on")) return;
           b.classList.toggle("on", on);
           if (on) { b.dispatchEvent(new Event("on")); sfx(b.dataset.sfx); }
@@ -619,6 +743,12 @@
         parts[i][1].forEach((c) => {
           const [f, t, a, z] = c.dataset.count.split(",").map(Number), v = String(Math.round(f + (t - f) * Math.min(1, Math.max(0, (p - a) / (z - a)))));
           if (c.textContent !== v) { c.textContent = v; sfx("tick"); }
+        });
+        // typing driven by scroll ([data-keys="p0,p1"]): a key click every small step forward inside that range
+        parts[i][2].forEach((el) => {
+          const [a, z] = el.dataset.keys.split(",").map(Number), last = el.lp ?? p;
+          if (p < last) el.lp = p;
+          else if (p - last > 0.008) { el.lp = p; if (p > a && last < z) sfx("key"); }
         });
       });
     };

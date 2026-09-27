@@ -1035,3 +1035,75 @@ html:not(.js) .kids i { opacity: 1; }
 .tag.t2 { bottom: 10%; left: -2%; background: var(--legendary); }
 .js .tag:not(.on) { transform: scale(0.4); }
 @media (max-width: 860px) { .tag.t1 { right: 4%; } .tag.t2 { left: 4%; } }
+
+/* ============ ROUND 3: sideways tracks, combos, hobby / next quest / invite moments ============ */
+.fx { display: none; } /* sound-only beat markers */
+.gm-press .dots::after { content: ""; animation: dots 1.2s steps(1) infinite; }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+
+/* sideways tracks: chapters sit in a row and vertical scroll pans it (main.js sets --th = scroll length, --shift = panel index) */
+@media (min-width: 861px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+  .js .htrack { height: calc(var(--th, 0svh) + 100svh - 64px); }
+  .js .hstage { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; }
+  .js .hin { display: flex; height: 100%; transform: translateX(calc(var(--shift, 0) * -100%)); }
+  .js .htrack[data-dir="-1"] .hin { flex-direction: row-reverse; transform: translateX(calc(var(--shift, 0) * 100%)); }
+  .js .htrack .scene.pin { flex: 0 0 100%; height: 100%; border-bottom: 0; }
+  .js .htrack .scene.pin > .stage { position: relative; top: auto; height: 100%; }
+}
+
+/* character sheet combos: tools tick in, radar points pop, skill bars fill one after another, scores count up, B2 stamps */
+.equip li, .skill, .academic [data-n] { transition: opacity 0.35s var(--ease), transform 0.4s var(--ease); }
+.js .equip li[data-n]:not(.on) { opacity: 0; transform: translateY(10px) scale(0.85); }
+.radar .pt { transform-box: fill-box; transform-origin: center; transition: transform 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.js .radar .pt[data-n]:not(.on) { transform: scale(0); }
+.js #skills .skill[data-n]:not(.on) { opacity: 0; transform: translateX(-18px); }
+.js #skills .skill[data-n]:not(.on) .lvbar::after { transform: scaleX(0); }
+#skills .skill.on .lvtxt { animation: lvpop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
+@keyframes lvpop { from { transform: scale(1.7); } }
+.js .academic [data-n]:not(.on) { opacity: 0; }
+.stamp { display: inline-block; }
+.stamp.on { animation: stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
+@keyframes stamp { from { transform: scale(2.6) rotate(-12deg); opacity: 0; } }
+
+/* hobby: photo flashes in from the left, cards slide in from alternating sides, books slide off the shelf, Immortal glows */
+#hobby, .contact { overflow-x: clip; }
+.js .hobby-photo:not(.on) { transform: translateX(-60px) rotate(-3deg); }
+.hobby-photo::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.hobby-photo.on::after { animation: flash 0.5s ease-out; }
+@keyframes flash { from { opacity: 0.8; } }
+.js .hobby-card:not(.on) { transform: translateX(90px); }
+.js .hobby-card:nth-child(2):not(.on) { transform: translateX(-90px); }
+.books li { transition: opacity 0.4s var(--ease), transform 0.5s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.js .books li[data-n]:not(.on) { opacity: 0; transform: translateX(-50px) rotate(-8deg); }
+.rank { color: #ff4f6d; }
+.hobby-game.on .rank { animation: rankglow 1.4s 0.3s ease-out both; }
+@keyframes rankglow { 0% { text-shadow: none; } 40% { text-shadow: 0 0 24px #ff4f6d, 0 0 48px #ff4f6d; } 100% { text-shadow: 0 0 14px rgba(255, 79, 109, 0.45); } }
+
+/* next quest: a line draws from วิศวะคอม to Startup and a marker travels it */
+.route { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 2vw, 30px); }
+.rt { position: relative; flex: 0 1 clamp(80px, 16vw, 240px); height: 4px; border-radius: 2px; background: var(--line-2); }
+.rt::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, var(--volt), var(--legendary)); transform-origin: left; transform: scaleX(0); transition: transform 1.1s 0.2s var(--ease); }
+.rt b { position: absolute; top: 50%; left: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; rotate: 45deg; background: var(--volt); box-shadow: 0 0 16px var(--volt); transition: left 1.1s 0.2s var(--ease), top 1.1s 0.2s var(--ease); }
+.epi.on .rt::before, html:not(.js) .rt::before { transform: none; }
+.epi.on .rt b { left: 100%; }
+.epi.on .rt-b { animation: arrive 0.6s 1.2s both; color: var(--legendary); text-shadow: 0 0 30px rgba(245, 197, 66, 0.4); }
+@keyframes arrive { from { opacity: 0.3; transform: scale(0.94); color: var(--text); } 50% { transform: scale(1.06); } }
+@media (max-width: 700px) {
+  .route { flex-direction: column; gap: 14px; }
+  .rt { flex: none; width: 4px; height: 60px; }
+  .rt::before { transform-origin: top; transform: scaleY(0); }
+  .rt b { left: 50%; top: 0; }
+  .epi.on .rt b { left: 50%; top: 100%; }
+}
+
+/* party invite: notification toast slides in from the right, Accept breathes, motto slams in */
+.js .scene .invite:not(.on) { transform: translateX(115%); }
+.invite.on .accept { animation: accept 1.8s 1s ease-in-out infinite; }
+@keyframes accept { 50% { box-shadow: 0 0 0 6px var(--volt-dim), 0 0 30px var(--volt-dim); } }
+.js .scene .outro:not(.on) { transform: scale(2.2); }
+.outro.on { transition: transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.2s; }
+.contact:has(.outro.on) .outro p { animation: quake-s 0.35s 0.3s linear; }
+@keyframes quake-s { 25% { translate: -5px 2px; } 50% { translate: 4px -2px; } 75% { translate: -2px 1px; } }
+@media (prefers-reduced-motion: reduce) { .gm-press .dots::after { content: "..."; } }
+.route { font-size: clamp(30px, 4.6vw, 64px); }
+.route .rt-a { white-space: nowrap; }
