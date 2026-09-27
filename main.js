@@ -14,7 +14,7 @@
   const T = (src) => src.replace("assets/", "assets/t/"); // 480px thumbnail of the same image
 
   // ---------- SFX: tiny synth (Web Audio, no files). On by default (off-switch remembered); browsers only allow sound after the first tap/key,
-  // so the pack tap starts it. Only a few sounds: pack + walkout, slot machine, copy. One master gain + limiter so nothing jump-scares ----------
+  // so the pack tap starts it. Only a few sounds: pack + walkout, slot spin, copy. One master gain + limiter so nothing jump-scares ----------
   let ac = null, out = null, sound = true;
   try { sound = localStorage.getItem("sfx") !== "0"; } catch {}
   const tone = (f, at = 0, dur = 0.12, type = "square", vol = 0.05, f2 = f) => {
@@ -75,7 +75,7 @@
       noise(1.2, 0.025, 0.1, 9000, 7000, 1);
     },
     ting: () => { stab([1319, 1976, 2637], 0, 0.9, 0.05, 11000, 4000); tone(2637, 0, 0.8, "sine", 0.05); },
-    // real slot machine: reels rattle high-low and slow down, each reel lands with a clunk, then the bell rings with coins dropping
+    // slot machine: sound only while it spins (lever, reels rattle high-low and slow down, each reel lands with a clunk)
     spin: (len = 1.8) => {
       for (let t = 0, gap = 0.05, i = 0; t < len; t += gap, gap *= 1.04, i++) {
         tone(i % 2 ? 660 : 440, t, 0.045, "square", 0.028);
@@ -84,17 +84,6 @@
     },
     lever: () => { for (let i = 0; i < 6; i++) noise(0.03, 0.08, i * 0.045, 2600, 2600, 3); kick(0.3, 0.14, 140, 60, 0.2); noise(0.06, 0.07, 0.3, 1200); },
     stop: () => { kick(0, 0.17, 200, 70, 0.14); noise(0.04, 0.09, 0, 2400, 2400, 1.5); tone(330, 0, 0.07, "square", 0.05); },
-    payout: () => {
-      for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.05); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
-      for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
-    },
-    // game start (Ch.1): tape pushed in = plastic slide, click-clack, latch clunk, then the motor spins up
-    tape: () => {
-      noise(0.16, 0.05, 0, 1800, 2600, 3);
-      noise(0.02, 0.12, 0.17, 3000, 3000, 2); noise(0.02, 0.1, 0.23, 2200, 2200, 2);
-      tone(180, 0.25, 0.08, "square", 0.05, 120); noise(0.05, 0.08, 0.25, 700, 700, 1.5);
-      tone(90, 0.4, 0.5, "sawtooth", 0.015, 140); noise(0.5, 0.02, 0.4, 400, 600, 2);
-    },
     coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
   };
   const sfx = (name, i) => { if (sound && out && SFX[name]) try { SFX[name](i); } catch {} };
@@ -616,7 +605,7 @@
       clearTimeout(pulse);
       job.classList.remove("ping");
       machine.classList.remove("idle");
-      pulse = setTimeout(() => { sfx("payout"); job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
+      pulse = setTimeout(() => { job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
@@ -644,17 +633,49 @@
     links.forEach((a) => { const t = document.getElementById(a.hash.slice(1)); if (t) cur.observe(t); });
   }
 
+  // ---------- transitions (the only scroll effects): curtain panels + chapter track ----------
+  {
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, big = matchMedia("(min-width: 861px) and (min-height: 700px)");
+    // curtain: the next section slides up over a .cover, which sinks a little and dims under it
+    const covers = [...document.querySelectorAll(".cover")];
+    // chapter track: each chapter holds HOLD svh of scroll, then the next one spends PAN svh entering its own way (data-tx, CSS)
+    const HOLD = 45, PAN = 45, track = $(".htrack"), chs = track ? [...track.querySelectorAll(".chapter")] : [];
+    if (track) track.style.setProperty("--th", HOLD * chs.length + PAN * (chs.length - 1) + "svh");
+    let q = 0;
+    const run = () => {
+      q = 0;
+      const vh = innerHeight;
+      covers.forEach((c) => {
+        const k = calm ? 0 : Math.min(1, Math.max(0, (vh - (c.getBoundingClientRect().bottom - (c.y0 || 0))) / vh));
+        // fully covered (or not yet) = no transform, so #anchors from the nav still land on the real layout position
+        c.y0 = k > 0 && k < 1 ? k * vh * 0.3 : 0;
+        c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.04).toFixed(4)})` : "";
+        c.style.setProperty("--k", c.y0 ? k.toFixed(3) : 0);
+      });
+      if (!track) return;
+      if (calm || !big.matches) return chs.forEach((s) => s.classList.remove("cur", "nxt"));
+      const top = hud ? hud.getBoundingClientRect().bottom : 0, y = (top - track.getBoundingClientRect().top) / (vh / 100);
+      const i = Math.min(chs.length - 1, Math.max(0, Math.floor(y / (HOLD + PAN)))), local = y - i * (HOLD + PAN);
+      const t = i < chs.length - 1 ? Math.min(1, Math.max(0, (local - HOLD) / PAN)) : 0;
+      chs.forEach((s, j) => {
+        s.classList.toggle("cur", j === i);
+        s.classList.toggle("nxt", j === i + 1 && t > 0);
+        s.style.setProperty("--out", j === i ? t.toFixed(4) : 0);
+        s.style.setProperty("--in", j === i + 1 ? t.toFixed(4) : 0);
+        if (j === i && chs[j + 1]) s.dataset.leave = chs[j + 1].dataset.tx; else delete s.dataset.leave;
+      });
+    };
+    addEventListener("scroll", () => { if (!q) q = requestAnimationFrame(run); }, { passive: true });
+    addEventListener("resize", run);
+    run();
+  }
+
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
   const els = document.querySelectorAll(".reveal");
   if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); sfx(en.target.dataset.sfx); }
+    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
   }), { rootMargin: "0px 0px -8% 0px" });
   els.forEach((el) => io.observe(el));
 
-  // story beats (e.g. battery boom) fire later, once well inside the screen, so the reader sees them happen
-  const pop = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); pop.unobserve(en.target); sfx(en.target.dataset.sfx); }
-  }), { rootMargin: "0px 0px -30% 0px" });
-  document.querySelectorAll(".pop").forEach((el) => pop.observe(el));
 })();

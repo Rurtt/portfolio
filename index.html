@@ -70,7 +70,7 @@
 
   <main id="main" tabindex="-1">
     <!-- HERO -->
-    <header class="hero" id="top">
+    <header class="hero cover" id="top">
       <div class="pk" id="pack" role="dialog" aria-modal="true" aria-label="เปิดแพ็กการ์ดผู้เล่น" hidden>
         <button class="pk-skip" type="button">ข้าม ›</button>
         <button class="sfx-btn pk-sfx" type="button" aria-pressed="true" aria-label="เสียงเอฟเฟกต์"><svg aria-hidden="true"><use href="#i-sound"/></svg><span>เสียง</span></button>
@@ -127,7 +127,7 @@
     </header>
 
     <!-- MAIN QUEST 1: DoCode (same pinned-steps layout as WordFlow) -->
-    <section class="chapter ch-wf ch-dc" id="docode" aria-labelledby="dc-title">
+    <section class="chapter ch-wf ch-dc cover" id="docode" aria-labelledby="dc-title">
       <div class="container">
         <div class="wf-intro reveal">
           <p class="ch-mark">Main Quest 1 · 2025</p>
@@ -171,7 +171,7 @@
     </section>
 
     <!-- MAIN QUEST -->
-    <section class="chapter ch-wf" id="main-quest" aria-labelledby="ch5-title">
+    <section class="chapter ch-wf cover" id="main-quest" aria-labelledby="ch5-title">
       <div class="container">
         <div class="wf-intro reveal" id="wordflow">
           <p class="ch-mark">Main Quest 2 · 2026</p>
@@ -212,11 +212,13 @@
       </div>
     </section>
 
+    <!-- STORY: Ch.1-5 share one pinned stage on big screens; each chapter enters its own way (data-tx, see styles "chapter track") -->
+    <div class="htrack"><div class="hstage"><div class="hin">
     <!-- CH.1 GAMER -->
     <section class="chapter ch-gamer" id="ch1" aria-labelledby="ch1-title">
       <div class="container">
         <div class="ch-grid">
-          <figure class="ch-media pop" data-sfx="tape">
+          <figure class="ch-media">
             <img src="assets/rov-1.webp" alt="ทีม ROV รับรางวัลรองชนะเลิศอันดับ 2 depa E-Sports In Schools" width="900" height="675" loading="lazy">
           </figure>
           <div class="ch-copy reveal">
@@ -230,9 +232,9 @@
     </section>
 
     <!-- CH.2 THE FALL -->
-    <section class="chapter ch-fall" id="ch2" aria-labelledby="ch2-title">
+    <section class="chapter ch-fall" data-tx="crt" id="ch2" aria-labelledby="ch2-title">
       <div class="container ch-grid">
-        <figure class="ch-media pop">
+        <figure class="ch-media">
           <img src="assets/wrg.webp" alt="นั่งแก้หุ่นยนต์กับเพื่อนบนพื้นสนามแข่ง WRG 2024" width="900" height="506" loading="lazy">
         </figure>
         <div class="ch-copy reveal">
@@ -241,7 +243,7 @@
           <p class="ch-sub">ตอนนั้นไม่รู้อะไรเลย ไปด้วยความชอบล้วน&nbsp;ๆ</p>
           <ul class="fails">
             <li><small>Innovative Robots</small><b>ทำโปรเจกต์ไม่เสร็จ</b></li>
-            <li class="pop"><svg class="burst" viewBox="0 0 100 100" aria-hidden="true"><polygon fill="#ff5a5a" points="50,0 58,21 70,14 71,29 91,26 79,42 89,50 79,58 93,75 71,71 70,86 58,79 50,98 42,79 31,84 29,71 7,75 21,58 9,50 21,42 9,26 29,29 30,16 42,21"/><polygon fill="#f5c542" points="59,17 60,33 70,30 67,40 81,42 70,50 76,57 67,60 74,74 60,67 57,77 50,70 42,81 40,67 31,69 33,60 17,59 30,50 23,43 33,40 27,27 40,33 43,24 50,30"/><circle cx="50" cy="50" r="9" fill="#fff6d6"/></svg><small>Line Tracing Robots</small><b>แบตระเบิด</b></li>
+            <li><small>Line Tracing Robots</small><b>แบตระเบิด</b></li>
           </ul>
           <p class="ch-sub">เลยรู้ว่า ความสนใจอย่างเดียวไม่พอ</p>
         </div>
@@ -249,9 +251,9 @@
     </section>
 
     <!-- CH.3 TURNING POINT -->
-    <section class="chapter ch-posn" id="ch3" aria-labelledby="ch3-title">
+    <section class="chapter ch-posn" data-tx="pan" id="ch3" aria-labelledby="ch3-title">
       <div class="container ch-grid">
-        <figure class="ch-media pop">
+        <figure class="ch-media">
           <img src="assets/posn-photo.webp" alt="รับเกียรติบัตรค่าย 1 สอวน. คอมพิวเตอร์" width="900" height="675" loading="lazy">
         </figure>
         <div class="ch-copy reveal">
@@ -266,9 +268,9 @@
     </section>
 
     <!-- CH.4 COMEBACK -->
-    <section class="chapter ch-comeback" id="ch4" aria-labelledby="ch4-title">
+    <section class="chapter ch-comeback" data-tx="iris" id="ch4" aria-labelledby="ch4-title">
       <div class="container ch-grid rev">
-        <figure class="ch-media duo pop">
+        <figure class="ch-media duo">
           <img src="assets/zt-macro-bg.webp" alt="ZeiTop เปลี่ยนมือถือ Android เก่าเป็น Macropad ของ PC" width="1920" height="1080" loading="lazy">
           <img src="assets/zt-team.webp" alt="ทีม ZeiTop ในวันแข่ง SK Robotics Playground 2025" width="900" height="675" loading="lazy">
           <img class="contain" src="assets/zt-cert.webp" alt="เกียรติบัตรเหรียญทอง SK Robotics Playground 2025" width="900" height="632" loading="lazy">
@@ -284,9 +286,9 @@
     </section>
 
     <!-- CH.5 NOW -->
-    <section class="chapter ch-now" id="ch5" aria-labelledby="ch5n-title">
+    <section class="chapter ch-now" data-tx="scan" id="ch5" aria-labelledby="ch5n-title">
       <div class="container ch-grid">
-        <figure class="ch-media pop">
+        <figure class="ch-media">
           <img src="assets/ctf-award.webp" alt="รับเหรียญ Thailand Cyber Top Talent 2026" width="900" height="506" loading="lazy">
         </figure>
         <div class="ch-copy reveal">
@@ -298,6 +300,8 @@
         </div>
       </div>
     </section>
+
+    </div></div></div>
 
     <!-- SIDE QUESTS + FULL TIMELINE -->
     <section class="block" id="side-quests">

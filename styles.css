@@ -554,7 +554,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 
 /* story chapters */
 .chapter { --ch: var(--volt); min-height: 100svh; display: grid; align-items: center; padding: 112px 0; border-bottom: 1px solid var(--line); }
-.ch-fall { --ch: #ff5a5a; overflow-x: clip; } /* burst hangs off the card edge; never let it widen the page */
+.ch-fall { --ch: #ff5a5a; }
 .ch-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
 .ch-media { position: relative; }
 .ch-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; border: 1px solid var(--line-2); }
@@ -679,49 +679,19 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 @keyframes job-ping { 40% { transform: scale(1.08); color: var(--text); } }
 @media (prefers-reduced-motion: reduce) { .next-job.ping { animation: none; } }
 
-/* chapter beats (one per chapter, all end in the static final state; reduced motion skips them) */
-/* ch.3: the photo goes from gray (like ch.2) to full color, the quote bar fills top to bottom */
+/* ch.3 quote bar */
 .ch-quote { position: relative; border-left-color: var(--line-2); }
 .ch-quote::before { content: ""; position: absolute; left: -3px; top: 0; bottom: 0; width: 3px; background: var(--ch); transform-origin: top; }
-@supports (animation-timeline: view()) {
-  .ch-posn .ch-media img { animation: colorize linear both; animation-timeline: view(); animation-range: entry 25% cover 50%; }
-  @keyframes colorize { from { filter: grayscale(1) brightness(0.75); } to { filter: none; } }
-  .ch-quote::before { animation: barfill linear both; animation-timeline: view(); animation-range: entry 70% cover 55%; }
-  @keyframes barfill { from { transform: scaleY(0); } }
-}
-/* ch.4: gold shine sweeps across "ได้เหรียญทอง", photos rise in one after another */
+/* ch.4: the one kept beat: gold shine sweeps across "ได้เหรียญทอง" */
 .gold-shine { padding: 0.25em 0; background: linear-gradient(100deg, var(--legendary) 30%, #fffdf2 47%, #ffffff 50%, #fffdf2 53%, var(--legendary) 70%) 100% 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
 .js .ch-copy.in .gold-shine { animation: goldsweep 1.4s 0.5s ease-in-out both; }
 @keyframes goldsweep { from { background-position: 100% 0; } 50% { filter: drop-shadow(0 0 18px rgba(245, 197, 66, 0.7)); } to { background-position: 0 0; } }
-/* as the shine passes, the team photo (medals on) pulses gold once (echo of the hero badge pulse) */
-.js .duo.in img:nth-child(2) { animation: goldpulse 1.3s 1s ease-out both; }
-@keyframes goldpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0.85); border-color: var(--legendary); } 60% { border-color: var(--legendary); } 100% { box-shadow: 0 0 0 22px rgba(245, 197, 66, 0); } }
-.js .duo img { transition: opacity 0.6s var(--ease), transform 0.7s var(--ease); }
-.js .duo:not(.in) img { opacity: 0; transform: translateY(48px); }
-.duo img:nth-child(2) { transition-delay: 0.15s; }
-.duo img:nth-child(3) { transition-delay: 0.3s; }
 
-/* ch.5: cyan scan line sweeps the photo once, then "อันดับ 8" glitches in like a terminal readout */
 .ch-now .ch-media { border-radius: 20px; overflow: hidden; }
-.ch-now .ch-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(180deg, transparent 0 44%, rgba(62, 232, 255, 0.28) 49%, #3ee8ff 50%, transparent 51%) 0 0 / 100% 200% no-repeat, repeating-linear-gradient(0deg, rgba(62, 232, 255, 0.07) 0 2px, transparent 2px 4px); }
-.js .ch-now .ch-media.in::after { animation: scan 1.3s 0.3s ease-in-out both; }
-@keyframes scan { 0% { opacity: 1; background-position: 0 100%, 0 0; } 85% { opacity: 1; } 100% { opacity: 0; background-position: 0 -100%, 0 0; } }
-.js .ch-now .ch-copy.in h2 .cyber { animation: glitch 0.6s 1.2s steps(1) both; }
-@keyframes glitch { 0% { opacity: 0; } 15% { opacity: 1; transform: translateX(-4px); text-shadow: 3px 0 #ff2bd6, -3px 0 #3ee8ff; } 35% { transform: translateX(3px); text-shadow: -3px 0 #ff2bd6, 3px 0 #3ee8ff; } 55% { opacity: 0.4; transform: none; } 70% { opacity: 1; transform: translateX(-2px); text-shadow: 2px 0 #ff2bd6, -2px 0 #3ee8ff; } 100% { opacity: 1; transform: none; text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); } }
 
-/* battery boom: drawn burst behind the card's right side, pops when the card is well on screen */
-.fails .pop { position: relative; }
-.fails .pop > small, .fails .pop > b { position: relative; z-index: 1; }
-.burst { position: absolute; right: -28px; top: 50%; width: clamp(120px, 12vw, 170px); height: auto; margin-top: calc(clamp(120px, 12vw, 170px) / -2); pointer-events: none; filter: drop-shadow(0 0 24px rgba(255, 90, 90, 0.55)); }
-.js .pop:not(.in) .burst { transform: scale(0) rotate(-40deg); }
-.js .pop.in .burst { animation: burst 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
-.js .pop.in { animation: jolt 0.36s 0.08s both; }
-@keyframes burst { 0% { transform: scale(0) rotate(-40deg); } 60% { transform: scale(1.35) rotate(10deg); } 100% { transform: scale(1) rotate(0); } }
-@keyframes jolt { 0%, 100% { transform: none; background: var(--panel); } 20% { transform: translateX(-7px); background: #3a1418; } 45% { transform: translateX(6px); } 70% { transform: translateX(-3px); } }
 @media (max-width: 860px) {
   .chapter { min-height: 0; padding: 80px 0; }
   .ch-grid { grid-template-columns: 1fr; gap: 32px; }
-  .burst { right: -10px; }
 }
 
 /* reveal (only when JS runs) */
@@ -860,29 +830,38 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 @media (max-width: 1199px) { .hud .sfx-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .hud .sfx-btn { min-width: 44px; justify-content: center; position: relative; } }
 @media (pointer: coarse) { .sfx-btn { min-height: 44px; } }
 
-/* chapter worlds (minimal): each chapter has its own tint, and its photo enters its own way once when it scrolls in. No pinning, no extra scroll */
-.ch-gamer, .ch-posn, .ch-comeback, .ch-now { overflow-x: clip; } /* entrances start off-frame; never widen the page */
+/* chapter worlds: each chapter has its own tint */
 .ch-gamer { --ch: var(--epic); background: radial-gradient(60% 55% at 30% 50%, rgba(183, 148, 255, 0.13), transparent 70%), #0b0912; }
 .ch-fall { background: radial-gradient(60% 55% at 30% 50%, rgba(255, 90, 90, 0.11), transparent 70%), #0e0707; }
 .ch-posn { --ch: var(--rare); background: radial-gradient(60% 55% at 30% 50%, rgba(111, 178, 255, 0.12), transparent 70%), #070b13; }
 .ch-comeback { background: radial-gradient(60% 55% at 70% 50%, rgba(245, 197, 66, 0.12), transparent 70%), #0d0b06; }
 .ch-now { background: radial-gradient(60% 55% at 30% 50%, rgba(62, 232, 255, 0.1), transparent 70%), #050c0e; }
-@media (prefers-reduced-motion: no-preference) {
-  .js .chapter .ch-media.pop:not(.in) { opacity: 0; }
-  .js .chapter .ch-media.pop.in { animation: 0.8s var(--ease) both; }
-  /* Ch.1: old TV turns on (line > full picture) */
-  .js .ch-gamer .ch-media.pop.in { animation-name: tv-on; }
-  @keyframes tv-on { 0% { opacity: 1; transform: scale(0.9, 0.006); filter: brightness(4); } 45% { transform: scale(1, 0.006); filter: brightness(4); } 100% { transform: none; filter: none; } }
-  /* Ch.2: drops in and thuds */
-  .js .ch-fall .ch-media.pop.in { animation-name: drop-in; animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0); }
-  @keyframes drop-in { 0% { opacity: 0; transform: translateY(-90px) rotate(-3deg); } 70% { opacity: 1; transform: translateY(0) rotate(0); } 80% { transform: translateX(-6px); } 90% { transform: translateX(4px); } 100% { transform: none; } }
-  /* Ch.3: slides in from the right */
-  .js .ch-posn .ch-media.pop.in { animation-name: from-right; animation-duration: 1s; animation-timing-function: cubic-bezier(0.3, 0.7, 0.3, 1); }
-  @keyframes from-right { from { opacity: 0; transform: translateX(220px); } }
-  /* Ch.4: iris opens */
-  .js .ch-comeback .ch-media.pop.in { animation-name: iris; }
-  @keyframes iris { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(75% at 50% 50%); } }
-  /* Ch.5: wiped in top to bottom (the cyan scan line rides the edge) */
-  .js .ch-now .ch-media.pop.in { animation-name: wipe-down; animation-duration: 1s; }
-  @keyframes wipe-down { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+
+/* ============ transitions only ============ */
+/* curtain panels: hero > DoCode > WordFlow > words each slide up over the one before, which sinks a little and dims (main.js "transitions") */
+.cover { position: relative; transform-origin: 50% 100%; }
+.cover::after { content: ""; position: absolute; inset: 0; z-index: 5; background: #000; opacity: calc(var(--k, 0) * 0.5); pointer-events: none; }
+.cover + * { position: relative; z-index: 2; background-color: var(--bg); border-radius: 32px 32px 0 0; box-shadow: 0 -30px 70px rgba(0, 0, 0, 0.6); border-top: 1px solid var(--line-2); }
+@media (max-width: 860px) { .cover + * { border-radius: 22px 22px 0 0; } }
+/* chapter track: Ch.1-5 stack in one pinned stage; the next chapter enters its own way (data-tx on it):
+   crt = old screen switches off, pan = pushed in from the right, iris = circle opens, scan = cyan line wipes down.
+   main.js sets --th (scroll length), .cur/.nxt, --out/--in (0-1) and data-leave on the outgoing chapter */
+@media (min-width: 861px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
+  .js .htrack { height: calc(var(--th, 0svh) + 100svh - 64px); }
+  .js .hstage { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; }
+  .js .hin { display: grid; height: 100%; }
+  .js .htrack .chapter { grid-area: 1 / 1; min-height: 0; height: 100%; padding: 0; border-bottom: 0; position: relative; --in: 0; --out: 0; }
+  .js .htrack .chapter:not(.cur):not(.nxt) { visibility: hidden; }
+  .js .htrack .cur { z-index: 1; }
+  .js .htrack .nxt { z-index: 2; }
+  .js .htrack .cur[data-leave="crt"] { z-index: 2; transform: scaleY(max(0.004, 1 - var(--out) * 1.7)) scaleX(clamp(0, 3 - var(--out) * 3.2, 1)); filter: brightness(calc(1 + var(--out) * 2.5)); }
+  .js .htrack .nxt[data-tx="crt"] { z-index: 1; opacity: clamp(0, var(--in) * 2.4 - 1.4, 1); }
+  .js .htrack .cur[data-leave="pan"] { transform: translateX(calc(var(--out) * -100%)); }
+  .js .htrack .nxt[data-tx="pan"] { transform: translateX(calc((1 - var(--in)) * 100%)); }
+  .js .htrack .cur[data-leave="iris"] { transform: scale(calc(1 - var(--out) * 0.08)); filter: brightness(calc(1 - var(--out) * 0.5)); }
+  .js .htrack .nxt[data-tx="iris"] { clip-path: circle(calc(var(--in) * 72%) at 50% 50%); }
+  .js .htrack .nxt[data-tx="scan"] { clip-path: inset(0 0 calc((1 - var(--in)) * 100%) 0); }
+  .js .htrack .cur[data-leave="scan"]::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--out) * 100%); height: 3px; z-index: 9; background: #3ee8ff; box-shadow: 0 0 24px 4px rgba(62, 232, 255, 0.7); }
 }
+@media (prefers-reduced-motion: reduce) { .cover::after { display: none; } }
+@media (min-width: 861px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) { .js .htrack .chapter:not(.cur) .gold-shine { animation: none; } } /* shine when Ch.4 takes the stage, not while it waits hidden */
