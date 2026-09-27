@@ -726,31 +726,28 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 @media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .logo-slot { width: 44px; height: 44px; } .filter, .copy { min-height: 44px; } .p-bar button { min-width: 44px; min-height: 44px; } }
 .tl-item[hidden], .tl-year[hidden] { display: none; }
 
-/* side quest cards */
-.side-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-@media (max-width: 1100px) { .side-list { grid-template-columns: repeat(2, 1fr); } }
-.mq-card {
-  position: relative; overflow: hidden; display: flex; flex-direction: column; text-decoration: none;
-  background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--rc); border-radius: 12px;
-  transition: border-color 0.25s, transform 0.25s var(--ease), box-shadow 0.25s;
-}
-.mq-card:hover { border-color: var(--rc); transform: translateY(-4px); box-shadow: 0 10px 32px -8px color-mix(in srgb, var(--rc) 45%, transparent); }
-.mq-card .tl-thumb { border-radius: 0; }
-.mq-card-body { padding: 16px 18px 18px; display: grid; gap: 6px; }
-.mq-card-body h3 { font-size: 24px; margin-top: 4px; }
-.mq-card-body p { color: var(--text-2); font-size: 16px; line-height: 1.55; }
-.mq-card .mq-date { font-size: 15px; align-self: center; }
-.mq-card .rar { font-size: 12px; }
-.mq-card[hidden] { display: none; }
-@media (max-width: 640px) { .side-list { grid-template-columns: 1fr; } }
-.rank-no { position: absolute; top: 10px; left: 10px; z-index: 1; font: 700 15px/1 var(--display); padding: 7px 10px; border-radius: 6px; background: rgba(8, 9, 13, 0.85); color: var(--rc); border: 1px solid var(--rc); }
+/* Side Quests: FUT-style cards, tier colour = rarity */
+.side-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+@media (max-width: 480px) { .side-list { grid-template-columns: 1fr 1fr; gap: 12px; } }
+.qc { --rc: var(--rare); position: relative; display: flex; flex-direction: column; gap: 10px; padding: 36px 12px 14px; border-radius: 14px; border: 2px solid var(--rc); background: linear-gradient(165deg, color-mix(in srgb, var(--rc) 28%, #0c0d10), #0c0d10 55%); text-decoration: none; color: var(--text); transition: transform 0.2s var(--ease), box-shadow 0.2s; }
+.qc[hidden] { display: none; }
+.qc.rar-legendary { --rc: var(--legendary); } .qc.rar-epic { --rc: var(--epic); } .qc.rar-rare { --rc: var(--rare); }
+.qc:hover, .qc:focus-visible { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 14px 40px color-mix(in srgb, var(--rc) 40%, transparent); }
+.qc-tier { position: absolute; top: 12px; left: 12px; font: 700 12px/1 var(--display); letter-spacing: 0.14em; text-transform: uppercase; color: var(--rc); }
+.qc-yr { position: absolute; top: 12px; right: 12px; font: 600 12px/1 var(--display); color: var(--text-3); }
+.qc-pic { aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; background: #000; }
+.qc-pic img { width: 100%; height: 100%; object-fit: cover; }
+.qc-pic.contain img { object-fit: contain; }
+.qc-info h3 { font: 700 18px/1.2 var(--display); }
+.qc-info p { margin-top: 4px; font-size: 14px; line-height: 1.35; color: var(--rc); }
+@media (max-width: 480px) { .qc { padding: 30px 8px 10px; } .qc-info h3 { font-size: 15px; } .qc-info p { font-size: 13px; } }
+@media (prefers-reduced-motion: reduce) { .qc:hover, .qc:focus-visible { transform: none; } }
 .tl-all { margin-top: 32px; }
 .tl-all > summary { list-style: none; }
 .tl-all > summary::-webkit-details-marker { display: none; }
 .tl-all > summary svg { transform: rotate(90deg); transition: transform 0.2s var(--ease); }
 .tl-all[open] > summary svg { transform: rotate(-90deg); }
 .tl-all .timeline { margin-top: 32px; }
-.mq-ev { font-size: 15px; color: var(--text-3); line-height: 1.45; }
 
 /* demo video */
 .q-cover.video { aspect-ratio: 776 / 540; background: #000; }

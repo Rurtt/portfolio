@@ -41,7 +41,7 @@
     document.querySelectorAll(".filter").forEach((btn) => btn.addEventListener("click", () => {
       const f = btn.dataset.filter;
       document.querySelectorAll(".filter").forEach((b) => { const on = b === btn; b.classList.toggle("is-on", on); b.setAttribute("aria-pressed", on); });
-      document.querySelectorAll(".tl-item, #side-list .mq-card").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
+      document.querySelectorAll(".tl-item, #side-list .qc").forEach((it) => { it.hidden = f !== "all" && it.dataset.rarity !== f; });
       tl.querySelectorAll(".tl-year").forEach((y) => { y.hidden = !tl.querySelector(`.tl-item[data-year="${y.dataset.year}"]:not([hidden])`); });
     }));
   }
@@ -50,16 +50,11 @@
   const side = $("#side-list");
   if (side) {
     const CH = ["rov", "posn", "zeitop", "ctf", "wordflow", "docode"], ORDER = { legendary: 0, epic: 1, rare: 2 };
-    side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
-      <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
-        <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
-        <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
-        <div class="mq-card-body">
-          <div class="tl-tags"><span class="rar rar-${q.rarity}">${RAR[q.rarity]}</span><span class="mq-date">${esc(q.date)}</span></div>
-          <h3>${esc(q.title)}</h3>
-          <span class="mq-ev">${hl(q.event)}</span>
-          <p>${hl(q.result)}</p>
-        </div>
+    side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q) => `
+      <a class="qc rar-${q.rarity} reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
+        <span class="qc-tier">${RAR[q.rarity]}</span><span class="qc-yr">${esc(q.year)}</span>
+        <div class="qc-pic${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="300"></div>
+        <div class="qc-info"><h3>${esc(q.title)}</h3><p>${hl(q.result)}</p></div>
       </a>`).join("");
   }
 
