@@ -49,7 +49,7 @@
   // ---------- home: side quests = every quest without its own chapter, ranked by rarity ----------
   const side = $("#side-list");
   if (side) {
-    const CH = ["rov", "posn", "zeitop", "ctf", "wordflow"], ORDER = { legendary: 0, epic: 1, rare: 2 };
+    const CH = ["rov", "posn", "zeitop", "ctf", "wordflow", "docode"], ORDER = { legendary: 0, epic: 1, rare: 2 };
     side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
       <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
         <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
@@ -449,9 +449,8 @@
     }
   }
 
-  // ---------- WordFlow chapter: wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
-  const wf = $(".wf");
-  if (wf) {
+  // ---------- pinned-steps chapters (DoCode, WordFlow): wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
+  document.querySelectorAll(".wf").forEach((wf) => {
     const stage = $(".wf-stage", wf), steps = [...wf.querySelectorAll(".wf-step")], media = steps.map((s) => $(".wf-m", s));
     const wide = matchMedia("(min-width: 861px)");
     const place = () => media.forEach((m, i) => (wide.matches ? stage.append(m) : steps[i].prepend(m)));
@@ -462,10 +461,36 @@
       if (!e.isIntersecting) return;
       const i = steps.indexOf(e.target);
       media.forEach((m, j) => m.classList.toggle("on", j === i));
+      // one-shot effects (payout roll, กา tiles) key off .seen / the "seen" event so they never replay
+      if (!media[i].classList.contains("seen")) { media[i].classList.add("seen"); media[i].dispatchEvent(new Event("seen")); }
       if (vid && !calm) { if (media[i].contains(vid)) vid.play().catch(() => {}); else vid.pause(); }
     }), { rootMargin: "-45% 0px -45% 0px" });
     steps.forEach((s) => pick.observe(s));
     media[0].classList.add("on");
+  });
+
+  // ---------- DoCode payout: reels roll 00,000 → 1x,xxx when its step is first read; SPIN re-rolls but always lands on the real amount ----------
+  const reels = $(".reels");
+  if (reels) {
+    const FACE = "1x,xxx", digits = FACE.replace(",", ""), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reels.innerHTML = [...FACE].map((c) => (c === "," ? '<span class="reel comma"><i><span>,</span></i></span>' : '<span class="reel"><i><span>0</span></i></span>')).join("");
+    const strips = [...reels.querySelectorAll(".reel:not(.comma) i")], job = $(".next-job");
+    let pulse = 0;
+    const roll = () => {
+      strips.forEach((s, k) => {
+        s.getAnimations().forEach((a) => a.cancel());
+        s.innerHTML = ["0", ...Array.from({ length: 12 }, () => (Math.random() * 10) | 0), digits[k]].map((d) => `<span>${d}</span>`).join("");
+        if (calm) { s.style.transform = "translateY(-13em)"; return; }
+        s.animate([{ transform: "translateY(0)" }, { transform: "translateY(-13em)" }], { duration: 900 + k * 220, easing: "cubic-bezier(.15,.8,.25,1)", fill: "forwards" });
+      });
+      clearTimeout(pulse);
+      job.classList.remove("ping");
+      pulse = setTimeout(() => job.classList.add("ping"), calm ? 0 : 900 + 4 * 220);
+    };
+    // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
+    const slotM = $(".slot-m");
+    if (slotM.classList.contains("seen")) roll(); else slotM.addEventListener("seen", roll, { once: true });
+    $(".spin").addEventListener("click", roll);
   }
 
   // ---------- HUD: XP bar = scroll progress; link of the section in mid-screen gets aria-current ----------
