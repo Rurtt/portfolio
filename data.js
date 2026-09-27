@@ -52,7 +52,7 @@ window.GAMING = [
 ];
 
 // Quest log, newest first. rarity: legendary | epic | rare. fit: "contain" for transparent/diagram covers.
-// Quest page: keep brief/did at 1-2 short bullets, loot/note one short line (judges skim). origin is kept but not rendered.
+// Quest page: keep brief/did at 1-2 short bullets, loot 2+ bullets, note one short line (judges skim). origin is kept but not rendered.
 window.QUESTS = [
   {
     id: "docode",
@@ -76,7 +76,10 @@ window.QUESTS = [
       "ออกแบบ และร่วมทำ Frontend",
     ],
     stack: ["Next.js", "Static Site", "SEO"],
-    loot: "Product ดีเป็นแค่ส่วนหนึ่ง ที่ยากกว่าคือทำให้ลูกค้าเห็นคุณค่า",
+    loot: [
+      "Product ดีเป็นแค่ส่วนหนึ่ง ที่ยากกว่าคือหาว่าเราสร้างคุณค่าให้ตลาดตรงไหน และทำให้ลูกค้าเห็นคุณค่านั้น",
+      "กว่างานหนึ่งชิ้นจะเป็นรายได้ ต้องผ่านทั้งหาลูกค้า สร้างความน่าเชื่อถือ เจรจา จนส่งงานให้ตรงความคาดหวัง",
+    ],
     note: "เขียนโค้ดง่ายกว่าหาลูกค้าเยอะ",
     gallery: [
       { src: "assets/dc-home.webp", cap: "เว็บไซต์ลูกค้า · หน้าแรก" },
@@ -93,13 +96,13 @@ window.QUESTS = [
     date: "ส.ค. 2569", year: "2026",
     title: "Thailand Cyber Top Talent 2026",
     event: "TCTT 2026 · การแข่งขัน CTF ระดับ Junior · สกมช. (NCSA)",
-    result: "*อันดับ 8 ของประเทศ* ทั้งประเภททีมและบุคคล · อันดับ 4 ภาคกลาง (ทีม)",
+    result: "*อันดับ 8 ของประเทศ* ทีมและบุคคล",
     rarity: "legendary",
     level: "ระดับชาติ",
     role: "Web Security · Reverse Engineering · Crypto · OSINT",
     duration: "เตรียมตัว 7 วัน",
     cover: "assets/ctf-map.webp",
-    summary: "แข่ง CTF (หาช่องโหว่เพื่อเก็บคะแนน) ทั้งที่พื้นฐานแทบเป็นศูนย์ เตรียมตัว 7 วัน ติดอันดับ 8 ของประเทศ",
+    summary: "แข่ง CTF (หาช่องโหว่เพื่อเก็บคะแนน) ครั้งแรก พื้นฐานแทบเป็นศูนย์ เตรียมตัว 7 วัน ติดอันดับ 8 ของประเทศ และอันดับ 4 ภาคกลาง (ทีม) คะแนนของผม 5,277 จาก 7,801 ของทั้งทีม",
     brief: [
       "CTF คือแข่งหาช่องโหว่หรือไขปริศนา เพื่อหา Flag มาเก็บคะแนน",
       "โจทย์มีทั้ง Web, Reverse Engineering, Crypto และ OSINT",
@@ -109,7 +112,10 @@ window.QUESTS = [
       "Reverse Engineering: แกะดูการทำงานของ Android APK",
     ],
     stack: ["OSINT", "Reverse Engineering", "Android Studio", "Web Security", "Cryptography"],
-    loot: "เรียนของใหม่ใต้เวลาจำกัด ทางเดิมไม่เวิร์กก็เปลี่ยนทันที",
+    loot: [
+      "เรียนเรื่องที่ไม่คุ้นใต้เวลาจำกัด ลองเครื่องมือจริง และทำงานใต้แรงกดดัน",
+      "ทางเดิมไม่เวิร์กก็ต้องเปลี่ยนวิธีคิดทันที และทำให้ผมสนใจ Cybersecurity มากขึ้น",
+    ],
     note: "เรียนพื้นฐานใน 7 วัน เกือบตาย",
     gallery: [
       { src: "assets/ctf-map.webp", cap: "Scoreboard ระหว่างแข่ง" },
@@ -146,7 +152,11 @@ window.QUESTS = [
       "ทำ Backend, Dashboard และคุยกับแพทย์",
     ],
     stack: ["Unity", "C#", "FastAPI", "ReVoiceAI Model", "Firebase", "Next.js"],
-    loot: "ซอฟต์แวร์ที่ดีต้องเหมาะกับผู้ใช้ และเคารพข้อมูลที่ละเอียดอ่อน",
+    loot: [
+      "บริหารทีมและสร้างโปรดักต์จากปัญหาจริง ที่ต้องคิดถึงเด็ก ผู้ปกครอง แพทย์ และข้อจำกัดทางเทคนิคไปพร้อมกัน",
+      "ซอฟต์แวร์ที่มีคุณค่าไม่จบแค่ระบบทำงานได้ ต้องเหมาะกับผู้ใช้ เคารพข้อมูลที่ละเอียดอ่อน และผ่านการทดสอบก่อนใช้จริง",
+      "คุณค่าของเทคโนโลยีเริ่มจากเข้าใจผู้ใช้ และทำงานร่วมกับผู้เชี่ยวชาญ",
+    ],
     note: "นอนน้อยที่สุด แต่ภูมิใจที่สุด",
     gallery: [
       { src: "assets/wf-app.webp", cap: "หน้าจอเกมบนมือถือ" },
@@ -175,7 +185,10 @@ window.QUESTS = [
       "แก้โจทย์ใต้เวลาจำกัด ด้วยพื้นฐานจากค่าย สอวน.",
     ],
     stack: ["Competitive Programming", "Algorithm", "Problem Solving"],
-    loot: "พื้นฐานจากค่าย สอวน. เอามาใช้ได้จริงในสนาม",
+    loot: [
+      "พื้นฐานจากค่าย สอวน. เอามาใช้ได้จริงในสนาม",
+      "ใต้เวลาจำกัด ต้องเลือกข้อที่ทำได้ก่อน ไม่จมอยู่กับข้อเดียว",
+    ],
     note: "ถ้วยไม่ได้ แต่ได้เข้ารอบชิง ก็คุ้มแล้ว",
     gallery: [
       { src: "assets/it-cert.webp", cap: "เกียรติบัตรผู้เข้ารอบชิงชนะเลิศ IT CLASH 69" },
@@ -192,6 +205,8 @@ window.QUESTS = [
     role: "Game Programmer · Game Designer",
     duration: "3 วัน",
     cover: "assets/gj-game.webp",
+    video: "assets/gj-demo.mp4", poster: "assets/gj-poster.webp",
+    live: "https://rurtt.itch.io/gimme-your-place", liveLabel: "ดาวน์โหลดเกม · itch.io",
     summary: "เกม 2D Local Co-op แข่งกันไปเส้นชัย ตัวละครสลับกันได้ เหมาะกับการทำลายมิตรภาพ",
     brief: [
       "มี Event ป่วนตลอด เช่น ถังระเบิด สลับปุ่มควบคุม",
@@ -202,7 +217,10 @@ window.QUESTS = [
       "ตัดขอบเขตให้ทันใน 3 วัน",
     ],
     stack: ["Unity", "C#", "Game Design", "Rapid Prototyping"],
-    loot: "เวลาน้อย ต้องทำ Mechanic หลักให้สนุกก่อน",
+    loot: [
+      "ได้เรียน Unity ออกแบบ Gameplay Mechanic และทำ Rapid Prototyping ทั้งที่พื้นฐานยังน้อย",
+      "เวลาจำกัด ต้องทำ Mechanic หลักให้สนุกก่อน ค่อยเพิ่มอย่างอื่น",
+    ],
     note: "ทำเกมยากกว่าเล่นเยอะ ขอโทษ Dev ทุกคน",
     gallery: [
       { src: "assets/gj-game.webp", cap: "หน้าจอเกม" },
@@ -230,7 +248,10 @@ window.QUESTS = [
       "ทำ Flow เชื่อม Gmail และนำเสนอต่อกรรมการ",
     ],
     stack: ["React", "TypeScript", "Vite", "Tailwind CSS", "Google OAuth 2.0", "Gmail API"],
-    loot: "AI ช่วยเร่งได้ แต่คนต้องกำหนดโจทย์และตัดสินใจเอง",
+    loot: [
+      "เลือกเฉพาะฟีเจอร์ที่พิสูจน์ไอเดียได้ ปรับขอบเขต และเตรียมแผนสำรองใต้เวลาจำกัด",
+      "AI ช่วยเร่งได้ แต่คนต้องกำหนดโจทย์ ตรวจผลลัพธ์ และตัดสินใจให้ตรงเป้าหมายโปรดักต์",
+    ],
     note: "ห้องเต็มไปด้วยพี่มหาลัย แต่อยากได้ตังค์ ทำไงได้",
     gallery: [
       { src: "assets/hero.webp", cap: "ถ้วยชนะเลิศ + เงินรางวัล 10,000 บาท" },
@@ -259,7 +280,10 @@ window.QUESTS = [
       "นำเสนอและตอบคำถามกรรมการ",
     ],
     stack: ["Rust", "Tokio", "Apache Cordova", "WebSocket", "ADB"],
-    loot: "ประสบการณ์ผู้ใช้เริ่มตั้งแต่วินาทีที่เสียบสาย",
+    loot: [
+      "เชื่อมซอฟต์แวร์ข้ามอุปกรณ์ต่างระบบ และจัดการตอนที่หลายส่วนต้องทำงานร่วมกัน",
+      "ประสบการณ์ผู้ใช้เริ่มตั้งแต่วินาทีที่เสียบสาย ขั้นตอนติดตั้งสำคัญไม่แพ้ตัวแอป",
+    ],
     note: "มือถือเก่าในลิ้นชัก ขอเกิดใหม่เป็น Macropad",
     gallery: [
       { src: "assets/zt-macro-bg.webp", cap: "โหมด Macropad" },
@@ -290,7 +314,10 @@ window.QUESTS = [
       "แบ่งหน้าที่ในทีมตามความถนัด",
     ],
     stack: ["Computer Science", "IT Knowledge", "Teamwork"],
-    loot: "ทฤษฎีกับการลงมือสร้าง ต้องไปด้วยกัน",
+    loot: [
+      "ทฤษฎีกับการลงมือสร้าง ต้องไปด้วยกัน",
+      "แบ่งงานตามความถนัด ทีมไปได้ไกลกว่าต่างคนต่างทำ",
+    ],
     note: "ครั้งหน้าไปให้ไกลกว่านี้",
     gallery: [
       { src: "assets/ict-cert.webp", cap: "เกียรติบัตรผ่านเข้ารอบ 30 ทีม ICT Challenge 2025" },
@@ -317,7 +344,10 @@ window.QUESTS = [
       "แตกปัญหาใหญ่เป็นขั้นเล็กก่อนเขียนโค้ด",
     ],
     stack: ["C++", "Algorithm", "Problem Solving"],
-    loot: "ไม่ได้ไปค่าย 2 แต่ได้วิธีคิดเป็นขั้นตอนที่ใช้ต่อทุกโปรเจกต์",
+    loot: [
+      "ไม่ได้ไปค่าย 2 แต่ได้วิธีคิดเป็นขั้นตอนที่ใช้ต่อทุกโปรเจกต์",
+      "ถ้าผมพยายาม ผมก็ทำได้ และความพยายามคือสิ่งจำเป็น",
+    ],
     note: "ได้ C++ กับเพื่อนสายคอมกลับบ้าน ถือว่ากำไร",
     gallery: [
       { src: "assets/posn-photo.webp", cap: "รับเกียรติบัตรค่าย 1" },
@@ -343,7 +373,10 @@ window.QUESTS = [
       "วิเคราะห์คู่แข่ง และปรับแผนตามเกม",
     ],
     stack: ["Teamwork", "Shotcalling", "Decision Making"],
-    loot: "ฝีมือแต่ละคนเก่งสุดเมื่อทุกคนรู้บทบาทและเล่นเป็นทีม",
+    loot: [
+      "ฝึกสื่อสาร วางแผน และตัดสินใจใต้ความกดดัน",
+      "ฝีมือแต่ละคนเก่งสุดเมื่อทุกคนรู้บทบาทและเล่นเป็นทีม",
+    ],
     note: "ชื่อในเกมไม่จริงจัง แต่เรื่องทีมจริงจังนะ",
     gallery: [
       { src: "assets/rov-1.webp", cap: "ทีมรับรางวัล" },

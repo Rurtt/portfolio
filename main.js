@@ -45,7 +45,7 @@
   // ---------- home: side quests = every quest without its own chapter, ranked by rarity ----------
   const side = $("#side-list");
   if (side) {
-    const CH = ["rov", "posn", "zeitop", "wordflow"], ORDER = { legendary: 0, epic: 1, rare: 2 };
+    const CH = ["rov", "posn", "zeitop", "ctf", "wordflow"], ORDER = { legendary: 0, epic: 1, rare: 2 };
     side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
       <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
         <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
@@ -160,7 +160,7 @@
                 <h1>${esc(q.title)}</h1>
                 <p class="event">${esc(q.event)}</p>
                 <p class="summary">${esc(q.summary)}</p>
-                ${q.live ? `<a class="btn btn-primary" href="${q.live}" target="_blank" rel="noopener">เปิดเว็บจริง ${back}</a>` : ""}
+                ${q.live ? `<a class="btn btn-primary" href="${q.live}" target="_blank" rel="noopener">${q.liveLabel || "เปิดเว็บจริง"} ${back}</a>` : ""}
               </div>
               ${q.video ? `<div class="q-media"><div class="q-cover video"><video src="${q.video}" poster="${q.poster}" controls preload="metadata" playsinline aria-label="วิดีโอเดโม ${esc(q.title)}"></video></div></div>` : pics ? `<div class="q-media"><div class="q-cover slides">
                   <img id="slide" src="${pics[0].src}" alt="${esc(pics[0].cap)}" data-full="${pics[0].src}" data-cap="${esc(pics[0].cap)}" width="900" height="560">
@@ -180,7 +180,7 @@
             </div>
             <div>
               <div class="panel reveal"><h2>Loadout</h2><div class="chips">${q.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>
-              <div class="panel reveal"><h2>บทเรียน</h2><p class="loot">${esc(q.loot)}</p></div>
+              <div class="panel reveal"><h2>บทเรียน</h2><ul class="list">${li(q.loot)}</ul></div>
               <div class="panel reveal"><p class="note"><small>บันทึกผู้เล่น</small>${esc(q.note)}</p></div>
             </div>
           </div>

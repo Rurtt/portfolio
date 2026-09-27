@@ -241,13 +241,15 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .logo-slot:hover { border-color: var(--volt); }
 .logo-slot:hover img, .logo-slot:focus-visible img { opacity: 1; }
 .logo-slot { position: relative; }
+/* tip only exists while shown: a hidden one near the right edge still widened the page on phones */
 .logo-slot::after {
-  content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; z-index: 5;
+  content: none; position: absolute; bottom: calc(100% + 8px); left: 50%; z-index: 5;
   padding: 5px 9px; border-radius: 6px; white-space: nowrap; pointer-events: none;
   font: 600 13px/1 var(--display); color: var(--text); background: var(--panel-2); border: 1px solid var(--volt);
   opacity: 0; transform: translate(-50%, 4px); transition: opacity 0.15s, transform 0.15s var(--ease);
 }
-.logo-slot:hover::after, .logo-slot:focus::after { opacity: 1; transform: translate(-50%, 0); }
+.logo-slot:hover::after, .logo-slot:focus::after { content: attr(data-tip); opacity: 1; transform: translate(-50%, 0); animation: tipin 0.15s var(--ease); }
+@keyframes tipin { from { opacity: 0; transform: translate(-50%, 4px); } }
 .logo-slot:focus-visible { outline: 2px solid var(--volt); outline-offset: 2px; }
 
 @media (max-width: 560px) {
@@ -500,7 +502,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 
 /* story chapters */
 .chapter { --ch: var(--volt); min-height: 100svh; display: grid; align-items: center; padding: 112px 0; border-bottom: 1px solid var(--line); }
-.ch-fall { --ch: #ff5a5a; }
+.ch-fall { --ch: #ff5a5a; overflow-x: clip; } /* burst hangs off the card edge; never let it widen the page */
 .ch-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
 .ch-media { position: relative; }
 .ch-media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 20px; border: 1px solid var(--line-2); }
@@ -551,6 +553,10 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .ch-comeback { --ch: var(--legendary); }
 .gold { color: var(--legendary); }
 .chip.gold { color: var(--legendary); border-color: rgba(245, 197, 66, 0.45); }
+.ch-now { --ch: #3ee8ff; background: radial-gradient(60% 50% at 30% 50%, rgba(62, 232, 255, 0.08), transparent 70%); }
+.ch-now .ch-media img { border-color: rgba(62, 232, 255, 0.5); box-shadow: 0 0 48px rgba(62, 232, 255, 0.18); }
+.cyber { color: var(--ch); text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); }
+.chip.cyber { color: var(--ch); border-color: rgba(62, 232, 255, 0.45); text-shadow: none; }
 .ch-sub b { color: var(--text); }
 .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .chapter .duo img { aspect-ratio: 1; border-radius: 14px; }
@@ -605,6 +611,14 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 .duo img:nth-child(2) { transition-delay: 0.15s; }
 .duo img:nth-child(3) { transition-delay: 0.3s; }
 
+/* ch.5: cyan scan line sweeps the photo once, then "อันดับ 8" glitches in like a terminal readout */
+.ch-now .ch-media { border-radius: 20px; overflow: hidden; }
+.ch-now .ch-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(180deg, transparent 0 44%, rgba(62, 232, 255, 0.28) 49%, #3ee8ff 50%, transparent 51%) 0 0 / 100% 200% no-repeat, repeating-linear-gradient(0deg, rgba(62, 232, 255, 0.07) 0 2px, transparent 2px 4px); }
+.js .ch-now .ch-media.in::after { animation: scan 1.3s 0.3s ease-in-out both; }
+@keyframes scan { 0% { opacity: 1; background-position: 0 100%, 0 0; } 85% { opacity: 1; } 100% { opacity: 0; background-position: 0 -100%, 0 0; } }
+.js .ch-now .ch-copy.in h2 .cyber { animation: glitch 0.6s 1.2s steps(1) both; }
+@keyframes glitch { 0% { opacity: 0; } 15% { opacity: 1; transform: translateX(-4px); text-shadow: 3px 0 #ff2bd6, -3px 0 #3ee8ff; } 35% { transform: translateX(3px); text-shadow: -3px 0 #ff2bd6, 3px 0 #3ee8ff; } 55% { opacity: 0.4; transform: none; } 70% { opacity: 1; transform: translateX(-2px); text-shadow: 2px 0 #ff2bd6, -2px 0 #3ee8ff; } 100% { opacity: 1; transform: none; text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); } }
+
 /* battery boom: drawn burst behind the card's right side, pops when the card is well on screen */
 .fails .pop { position: relative; }
 .fails .pop > small, .fails .pop > b { position: relative; z-index: 1; }
@@ -643,7 +657,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .filter:hover { border-color: var(--rc, var(--volt)); }
 .filter.is-on { background: var(--rc, var(--volt)); border-color: var(--rc, var(--volt)); color: var(--on-accent); }
 /* touch: nav links + filters reach the 44px tap target (nav band is 64px, so the links still fit) */
-@media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .filter, .copy { min-height: 44px; } .p-bar button { min-width: 44px; min-height: 44px; } }
+@media (pointer: coarse) { .nav-links a, .logo { padding-block: 15px; } .logo-slot { width: 44px; height: 44px; } .filter, .copy { min-height: 44px; } .p-bar button { min-width: 44px; min-height: 44px; } }
 .tl-item[hidden], .tl-year[hidden] { display: none; }
 
 /* side quest cards */
