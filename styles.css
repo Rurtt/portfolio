@@ -882,6 +882,13 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .js .ch-posn .ch-quote::before { transform: scaleY(clamp(0, (var(--h) - 0.2) / 0.35, 1)); }
 /* Ch.4: gold shine sweeps across "ได้เหรียญทอง" */
 .js .ch-comeback .gold-shine { background-position: calc((1 - clamp(0, (var(--h) - 0.1) / 0.5, 1)) * 100%) 0; }
-/* Main Quest 1 > 2: WordFlow rises as a narrower card and widens to full width (--kin from main.js) */
-#main-quest { clip-path: inset(0 calc((1 - clamp(0, var(--kin, 1) * 1.6, 1)) * 12%) 0 round 32px 32px 0 0); }
-@media (max-width: 860px) { #main-quest { clip-path: inset(0 calc((1 - clamp(0, var(--kin, 1) * 1.6, 1)) * 5%) 0 round 22px 22px 0 0); } }
+/* Ch.5: cyan scan sweeps down the photo, then "อันดับ 8" glitches in */
+.ch-now { --s: clamp(0, (var(--h) - 0.05) / 0.35, 1); }
+.ch-now .ch-media::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--s) * 100%); height: 3px; pointer-events: none; background: #3ee8ff; box-shadow: 0 0 24px 4px rgba(62, 232, 255, 0.7); opacity: calc(var(--s) * (1 - var(--s)) * 6); }
+.js .ch-now .ch-media img { clip-path: inset(0 0 calc((1 - var(--s)) * 100%) 0); }
+.js .ch-now h2 .cyber { animation: glitch 1s linear both paused; animation-delay: calc(clamp(0, (var(--h) - 0.4) / 0.25, 1) * -0.999s); }
+@keyframes glitch { 0% { opacity: 0; } 15% { opacity: 1; transform: translateX(-4px); text-shadow: 3px 0 #ff2bd6, -3px 0 #3ee8ff; } 35% { transform: translateX(3px); text-shadow: -3px 0 #ff2bd6, 3px 0 #3ee8ff; } 55% { opacity: 0.4; transform: none; } 70% { opacity: 1; transform: translateX(-2px); text-shadow: 2px 0 #ff2bd6, -2px 0 #3ee8ff; } 100% { opacity: 1; transform: none; text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); } }
+/* Main Quest 1 > 2: WordFlow rises as a smaller rounded card and grows to full screen while DoCode darkens under it (--kin from main.js) */
+#main-quest { --g: clamp(0, var(--kin, 1) * 1.4, 1); scale: calc(0.86 + 0.14 * var(--g)); transform-origin: 50% 0; border-radius: calc(48px - 16px * var(--g)) calc(48px - 16px * var(--g)) 0 0; }
+#docode::after { opacity: calc(var(--k, 0) * 0.85); }
+@media (prefers-reduced-motion: reduce) { #main-quest { scale: none; } }
