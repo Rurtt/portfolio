@@ -793,3 +793,17 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 /* big screens (1080p+ / 2K): scale the whole page so text isn't tiny and layout isn't a narrow strip */
 @media (min-width: 1600px) { body { zoom: 1.12; } }
 @media (min-width: 2200px) { body { zoom: 1.25; } }
+
+/* WordFlow step 2: consonant + vowel tiles slide together into กา (the game's build-a-word mechanic), once */
+.ga-m { position: relative; }
+.ga { position: absolute; top: -0.7em; right: -0.5em; z-index: 1; rotate: 4deg; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5)); display: flex; font: 700 clamp(28px, 3vw, 44px)/1 var(--body); pointer-events: none; }
+.ga b { display: grid; place-items: center; min-width: 1.4em; height: 1.4em; border-radius: 10px; color: var(--on-accent); }
+.ga b:first-child { background: var(--volt); }
+.ga b:last-child { background: var(--legendary); }
+.js .ga b:first-child { transform: translateX(-60%); opacity: 0; }
+.js .ga b:last-child { transform: translateX(60%); opacity: 0; }
+.js .seen .ga b { animation: ga-join 0.8s var(--ease) 0.2s forwards; }
+@keyframes ga-join { 60% { opacity: 1; transform: none; margin: 0 4px; } to { opacity: 1; transform: none; margin: 0; } }
+.seen .ga b:first-child { border-radius: 10px 0 0 10px; }
+.seen .ga b:last-child { border-radius: 0 10px 10px 0; }
+@media (prefers-reduced-motion: reduce) { .js .ga b { animation: none !important; transform: none !important; opacity: 1 !important; } }
