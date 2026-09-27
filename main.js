@@ -62,7 +62,8 @@
   const kick = (at = 0, vol = 0.17, f0 = 150, f1 = 38, dur = 0.5) => tone(f0, at, dur, "sine", vol, f1);
   const NOTES = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093, 2349]; // combos climb this scale
   const SFX = {
-    key: () => { noise(0.03, 0.05, 0, 3500); tone(1600 + Math.random() * 400, 0, 0.02, "square", 0.01); },
+    // low, soft keyboard click; at most ~8 per second however fast the text types (user: slower + lower)
+    key: () => { if (ac.currentTime - (SFX.kt || 0) < 0.12) return; SFX.kt = ac.currentTime; noise(0.04, 0.06, 0, 1100, 900, 1.2); tone(420 + Math.random() * 80, 0, 0.03, "triangle", 0.02); },
     tick: () => tone(1800, 0, 0.03, "sine", 0.025),
     blip: () => tone(880, 0, 0.06, "square", 0.03),
     note: (i = 0) => tone(NOTES[i % NOTES.length], 0, 0.16, "triangle", 0.05),
@@ -77,7 +78,6 @@
     coin: () => { tone(988, 0, 0.08, "square", 0.035); tone(1319, 0.08, 0.3, "square", 0.035); },
     flag: () => arp([784, 988, 1175, 1568], 0.07, "triangle", 0.05),
     win: () => arp([523, 523, 523, 698, 880, 1047], 0.11, "square", 0.03),
-    whoosh: () => noise(0.5, 0.07, 0, 250, 2600, 0.6),
     swipe: () => noise(0.28, 0.05, 0, 1500, 6000, 0.7),
     flip: () => noise(0.14, 0.06, 0, 3200, 1200, 1.2),
     shutter: () => { noise(0.04, 0.09, 0, 4200, 4200, 2); noise(0.06, 0.07, 0.07, 2600, 2600, 2); },
@@ -111,6 +111,7 @@
       stab([r, r * 1.5, r * 2], 0, 0.7, 0.05, 9000, 2500);
       tone(r * 2, 0.02, 0.5, "sine", 0.04);
     },
+    ting: () => { stab([1319, 1976, 2637], 0, 0.9, 0.05, 11000, 4000); tone(2637, 0, 0.8, "sine", 0.05); },
     reveal: () => {
       noise(0.15, 0.08, 0, 9000, 5000, 1);
       stab([1319, 1661, 1976, 2637], 0, 1.4, 0.05, 11000, 3000);
@@ -130,7 +131,6 @@
       for (let i = 0; i < 22; i++) { tone(i % 2 ? 1175 : 1568, i * 0.075, 0.12, "triangle", 0.05); tone(i % 2 ? 2350 : 3136, i * 0.075, 0.05, "sine", 0.03); }
       for (let i = 0; i < 16; i++) { const t = 0.1 + Math.random() * 1.5; tone(3200 + Math.random() * 2400, t, 0.06, "sine", 0.04); noise(0.03, 0.06, t, 6000, 6000, 3); }
     },
-    curtain: () => { noise(0.7, 0.07, 0, 150, 1400, 0.5); kick(0.05, 0.1, 90, 40, 0.5); },
     rankup: () => { arp([392, 523, 659, 784, 1047], 0.07, "sawtooth", 0.025); noise(0.6, 0.02, 0.3, 8000, 6000); },
     page: () => noise(0.18, 0.06, 0, 2500, 5500, 0.7),
     quest: () => { noise(0.45, 0.05, 0, 300, 2400, 0.6); arp([659, 784, 988, 1319], 0.1, "triangle", 0.05, 1.1); },
@@ -579,7 +579,7 @@
         timers.forEach(clearTimeout);
         doc.classList.add("go");
         pk.classList.add("pk-out");
-        sfx("whoosh");
+        sfx("ting");
         const moves = [$(".hero-copy", heroEl).animate([{ opacity: 0, transform: "translateY(18px)" }, { opacity: 1, transform: "none" }], { duration: 600, delay: from ? 300 : 0, easing: OUT, fill: "backwards" })];
         if (from) { held.cancel(); moves.push(card.animate([from, { translate: "0px 0px", scale: "1" }], { duration: 750, easing: INOUT })); }
         Promise.all(moves.map((a) => a.finished)).then(() => {
@@ -750,7 +750,7 @@
     const type = (el, p) => {
       const [a, z] = el.dataset.type.split(",").map(Number), n = Math.round(el.gs.length * Math.min(1, Math.max(0, (p - a) / (z - a))));
       if (n === el.shown) return;
-      if (n > el.shown && el.shown >= 0 && el.closest(".words")) sfx("key");
+      if (n > el.shown && el.shown >= 0) sfx("key");
       el.shown = n;
       el.gs.forEach((g, i) => { g.classList.toggle("in", i < n); g.classList.toggle("cur", i === n - 1 && n < el.gs.length); });
     };
@@ -758,8 +758,6 @@
     const covers = [...document.querySelectorAll(".cover")];
     const curtain = (vh) => covers.forEach((c) => {
       const k = calm ? 0 : Math.min(1, Math.max(0, (vh - (c.getBoundingClientRect().bottom - (c.y0 || 0))) / vh));
-      if (k > 0.02 && !c.hit && !c.hasAttribute("data-hush")) sfx("curtain");
-      c.hit = k > 0.02;
       // fully covered (or not yet) = no transform, so #anchors from the nav still land on the real layout position
       c.y0 = k > 0 && k < 1 ? k * vh * 0.45 : 0;
       c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.08).toFixed(4)})` : "";
@@ -770,7 +768,7 @@
     const tracks = [...document.querySelectorAll(".htrack")].map((t) => {
       const ps = [...t.querySelectorAll(".hin > .scene")], play = ps.map((s) => parseFloat(s.style.getPropertyValue("--len")) - 90);
       t.style.setProperty("--th", play.reduce((a, b) => a + b, 0) + PAN * (ps.length - 1) + "svh");
-      return { t, inn: $(".hin", t), ps, play, seg: 0 };
+      return { t, inn: $(".hin", t), ps, play };
     });
     const stageOn = matchMedia("(min-width: 861px)");
     const hs = $(".scene.hs"), track = $("#side-list");
@@ -792,9 +790,6 @@
           s0 += k.play[i] + PAN;
         });
         k.inn.style.setProperty("--shift", shift.toFixed(4));
-        const seg = Math.floor(shift + 0.9);
-        if (seg > k.seg) sfx("whoosh");
-        k.seg = seg;
       });
       scenes.forEach((s, i) => {
         const r = s.getBoundingClientRect(), pinned = s.classList.contains("pin") || s === hs;
