@@ -112,7 +112,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 72px; align-items: center; }
 .hero-copy h1 { font-size: clamp(40px, 5.2vw, 80px); line-height: 1.3; margin-top: 14px; padding-bottom: 0.08em; }
 .hero-copy .hero-cta { margin-top: 34px; }
-.hero-eyebrow { font-size: 18px; }
+.hero-eyebrow { font-size: 21px; }
 @media (max-width: 480px) { .hero-copy h1 { font-size: 10.4vw; } } /* "จากการรับทำเว็บ" is one unbreakable line: size it to the phone width */
 .hero-copy h1 .money { color: var(--legendary); }
 .char-ovr .club { font: 700 10px/1 var(--display); letter-spacing: 0.06em; color: var(--volt); border: 1px solid var(--volt); border-radius: 4px; padding: 3px 5px; }
@@ -266,7 +266,7 @@ html.intro { overflow: hidden; }
 .card-stats b { color: var(--text); font-size: 16px; line-height: 1; }
 .card-stats i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: linear-gradient(var(--volt), var(--volt)) no-repeat 0 0 / var(--v) 100%, var(--line-2); }
 
-.en-name { margin-top: 14px; color: var(--text-3); font: 500 17px/1.4 var(--display); letter-spacing: 0.05em; }
+.en-name { margin-top: 14px; color: var(--text-3); font: 500 20px/1.4 var(--display); letter-spacing: 0.05em; }
 .en-name b { color: var(--text-2); font-weight: 600; }
 .info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 32px; }
 .info div { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
@@ -472,8 +472,8 @@ section.block { padding: 96px 0; border-bottom: 1px solid var(--line); }
 .invite-mail a { color: var(--text-2); }
 .outro { margin: 64px auto 0; }
 .outro p { font: 700 clamp(28px, 4vw, 42px)/1.2 var(--display); color: var(--volt); text-transform: uppercase; letter-spacing: 0.04em; }
-.outro footer { margin-top: 10px; color: var(--text-2); font-size: 16px; }
-body > footer { padding: 32px 0 40px; color: var(--text-3); font-size: 14px; }
+.outro footer { margin-top: 10px; color: var(--text-2); font-size: 18px; }
+body > footer { padding: 32px 0 40px; color: var(--text-3); font-size: 16px; }
 body > footer a { color: var(--text-2); }
 body > footer a:hover { color: var(--volt); }
 body > footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -640,7 +640,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 
 /* DoCode (Main Quest 1): gold accents, desktop+phone screenshot pair, slot-machine payout */
 .ch-dc .ch-mark, .ch-dc .wf-step .eyebrow { color: var(--legendary); }
-.quip { margin-top: 18px; font-style: italic; color: var(--text-2); border-left: 3px solid var(--legendary); padding-left: 14px; }
+.quip { margin-top: 18px; font-size: clamp(20px, 1.8vw, 24px); font-style: italic; color: var(--text-2); border-left: 3px solid var(--legendary); padding-left: 14px; }
 .dc-duo { position: relative; padding: 0 6% 7% 0; }
 .dc-duo .dc-phone { position: absolute; right: 0; bottom: 0; width: 24%; border: 3px solid #222; border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); }
 .slot-machine { display: flex; align-items: center; justify-content: center; }
@@ -840,3 +840,9 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
   .invite-actions { grid-template-columns: 1fr; }
 }
 .intro .words .w-back { animation: none; } /* scroll is locked under the pack overlay; dim state there reads as low contrast to Lighthouse */
+/* Main Quest intro chips: DoCode a bit bigger, WordFlow slightly bigger */
+.ch-dc .wf-intro .chip { font-size: 20px; padding: 11px 17px; }
+#main-quest .wf-intro .chip { font-size: 18px; padding: 10px 16px; }
+@media (max-width: 480px) { .ch-dc .wf-intro .chip { font-size: 17px; } #main-quest .wf-intro .chip { font-size: 16px; } }
+.wf-intro mark.volt { color: var(--volt); }
+@media (max-width: 480px) { .en-name .ign-line { display: block; } .en-name .sep { display: none; } } /* IGN on its own line, no orphan dot */
