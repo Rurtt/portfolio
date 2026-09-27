@@ -12,6 +12,58 @@
   const YEAR = { Ongoing: "Ongoing · ปัจจุบัน" };
   const Q = window.QUESTS || [];
   const T = (src) => src.replace("assets/", "assets/t/"); // 480px thumbnail of the same image
+  const hud = $(".hud");
+
+  // ---------- SFX: tiny synth (Web Audio, no files). Off until the viewer turns it on (browsers block sound before a tap); choice remembered ----------
+  let ac = null, sound = false;
+  try { sound = localStorage.getItem("sfx") === "1"; } catch {}
+  const tone = (f, at = 0, dur = 0.12, type = "square", vol = 0.06, f2 = f) => {
+    const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f, t);
+    o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(ac.destination);
+    o.start(t);
+    o.stop(t + dur);
+  };
+  const noise = (dur = 0.4, vol = 0.25, at = 0) => {
+    const b = ac.createBuffer(1, ac.sampleRate * dur, ac.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 2;
+    const s = ac.createBufferSource(), g = ac.createGain();
+    s.buffer = b; g.gain.value = vol;
+    s.connect(g).connect(ac.destination);
+    s.start(ac.currentTime + at);
+  };
+  const arp = (fs, gap = 0.08, type = "square", vol = 0.05) => fs.forEach((f, i) => tone(f, i * gap, gap * 1.6, type, vol));
+  const SFX = {
+    tick: () => tone(1800, 0, 0.03, "sine", 0.03),
+    blip: () => tone(880, 0, 0.06),
+    err: () => tone(150, 0, 0.28, "sawtooth", 0.07, 90),
+    boom: () => { noise(0.6, 0.35); tone(90, 0, 0.5, "sine", 0.3, 30); },
+    over: () => arp([440, 370, 311, 262], 0.2, "triangle", 0.09),
+    ok: () => arp([523, 659, 784, 1047], 0.08, "sine", 0.09),
+    start: () => arp([660, 880], 0.09),
+    plug: () => { noise(0.05, 0.2); tone(1200, 0.05, 0.05, "sine", 0.05); tone(300, 0.12, 0.35, "sine", 0.08, 900); },
+    coin: () => { tone(988, 0, 0.08); tone(1319, 0.08, 0.3); },
+    flag: () => arp([784, 988, 1175, 1568], 0.07, "triangle", 0.08),
+    win: () => arp([523, 523, 523, 698, 880, 1047], 0.11, "square", 0.05),
+  };
+  const sfx = (name) => { if (sound && ac && SFX[name]) try { SFX[name](); } catch {} };
+  const wake = () => { if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (A) ac = new A(); } if (ac && ac.state === "suspended") ac.resume(); };
+  const sfxBtns = document.querySelectorAll(".sfx-btn");
+  const paint = () => sfxBtns.forEach((b) => b.setAttribute("aria-pressed", sound));
+  sfxBtns.forEach((b) => b.addEventListener("click", () => {
+    sound = !sound;
+    try { localStorage.setItem("sfx", sound ? "1" : "0"); } catch {}
+    wake();
+    paint();
+    sfx("coin");
+  }));
+  // sound was on last visit: the audio context can only start on this visit's first tap/key
+  if (sound) ["pointerdown", "keydown"].forEach((ev) => addEventListener(ev, wake, { once: true }));
+  paint();
 
   // ---------- home: timeline (newest first, grouped by year) ----------
   const tl = $("#timeline");
@@ -51,7 +103,7 @@
   if (side) {
     const CH = ["rov", "posn", "zeitop", "ctf", "wordflow", "docode"], ORDER = { legendary: 0, epic: 1, rare: 2 };
     side.innerHTML = Q.filter((q) => !CH.includes(q.id)).sort((a, b) => ORDER[a.rarity] - ORDER[b.rarity]).map((q, i) => `
-      <a class="mq-card rar-${q.rarity} sheen reveal" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
+      <a class="mq-card rar-${q.rarity} sheen reveal" data-sfx="blip" data-rarity="${q.rarity}" href="quest.html?q=${q.id}">
         <span class="rank-no" aria-label="อันดับ ${i + 1}">#${i + 1}</span>
         <div class="tl-thumb${q.fit === "contain" ? " contain" : ""}"><img src="${T(q.cover)}" alt="" loading="lazy" decoding="async" width="400" height="250"></div>
         <div class="mq-card-body">
@@ -124,7 +176,9 @@
       const box = radar.getBoundingClientRect(), wrap = radar.parentElement.getBoundingClientRect();
       const vb = radar.viewBox.baseVal, k = box.width / vb.width / z;
       tip.innerHTML = `<b>${esc(s.key)}</b><br>${esc(s.can)}`;
-      tip.style.left = `${(box.left - wrap.left) / z + (el.cx.baseVal.value - vb.x) * k}px`;
+      // keep the tip inside the chart box (right-edge points on phones pushed it off screen)
+      const half = tip.offsetWidth / 2, W = wrap.width / z;
+      tip.style.left = `${Math.min(W - half, Math.max(half, (box.left - wrap.left) / z + (el.cx.baseVal.value - vb.x) * k))}px`;
       tip.style.top = `${(box.top - wrap.top) / z + (el.cy.baseVal.value - vb.y) * k}px`;
       tip.classList.add("show");
     };
@@ -412,6 +466,7 @@
         const c = (shown = center());
         doc.classList.add("go");
         pk.classList.add("revealed");
+        sfx("win");
         held = card.animate([{ ...c, opacity: 0, scale: `${c.scale * 0.4}` }, { ...c, opacity: 1 }], { duration: 700, easing: OUT, fill: "forwards" });
         flip.animate([{ transform: "rotateY(180deg)" }, { transform: "rotateY(-360deg)" }], { duration: 900, easing: OUT });
         $(".pk-enter", pk).focus();
@@ -436,7 +491,7 @@
       const onKey = (e) => {
         if (e.key === "Escape") return enter();
         if (e.key !== "Tab" || stage === 3) return;
-        const live = [$(".pk-skip", pk), stage === 0 && $(".pk-pack", pk), stage === 2 && $(".pk-enter", pk)].filter(Boolean);
+        const live = [$(".pk-skip", pk), $(".pk-sfx", pk), stage === 0 && $(".pk-pack", pk), stage === 2 && $(".pk-enter", pk)].filter(Boolean);
         const i = live.indexOf(document.activeElement);
         e.preventDefault();
         live[(i + (e.shiftKey ? -1 : 1) + live.length) % live.length].focus();
@@ -445,6 +500,7 @@
         if (stage) return;
         stage = 1;
         pk.classList.add("opening");
+        sfx("boom");
         $(".pk-skip", pk).focus(); // the pack bursts away; do not leave focus on an invisible button
         [[850, "b1"], [1750, "b2"], [2650, "b3"]].forEach(([t, c]) => timers.push(setTimeout(() => pk.classList.add(c), t)));
         timers.push(setTimeout(reveal, 3550));
@@ -494,7 +550,7 @@
       clearTimeout(pulse);
       job.classList.remove("ping");
       machine.classList.remove("idle");
-      pulse = setTimeout(() => { job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
+      pulse = setTimeout(() => { sfx("coin"); job.classList.add("ping"); if (!calm) machine.classList.add("idle"); }, calm ? 0 : 900 + 4 * 220);
     };
     // the media gets "seen" from the pinned-steps observer (step 4 in mid-screen), not from its own visibility (it sits hidden in the sticky stage)
     const slotM = $(".slot-m");
@@ -502,12 +558,12 @@
     lever.addEventListener("click", () => {
       lever.classList.remove("pull"); void lever.offsetWidth; // restart the pull animation on every pull
       lever.classList.add("pull");
+      sfx("start");
       roll();
     });
   }
 
   // ---------- HUD: XP bar = scroll progress; link of the section in mid-screen gets aria-current ----------
-  const hud = $(".hud");
   if (hud) {
     const bar = $(".xp i", hud), links = [...hud.querySelectorAll(".nav-links a")];
     let tick = 0;
@@ -521,17 +577,89 @@
     links.forEach((a) => { const t = document.getElementById(a.hash.slice(1)); if (t) cur.observe(t); });
   }
 
+  // ---------- results screen: quest tally straight from data.js ----------
+  const rl = $("#res-list");
+  if (rl) {
+    const n = (r) => Q.filter((q) => q.rarity === r).length;
+    rl.innerHTML = [["Quests Cleared", Q.length, ""], ["Main Quests", 2, "gold"], ["Legendary", n("legendary"), "rar-legendary"], ["Epic", n("epic"), "rar-epic"], ["Rare", n("rare"), "rar-rare"]]
+      .map(([k, v, c], i) => `<div class="${c}" data-at="${(0.14 + i * 0.08).toFixed(2)}" data-sfx="blip"><dt>${k}</dt><dd class="num">${v}</dd></div>`).join("");
+  }
+
+  // ---------- scroll scenes: .scene.pin pins its .stage on wide screens and scrubs --p 0-1 over the section; elsewhere --p runs while the scene rises into view.
+  // [data-at] children get .on once --p passes that value (off again when scrolled back, sfx only going forward); [data-count="from,to,p0,p1"] counts with --p ----------
+  const scenes = [...document.querySelectorAll(".scene")];
+  if (scenes.length) {
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches, wide = matchMedia("(min-width: 861px) and (min-height: 600px)");
+    const parts = scenes.map((s) => [[...s.querySelectorAll("[data-at]")], [...s.querySelectorAll("[data-count]")]]);
+    const hs = $(".scene.hs"), track = $("#side-list");
+    // side quests: vertical scroll distance = how far the card row overflows, so it slides exactly to its end
+    const size = () => { if (hs) { const dx = wide.matches && !calm ? Math.max(0, track.scrollWidth - track.clientWidth) : 0; hs.style.setProperty("--dx", dx + "px"); } };
+    let q = 0;
+    const run = () => {
+      q = 0;
+      const vh = innerHeight, top = hud ? hud.getBoundingClientRect().bottom : 0;
+      scenes.forEach((s, i) => {
+        const r = s.getBoundingClientRect(), pinned = s.classList.contains("pin") || s === hs;
+        const raw = calm ? 1 : pinned && wide.matches ? (top - r.top) / Math.max(1, r.height - vh + top) : (vh * 0.9 - r.top) / (vh * 0.75);
+        const p = Math.min(1, Math.max(0, raw));
+        s.style.setProperty("--p", p.toFixed(4));
+        parts[i][0].forEach((b) => {
+          const on = p >= +b.dataset.at;
+          if (on === b.classList.contains("on")) return;
+          b.classList.toggle("on", on);
+          if (on) { b.dispatchEvent(new Event("on")); sfx(b.dataset.sfx); }
+        });
+        parts[i][1].forEach((c) => {
+          const [f, t, a, z] = c.dataset.count.split(",").map(Number), v = String(Math.round(f + (t - f) * Math.min(1, Math.max(0, (p - a) / (z - a)))));
+          if (c.textContent !== v) { c.textContent = v; sfx("tick"); }
+        });
+      });
+    };
+    addEventListener("scroll", () => { if (!q) q = requestAnimationFrame(run); }, { passive: true });
+    addEventListener("resize", () => { size(); run(); });
+    document.querySelectorAll(".filter").forEach((b) => b.addEventListener("click", () => { size(); run(); }));
+    size();
+    run();
+  }
+
+  // flag text decrypts from random glyphs when its beat turns on (once)
+  document.querySelectorAll("[data-scramble]").forEach((el) => {
+    const end = el.textContent, G = "!<>-_\\/[]{}=+*^?#abcdef0123456789";
+    const go = () => {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const t0 = performance.now();
+      const f = (t) => {
+        const k = Math.min(1, (t - t0) / 900);
+        el.textContent = [...end].map((c, i) => (i < k * end.length ? c : G[(Math.random() * G.length) | 0])).join("");
+        if (k < 1) requestAnimationFrame(f);
+      };
+      requestAnimationFrame(f);
+    };
+    el.closest("[data-at]").addEventListener("on", go, { once: true });
+  });
+
+  // ---------- radar: tours its points by itself (tooltip hops stat to stat) until the viewer touches it ----------
+  if (radar) {
+    const hits = [...radar.querySelectorAll(".hit")];
+    let k = 0, tour = 0;
+    const stop = () => { clearInterval(tour); tour = -1; radar.classList.remove("touring"); hits.forEach((h) => h.classList.remove("cur")); };
+    const step = () => { hits.forEach((h) => h.classList.remove("cur")); const h = hits[k++ % hits.length]; h.classList.add("cur"); h.dispatchEvent(new Event("pointerenter")); };
+    radar.addEventListener("pointerdown", stop);
+    hits.forEach((h) => { h.addEventListener("pointerenter", (e) => { if (e.isTrusted) stop(); }); h.addEventListener("focus", stop); });
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting || tour) return;
+      o.disconnect();
+      radar.classList.add("touring");
+      step();
+      tour = setInterval(step, 2600);
+    }, { threshold: 0.6 }).observe(radar);
+  }
+
   // ---------- reveal on scroll (also triggers radar + skill bar fill) ----------
   const els = document.querySelectorAll(".reveal");
   if (!("IntersectionObserver" in window)) { els.forEach((el) => el.classList.add("in")); return; }
   const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+    if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); sfx(en.target.dataset.sfx); }
   }), { rootMargin: "0px 0px -8% 0px" });
   els.forEach((el) => io.observe(el));
-
-  // story beats (e.g. battery boom) fire later, once well inside the screen, so the reader sees them happen
-  const pop = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (en.isIntersecting) { en.target.classList.add("in"); pop.unobserve(en.target); }
-  }), { rootMargin: "0px 0px -30% 0px" });
-  document.querySelectorAll(".pop").forEach((el) => pop.observe(el));
 })();
