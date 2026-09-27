@@ -1031,13 +1031,31 @@ html:not(.js) .kids i { opacity: 1; }
 .gm-press .dots::after { content: ""; animation: dots 1.2s steps(1) infinite; }
 @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
 
-/* sideways tracks: chapters sit in a row and vertical scroll pans it (main.js sets --th = scroll length, --shift = panel index) */
+/* chapter track: Ch.1-5 stack in one pinned stage; between two chapters the next one enters its own way (data-tx on it):
+   crt = old screen switches off, pan = pushed in from the right, iris = circle opens, scan = cyan line wipes down.
+   main.js sets --th (scroll length), .cur/.nxt, --out/--in (0-1) and data-leave on the outgoing chapter */
+:where(.hin > .scene) { background-color: var(--bg); }
 @media (min-width: 861px) and (min-height: 700px) and (prefers-reduced-motion: no-preference) {
   .js .htrack { height: calc(var(--th, 0svh) + 100svh - 64px); }
   .js .hstage { position: sticky; top: 64px; height: calc(100svh - 64px); overflow: hidden; }
-  .js .hin { display: flex; height: 100%; transform: translateX(calc(var(--shift, 0) * -100%)); }
-  .js .htrack[data-dir="-1"] .hin { flex-direction: row-reverse; transform: translateX(calc(var(--shift, 0) * 100%)); }
-  .js .htrack .scene.pin { flex: 0 0 100%; height: 100%; border-bottom: 0; }
+  .js .hin { display: grid; height: 100%; }
+  .js .htrack .scene.pin { grid-area: 1 / 1; height: 100%; border-bottom: 0; position: relative; --in: 0; --out: 0; }
+  .js .htrack .scene.pin:not(.cur):not(.nxt) { visibility: hidden; }
+  .js .htrack .scene.cur { z-index: 1; }
+  .js .htrack .scene.nxt { z-index: 2; }
+  /* crt: outgoing squashes to a bright line, then a dot; the next chapter fades up behind it */
+  .js .htrack .cur[data-leave="crt"] { z-index: 2; transform: scaleY(max(0.004, 1 - var(--out) * 1.7)) scaleX(clamp(0, 3 - var(--out) * 3.2, 1)); filter: brightness(calc(1 + var(--out) * 4)); }
+  .js .htrack .nxt[data-tx="crt"] { z-index: 1; opacity: clamp(0, var(--in) * 2.4 - 1.4, 1); }
+  /* pan: pushed in from the right */
+  .js .htrack .cur[data-leave="pan"] { transform: translateX(calc(var(--out) * -100%)); }
+  .js .htrack .nxt[data-tx="pan"] { transform: translateX(calc((1 - var(--in)) * 100%)); }
+  /* iris: circle opens from the middle while the old chapter sinks back */
+  .js .htrack .cur[data-leave="iris"] { transform: scale(calc(1 - var(--out) * 0.12)); filter: brightness(calc(1 - var(--out) * 0.6)); }
+  .js .htrack .nxt[data-tx="iris"] { clip-path: circle(calc(var(--in) * 72%) at 50% 50%); }
+  /* scan: a cyan line wipes down, the old chapter jitters like a bad signal */
+  .js .htrack .nxt[data-tx="scan"] { clip-path: inset(0 0 calc((1 - var(--in)) * 100%) 0); }
+  .js .htrack .cur[data-leave="scan"] { transform: translateX(calc(sin(var(--out) * 40rad) * var(--out) * 10px)); }
+  .js .htrack .cur[data-leave="scan"]::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--out) * 100%); height: 3px; z-index: 9; background: #3ee8ff; box-shadow: 0 0 24px 4px rgba(62, 232, 255, 0.7); }
   .js .htrack .scene.pin > .stage { position: relative; top: auto; height: 100%; }
 }
 

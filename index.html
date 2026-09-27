@@ -213,7 +213,7 @@
     </section>
 
     <!-- STORY WORLDS: each chapter is a scroll scene (.scene): wide screens pin .stage and scrub --p 0-1; [data-at] parts switch on (.on) past that point. See main.js "scroll scenes". -->
-    <div class="htrack" data-dir="1"><div class="hstage"><div class="hin">
+    <div class="htrack"><div class="hstage"><div class="hin">
     <!-- CH.1 GAMER: CRT screen powers on > loading bar fills > PRESS START > the ROV photo is the game -->
     <section class="chapter scene pin w-gamer" id="ch1" aria-labelledby="ch1-title" style="--len:230">
       <div class="stage">
@@ -234,7 +234,7 @@
     </section>
 
     <!-- CH.2 THE FALL: robot boot log streams the real failures > battery blows (shake) > GAME OVER / CONTINUE? countdown -->
-    <section class="chapter scene pin w-fall" id="ch2" aria-labelledby="ch2-title" style="--len:280">
+    <section class="chapter scene pin w-fall" data-tx="crt" id="ch2" aria-labelledby="ch2-title" style="--len:280">
       <div class="stage">
         <div class="container ch-grid">
           <figure class="ch-media term">
@@ -259,7 +259,7 @@
     </section>
 
     <!-- CH.3 TURNING POINT: CONTINUE pressed > C++ types itself > judge says Wrong Answer twice, then Accepted > photo in colour, quote writes in -->
-    <section class="chapter scene pin w-posn" id="ch3" aria-labelledby="ch3-title" style="--len:280">
+    <section class="chapter scene pin w-posn" data-tx="pan" id="ch3" aria-labelledby="ch3-title" style="--len:280">
       <div class="stage">
         <div class="container ch-grid">
           <figure class="ch-media ide">
@@ -291,11 +291,8 @@
       </div>
     </section>
 
-    </div></div></div>
-
-    <div class="htrack" data-dir="-1"><div class="hstage"><div class="hin">
     <!-- CH.4 COMEBACK: USB cable rises into an old phone > it boots into the ZeiTop macropad > gold medal drops > team + certificate -->
-    <section class="chapter scene pin w-gold" id="ch4" aria-labelledby="ch4-title" style="--len:260">
+    <section class="chapter scene pin w-gold" data-tx="iris" id="ch4" aria-labelledby="ch4-title" style="--len:260">
       <div class="stage">
         <div class="container ch-grid rev">
           <figure class="ch-media zt">
@@ -317,7 +314,7 @@
     </section>
 
     <!-- CH.5 NOW: 7-day prep counter D-7 > D-0 > flag decrypts > photo scan > rank 8 glitches in -->
-    <section class="chapter scene pin w-cyber" id="ch5" aria-labelledby="ch5n-title" style="--len:250">
+    <section class="chapter scene pin w-cyber" data-tx="scan" id="ch5" aria-labelledby="ch5n-title" style="--len:250">
       <div class="stage">
         <div class="container ch-grid">
           <figure class="ch-media ctf">

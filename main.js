@@ -769,7 +769,7 @@
       c.style.transform = c.y0 ? `translateY(${c.y0.toFixed(1)}px) scale(${(1 - k * 0.08).toFixed(4)})` : "";
       c.style.setProperty("--k", c.y0 ? k.toFixed(3) : 0);
     });
-    // sideways tracks: chapters inside .htrack sit side by side; vertical scroll plays chapter i, then pans the row to chapter i+1 (PAN svh of scroll)
+    // chapter track: Ch.1-5 stack in one pinned stage; vertical scroll plays chapter i, then spends PAN svh on the next one's own entrance (its data-tx, CSS)
     const PAN = 70;
     const tracks = [...document.querySelectorAll(".htrack")].map((t) => {
       const ps = [...t.querySelectorAll(".hin > .scene")], play = ps.map((s) => parseFloat(s.style.getPropertyValue("--len")) - 90);
@@ -787,7 +787,7 @@
       curtain(vh);
       tracks.forEach((k) => {
         k.ps.forEach((s) => (s.hp = null));
-        if (!wide.matches || calm) return k.inn.style.removeProperty("--shift");
+        if (!wide.matches || calm) return k.ps.forEach((s) => s.classList.remove("cur", "nxt"));
         const y = (top - k.t.getBoundingClientRect().top) / (vh / 100);
         let s0 = 0, shift = 0;
         k.ps.forEach((s, i) => {
@@ -795,7 +795,14 @@
           if (y > s0 + k.play[i] && i < k.ps.length - 1) shift = i + Math.min(1, (y - s0 - k.play[i]) / PAN);
           s0 += k.play[i] + PAN;
         });
-        k.inn.style.setProperty("--shift", shift.toFixed(4));
+        const cur = Math.floor(shift), t = shift - cur;
+        k.ps.forEach((s, i) => {
+          s.classList.toggle("cur", i === cur);
+          s.classList.toggle("nxt", i === cur + 1 && t > 0);
+          s.style.setProperty("--out", i === cur ? t.toFixed(4) : 0);
+          s.style.setProperty("--in", i === cur + 1 ? t.toFixed(4) : 0);
+          if (i === cur && k.ps[i + 1]) s.dataset.leave = k.ps[i + 1].dataset.tx; else delete s.dataset.leave;
+        });
       });
       scenes.forEach((s, i) => {
         const r = s.getBoundingClientRect(), pinned = s.classList.contains("pin") || s === hs;
