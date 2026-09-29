@@ -565,7 +565,7 @@
     }
   }
 
-  // ---------- pinned-steps chapters (DoCode, WordFlow): wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
+  // ---------- pinned-steps chapters (HexCub, WordFlow): wide screens pin the media and the step in mid-screen picks it; phones keep media inside each step ----------
   document.querySelectorAll(".wf").forEach((wf) => {
     const stage = $(".wf-stage", wf), steps = [...wf.querySelectorAll(".wf-step")], media = steps.map((s) => $(".wf-m", s));
     const wide = matchMedia("(min-width: 861px)");
@@ -585,7 +585,7 @@
     media[0].classList.add("on");
   });
 
-  // ---------- DoCode payout: reels roll 00,000 → 1x,xxx when its step is first read; SPIN re-rolls but always lands on the real amount ----------
+  // ---------- HexCub payout: reels roll 00,000 → 1x,xxx when its step is first read; SPIN re-rolls but always lands on the real amount ----------
   const reels = $(".reels");
   if (reels) {
     const FACE = "1x,xxx", digits = FACE.replace(",", ""), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;

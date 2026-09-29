@@ -58,7 +58,7 @@ window.QUESTS = [
     id: "docode",
     main: 4,
     date: "2568 – ปัจจุบัน", year: "Ongoing",
-    title: "DoCode",
+    title: "HexCub",
     event: "ฟรีแลนซ์รับทำเว็บไซต์และ SEO",
     result: "Founder\n*ลูกค้าจริง*: บจก. เอส.อาร์.เซอร์วิส เอ็กเพรส",
     rarity: "epic",

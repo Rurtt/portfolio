@@ -115,7 +115,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .hero-eyebrow { font-size: 21px; }
 @media (max-width: 480px) { .hero-copy h1 { font-size: 10.4vw; } } /* "จากการรับทำเว็บ" is one unbreakable line: size it to the phone width */
 .hero-copy h1 .money { color: var(--legendary); }
-.char-ovr .club { font: 700 12px/1 var(--display); letter-spacing: 0.06em; color: var(--volt); border: 1px solid var(--volt); border-radius: 4px; padding: 3px 5px; }
+.char-ovr .club { display: flex; flex-direction: column; align-items: center; gap: 3px; font: 700 12px/1 var(--display); letter-spacing: 0.06em; color: var(--volt); border: 1px solid var(--volt); border-radius: 4px; padding: 3px 5px; }
+.char-ovr .club img { position: static; width: 34px; height: auto; } /* HexCub mascot as FUT club crest */
 .role { margin-top: 6px; font: 600 clamp(20px, 2vw, 26px)/1.4 var(--display); }
 .role b { color: var(--volt); }
 .proof { display: grid; grid-template-columns: repeat(2, auto); justify-content: start; gap: 10px; margin-top: 28px; }
@@ -176,7 +177,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .sheet-info .info { margin-top: 0; }
 .sheet-info .block-label { margin-top: 0; }
 
-/* FUT pack opening (first visit only; JS drives it, see main.js): pack > walkout beats (flag, PB, DoCode) > real hero card lands > enter */
+/* FUT pack opening (first visit only; JS drives it, see main.js): pack > walkout beats (flag, PB, HexCub) > real hero card lands > enter */
 html.intro { overflow: hidden; }
 .intro.go .tilt { cursor: pointer; }
 .pk { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; overflow: hidden; background: radial-gradient(900px 700px at 50% 55%, #1b2210, var(--bg) 70%); transition: opacity 0.5s var(--ease); }
@@ -196,6 +197,7 @@ html.intro { overflow: hidden; }
 .pk-beat strong { font: 700 clamp(80px, 22vw, 160px)/1 var(--display); color: var(--legendary); text-shadow: 0 0 40px rgba(245, 197, 66, 0.6); }
 .pk-beat strong.volt { font-size: clamp(52px, 14vw, 110px); color: var(--volt); text-shadow: 0 0 40px rgba(200, 245, 71, 0.5); }
 .pk-beat small { font: 600 clamp(18px, 2.8vw, 24px)/1.3 var(--display); letter-spacing: 0.24em; color: var(--text); }
+.pk-crest { width: clamp(96px, 20vw, 150px); height: auto; filter: drop-shadow(0 0 24px rgba(200, 245, 71, 0.35)); }
 .pk-flag { width: min(60vw, 320px); aspect-ratio: 3 / 2; border-radius: 6px; background: linear-gradient(#a51931 0 16.67%, #f4f5f8 0 33.33%, #2d2a4a 0 66.67%, #f4f5f8 0 83.33%, #a51931 0); box-shadow: 0 0 50px rgba(255, 255, 255, 0.2); }
 .pk-flash { width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; }
 .pk-enter { align-self: end; margin-bottom: max(24px, 5vh); opacity: 0; pointer-events: none; transition: opacity 0.4s; }
@@ -638,7 +640,7 @@ body > footer .container { display: flex; justify-content: space-between; gap: 1
 }
 @media (max-width: 860px) { .wf-stage { display: none; } }
 
-/* DoCode (Main Quest 1): gold accents, desktop+phone screenshot pair, slot-machine payout */
+/* HexCub (Main Quest 1): gold accents, desktop+phone screenshot pair, slot-machine payout */
 .ch-dc .ch-mark, .ch-dc .wf-step .eyebrow { color: var(--legendary); }
 .quip { margin-top: 18px; font-size: clamp(20px, 1.8vw, 24px); font-style: italic; color: var(--text-2); border-left: 3px solid var(--legendary); padding-left: 14px; }
 .dc-duo { position: relative; padding: 0 6% 7% 0; }
@@ -808,7 +810,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
   .invite-actions { grid-template-columns: 1fr; }
 }
 .intro .words .w-back { animation: none; } /* scroll is locked under the pack overlay; dim state there reads as low contrast to Lighthouse */
-/* Main Quest intro chips: DoCode a bit bigger, WordFlow slightly bigger */
+/* Main Quest intro chips: HexCub a bit bigger, WordFlow slightly bigger */
 .ch-dc .wf-intro .chip { font-size: 20px; padding: 11px 17px; }
 #main-quest .wf-intro .chip { font-size: 18px; padding: 10px 16px; }
 @media (max-width: 480px) { .ch-dc .wf-intro .chip { font-size: 17px; } #main-quest .wf-intro .chip { font-size: 16px; } }
@@ -836,7 +838,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .ch-now { background: radial-gradient(60% 55% at 30% 50%, rgba(62, 232, 255, 0.1), transparent 70%), #050c0e; }
 
 /* ============ transitions only ============ */
-/* curtain panels: hero > DoCode > WordFlow > words each slide up over the one before, which sinks a little and dims (main.js "transitions") */
+/* curtain panels: hero > HexCub > WordFlow > words each slide up over the one before, which sinks a little and dims (main.js "transitions") */
 .cover { position: relative; transform-origin: 50% 100%; }
 .cover::after { content: ""; position: absolute; inset: 0; z-index: 5; background: #000; opacity: calc(var(--k, 0) * 0.5); pointer-events: none; }
 .cover + * { position: relative; z-index: 2; background-color: var(--bg); border-radius: 32px 32px 0 0; box-shadow: 0 -30px 70px rgba(0, 0, 0, 0.6); border-top: 1px solid var(--line-2); }
@@ -888,7 +890,7 @@ img[src$="wf-arch.webp"], img[src$="wf-loop.webp"] { background: #f1f4f9; border
 .js .ch-now .ch-media img { clip-path: inset(0 0 calc((1 - var(--s)) * 100%) 0); }
 .js .ch-now h2 .cyber { animation: glitch 1s linear both paused; animation-delay: calc(clamp(0, (var(--h) - 0.4) / 0.25, 1) * -0.999s); }
 @keyframes glitch { 0% { opacity: 0; } 15% { opacity: 1; transform: translateX(-4px); text-shadow: 3px 0 #ff2bd6, -3px 0 #3ee8ff; } 35% { transform: translateX(3px); text-shadow: -3px 0 #ff2bd6, 3px 0 #3ee8ff; } 55% { opacity: 0.4; transform: none; } 70% { opacity: 1; transform: translateX(-2px); text-shadow: 2px 0 #ff2bd6, -2px 0 #3ee8ff; } 100% { opacity: 1; transform: none; text-shadow: 0 0 24px rgba(62, 232, 255, 0.45); } }
-/* Main Quest 1 > 2: WordFlow rises as a smaller rounded card and grows to full screen while DoCode darkens under it (--kin from main.js) */
+/* Main Quest 1 > 2: WordFlow rises as a smaller rounded card and grows to full screen while HexCub darkens under it (--kin from main.js) */
 #main-quest { --g: clamp(0, var(--kin, 1) * 1.4, 1); scale: calc(0.86 + 0.14 * var(--g)); transform-origin: 50% 0; border-radius: calc(48px - 16px * var(--g)) calc(48px - 16px * var(--g)) 0 0; }
 #docode::after { opacity: calc(var(--k, 0) * 0.85); }
 @media (prefers-reduced-motion: reduce) { #main-quest { scale: none; } }
